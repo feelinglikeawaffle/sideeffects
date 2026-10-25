@@ -3,365 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UNFILTERED: Dark Humor Edition</title>
+<title>UNFILTERED: Side Effects Dark Humor Edition</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+  
   * {
     box-sizing: border-box;
     user-select: none;
-    margin: 0;
-    padding: 0;
+    font-family: 'Inter', sans-serif;
   }
+
   body {
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #0d0d11;
+    color: #e2e8f0;
     height: 100vh;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
   }
 
-  /* Table Layout */
-  #game-table {
-    flex: 1;
-    position: relative;
-    background: radial-gradient(circle, #2a2a2a 0%, #121212 85%);
-    display: grid;
-    grid-template-rows: 150px 1fr 220px;
-    grid-template-columns: 220px 1fr 220px;
-    gap: 10px;
-    padding: 10px;
+  /* Felt Table Surface */
+  .felt-table {
+    background: radial-gradient(circle at center, #1e1e2d 0%, #0a0a0f 85%);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
   }
 
-  /* Seat positions */
-  .seat {
-    border: 2px dashed rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+  /* Card Styles */
+  .cah-card {
+    width: 90px;
+    height: 130px;
+    border-radius: 8px;
     padding: 8px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    position: relative;
-    background: rgba(0, 0, 0, 0.3);
-  }
-  .seat.active-turn {
-    border-color: #f1c40f;
-    box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
-  }
-  .seat-header {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 6px;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: flex;
     justify-content: space-between;
-    width: 100%;
-    padding: 0 5px;
-  }
-  .hand-count {
-    background: #fff;
-    color: #000;
-    border-radius: 10px;
-    padding: 2px 8px;
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 700;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
-  #seat-top { grid-row: 1; grid-column: 2; }
-  #seat-left { grid-row: 2; grid-column: 1; }
-  #seat-right { grid-row: 2; grid-column: 3; }
-  #seat-bottom { grid-row: 3; grid-column: 1 / span 3; }
-
-  /* Psyche Stacks Container */
-  .psyche-container {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    overflow-x: auto;
+  @media (min-width: 768px) {
+    .cah-card {
+      width: 105px;
+      height: 150px;
+      padding: 10px;
+      font-size: 11px;
+    }
   }
+
+  /* Card Variants */
+  .cah-card.crisis {
+    background: #111116;
+    color: #ffffff;
+    border: 1px solid #333340;
+  }
+  .cah-card.coping {
+    background: #f8fafc;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+  }
+  .cah-card.therapy {
+    background: #0284c7;
+    color: #ffffff;
+    border: 1px solid #38bdf8;
+  }
+  .cah-card.drama {
+    background: #dc2626;
+    color: #ffffff;
+    border: 1px solid #f87171;
+  }
+
+  .cah-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    z-index: 50 !important;
+    box-shadow: 0 12px 20px rgba(0,0,0,0.7);
+  }
+
+  .cah-card.selected {
+    transform: translateY(-16px) scale(1.08);
+    outline: 3px solid #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+    z-index: 60 !important;
+  }
+
+  /* Stack Overlays in Psyche */
   .psyche-stack {
     position: relative;
-    width: 80px;
-    height: 110px;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    transition: transform 0.2s;
-  }
-  .psyche-stack.targetable {
-    border-color: #2ecc71;
-    box-shadow: 0 0 10px #2ecc71;
-    cursor: pointer;
-  }
-
-  /* Center Table Area */
-  #center-area {
-    grid-row: 2;
-    grid-column: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-  }
-  #deck-area {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .deck-pile {
-    width: 90px;
+    width: 85px;
     height: 125px;
+    border: 2px dashed rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    background: #222;
-    border: 2px solid #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-weight: bold;
-    box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
-    position: relative;
+    transition: all 0.2s ease;
   }
-  .deck-pile .count {
-    font-size: 20px;
-    margin-top: 5px;
+  @media (min-width: 768px) {
+    .psyche-stack {
+      width: 100px;
+      height: 140px;
+    }
   }
 
-  /* Log & Action Area */
-  #game-log {
-    width: 80%;
-    max-height: 80px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid #444;
-    border-radius: 6px;
-    padding: 8px;
-    font-size: 12px;
-    color: #ccc;
-  }
-  #action-controls {
-    display: flex;
-    gap: 10px;
-  }
-  .btn {
-    background: #fff;
-    color: #000;
-    border: none;
-    padding: 8px 16px;
-    font-weight: bold;
-    border-radius: 4px;
+  .psyche-stack.targetable {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
     cursor: pointer;
-    text-transform: uppercase;
-    font-size: 12px;
-  }
-  .btn:hover { background: #ddd; }
-  .btn:disabled { background: #555; color: #888; cursor: not-allowed; }
-
-  /* Human Player Hand */
-  #human-hand {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 140px;
-    padding: 5px;
-    overflow-x: auto;
   }
 
-  /* Card Visuals (CAH Dark Style) */
-  .card {
-    width: 80px;
-    height: 110px;
-    background: #fff;
-    color: #000;
-    border-radius: 6px;
-    padding: 6px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 9px;
-    font-weight: bold;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-    cursor: grab;
+  .stack-card {
     position: absolute;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .card:hover {
-    transform: translateY(-5px) scale(1.05);
-    z-index: 100 !important;
-  }
-  .card.selected {
-    outline: 3px solid #f1c40f;
-    transform: translateY(-10px);
-  }
-
-  /* Card Types */
-  .card.crisis {
-    background: #000;
-    color: #fff;
-    border: 1px solid #fff;
-  }
-  .card.coping {
-    background: #fff;
-    color: #000;
-  }
-  .card.therapy {
-    background: #3498db;
-    color: #fff;
-    border: 1px solid #fff;
-  }
-  .card.drama {
-    background: #e74c3c;
-    color: #fff;
-    border: 1px solid #fff;
-  }
-
-  .card-title {
-    font-size: 9px;
-    line-height: 1.1;
-    font-weight: 800;
-  }
-  .card-body {
-    font-size: 7px;
-    font-weight: normal;
-    color: #555;
-    margin-top: 2px;
-  }
-  .card.crisis .card-body, .card.therapy .card-body, .card.drama .card-body {
-    color: #ccc;
-  }
-  .card-footer {
-    font-size: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    opacity: 0.8;
-  }
-
-  /* Stack Layer Offset */
-  .stack-layer-0 { top: 0; left: 0; z-index: 1; }
-  .stack-layer-1 { top: 12px; left: 0; z-index: 2; }
-  .stack-layer-2 { top: 24px; left: 0; z-index: 3; }
-  .stack-layer-3 { top: 36px; left: 0; z-index: 4; }
-
-  /* Animated Sliding Card */
-  .sliding-card {
-    position: fixed;
-    z-index: 1000;
-    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-    pointer-events: none;
-  }
-
-  /* Modal Discard Overlay */
-  #modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.85);
-    z-index: 2000;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-  }
-  #modal-overlay.active { display: flex; }
-  #modal-cards {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 80%;
-  }
-
-  /* Timer Bar */
-  #timer-bar {
-    width: 100%;
-    height: 4px;
-    background: #e74c3c;
-    position: absolute;
-    bottom: 0;
     left: 0;
-    display: none;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .stack-layer-0 { top: 0px; z-index: 10; }
+  .stack-layer-1 { top: 18px; z-index: 20; }
+  .stack-layer-2 { top: 36px; z-index: 30; }
+  .stack-layer-3 { top: 54px; z-index: 40; }
+
+  /* Custom Scrollbar for Hand & Log */
+  ::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
   }
 </style>
 </head>
-<body>
+<body class="flex flex-col h-screen felt-table select-none overflow-hidden">
 
-<div id="game-table">
-  <!-- Bot 2 (Top) -->
-  <div class="seat" id="seat-top">
-    <div class="seat-header">
-      <span>Bot 2 (Top)</span>
-      <span class="hand-count" id="hand-count-1">4 Cards</span>
-    </div>
-    <div class="psyche-container" id="psyche-1"></div>
-  </div>
-
-  <!-- Bot 1 (Left) -->
-  <div class="seat" id="seat-left">
-    <div class="seat-header">
-      <span>Bot 1 (Left)</span>
-      <span class="hand-count" id="hand-count-0">4 Cards</span>
-    </div>
-    <div class="psyche-container" id="psyche-0"></div>
-  </div>
-
-  <!-- Center Area -->
-  <div id="center-area">
-    <div id="deck-area">
-      <div class="deck-pile" id="draw-deck">
-        DECK
-        <div class="count" id="deck-count">0</div>
+  <!-- Main Game Layout Grid -->
+  <div class="flex-1 grid grid-cols-12 grid-rows-12 gap-2 p-3 h-full max-w-7xl mx-auto w-full">
+    
+    <!-- TOP SEAT: BOT 2 -->
+    <div id="seat-top" class="col-span-12 row-span-3 bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between relative backdrop-blur-md">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400 px-2">
+        <span id="name-1" class="flex items-center gap-2">🤖 Bot 2 (Top)</span>
+        <span id="hand-count-1" class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full text-[10px]">4 Cards</span>
       </div>
-      <div class="deck-pile" id="discard-deck" style="background: #111;">
-        DISCARD
-        <div class="count" id="discard-count">0</div>
+      <div id="psyche-1" class="flex justify-center items-center gap-3 overflow-x-auto py-1 h-full"></div>
+    </div>
+
+    <!-- LEFT SEAT: BOT 1 -->
+    <div id="seat-left" class="col-span-3 row-span-6 bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between relative backdrop-blur-md">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span id="name-0">🤖 Bot 1</span>
+        <span id="hand-count-0" class="bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded-full text-[10px]">4</span>
+      </div>
+      <div id="psyche-0" class="flex flex-col items-center justify-center gap-3 overflow-y-auto my-auto w-full"></div>
+    </div>
+
+    <!-- CENTER BOARD AREA -->
+    <div id="center-area" class="col-span-6 row-span-6 flex flex-col justify-between items-center p-2 gap-2">
+      <!-- Deck / Discard Pile Row -->
+      <div class="flex items-center gap-6">
+        <!-- Draw Deck -->
+        <div id="draw-deck" class="cah-card crisis flex-col justify-between items-start pointer-events-none border-2 border-amber-500/40 shadow-amber-900/20">
+          <div class="text-[9px] font-black uppercase tracking-widest text-amber-500">DRAW</div>
+          <div class="text-center w-full my-auto">
+            <span id="deck-count" class="text-2xl font-black text-white">0</span>
+          </div>
+          <div class="text-[8px] text-slate-500">DECK</div>
+        </div>
+
+        <!-- Discard Pile -->
+        <div id="discard-deck" class="cah-card bg-slate-950 border border-slate-800 flex-col justify-between items-start pointer-events-none">
+          <div class="text-[9px] font-black uppercase tracking-widest text-slate-500">DISCARD</div>
+          <div class="text-center w-full my-auto">
+            <span id="discard-count" class="text-2xl font-black text-slate-400">0</span>
+          </div>
+          <div class="text-[8px] text-slate-600">GRAVEYARD</div>
+        </div>
+      </div>
+
+      <!-- Live Action Log -->
+      <div id="game-log" class="w-full h-24 bg-slate-950/80 border border-slate-800/80 rounded-lg p-2 text-[11px] font-mono text-slate-300 overflow-y-auto space-y-1 shadow-inner">
+        <div class="text-amber-400 font-semibold">⚡ Match initializing...</div>
+      </div>
+
+      <!-- Action Status & End Turn Button -->
+      <div class="flex items-center gap-3 w-full justify-center">
+        <button id="btn-end-turn" onclick="endHumanTurn()" class="w-full py-2 px-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-amber-500/20 transition-all disabled:opacity-40 disabled:pointer-events-none">
+          End Turn (2 Actions Remaining)
+        </button>
       </div>
     </div>
 
-    <div id="game-log"></div>
-
-    <div id="action-controls">
-      <button class="btn" id="btn-end-turn" onclick="endHumanTurn()">End Turn (2 Actions Left)</button>
+    <!-- RIGHT SEAT: BOT 3 -->
+    <div id="seat-right" class="col-span-3 row-span-6 bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between relative backdrop-blur-md">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span id="name-2">🤖 Bot 3</span>
+        <span id="hand-count-2" class="bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded-full text-[10px]">4</span>
+      </div>
+      <div id="psyche-2" class="flex flex-col items-center justify-center gap-3 overflow-y-auto my-auto w-full"></div>
     </div>
+
+    <!-- BOTTOM SEAT: HUMAN PLAYER -->
+    <div id="seat-bottom" class="col-span-12 row-span-3 bg-slate-900/60 border-2 border-amber-500/30 rounded-xl p-2 flex flex-col justify-between relative shadow-2xl backdrop-blur-md">
+      <div class="flex justify-between items-center text-xs font-bold text-amber-400 px-2">
+        <span id="name-3" class="flex items-center gap-2">👤 You (Player)</span>
+        <span id="hand-count-3" class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full text-[10px]">4 Cards</span>
+      </div>
+      
+      <!-- Player's Psyche Stacks Row -->
+      <div id="psyche-3" class="flex justify-center items-center gap-3 my-1"></div>
+
+      <!-- Player Hand Container -->
+      <div class="relative w-full flex justify-center">
+        <div id="human-hand" class="flex items-center justify-center gap-2 overflow-x-auto py-1 px-4 max-w-full"></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Bot 3 (Right) -->
-  <div class="seat" id="seat-right">
-    <div class="seat-header">
-      <span>Bot 3 (Right)</span>
-      <span class="hand-count" id="hand-count-2">4 Cards</span>
+  <!-- MODAL: DISCARD EXTRA CARDS OVERLAY -->
+  <div id="modal-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-2xl w-full flex flex-col items-center gap-4 text-center shadow-2xl">
+      <h2 id="modal-title" class="text-xl font-black text-amber-400 uppercase tracking-wide">Too Many Cards!</h2>
+      <p id="modal-subtitle" class="text-xs text-slate-400">Choose cards from your hand to discard down to the 6-card limit.</p>
+      
+      <div id="modal-cards" class="flex flex-wrap justify-center gap-3 my-2 max-h-64 overflow-y-auto p-2"></div>
+      
+      <button id="modal-btn" onclick="confirmModalDiscard()" class="py-2.5 px-6 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-lg shadow-lg disabled:opacity-40 disabled:pointer-events-none transition-all">
+        Confirm Discard
+      </button>
     </div>
-    <div class="psyche-container" id="psyche-2"></div>
   </div>
-
-  <!-- Human Player (Bottom) -->
-  <div class="seat active-turn" id="seat-bottom">
-    <div class="seat-header">
-      <span>You (Player)</span>
-      <span class="hand-count" id="hand-count-3">4 Cards</span>
-    </div>
-    <div class="psyche-container" id="psyche-3" style="height: 60px; margin-bottom: 5px;"></div>
-    <div id="human-hand"></div>
-    <div id="timer-bar"></div>
-  </div>
-</div>
-
-<!-- Modal Discard Overlay -->
-<div id="modal-overlay">
-  <h2 id="modal-title" style="color: #fff;">Too Many Cards! Select cards to discard</h2>
-  <div id="modal-cards"></div>
-  <button class="btn" id="modal-btn" onclick="confirmModalDiscard()">Confirm Discard</button>
-</div>
 
 <script>
-// --- CARD DATA DEFINITIONS ---
+// --- MASTER CARD DEFINITIONS ---
 const CRISIS_TYPES = {
   EXPLOSIVE_DIARRHEA: 'Explosive Diarrhea',
   UNEXPLAINED_RASH: 'Unexplained Rash',
@@ -374,17 +256,17 @@ const CRISIS_TYPES = {
 };
 
 const CARDS_MASTER = [
-  // Crises (Disorders)
+  // Dark Crises (Black cards)
   { id: 'c1', type: 'crisis', name: CRISIS_TYPES.EXPLOSIVE_DIARRHEA, text: 'Must sit out 1 full round.', penalty: 'SKIP_ROUND' },
-  { id: 'c2', type: 'crisis', name: CRISIS_TYPES.UNEXPLAINED_RASH, text: 'Attacker steals 1 card from hand.', penalty: 'STEAL_CARD' },
-  { id: 'c3', type: 'crisis', name: CRISIS_TYPES.IMPENDING_DOOM, text: 'Discard all Coping cards on profile.', penalty: 'STRIP_COPING' },
+  { id: 'c2', type: 'crisis', name: CRISIS_TYPES.UNEXPLAINED_RASH, text: 'Attacker steals 1 random card from your hand.', penalty: 'STEAL_CARD' },
+  { id: 'c3', type: 'crisis', name: CRISIS_TYPES.IMPENDING_DOOM, text: 'Strip all Coping cards from your profile.', penalty: 'STRIP_COPING' },
   { id: 'c4', type: 'crisis', name: CRISIS_TYPES.ACCIDENTAL_FELONY, text: 'Discard your entire hand.', penalty: 'DISCARD_HAND' },
   { id: 'c5', type: 'crisis', name: CRISIS_TYPES.CRIPPLING_DEBT, text: 'Attacker draws 3 random cards from your hand.', penalty: 'LOOT_3' },
-  { id: 'c6', type: 'crisis', name: CRISIS_TYPES.CRYING_DURING_SEX, text: '3s to discard 3 cards, or drop entire hand.', penalty: 'TIMER_DISCARD' },
-  { id: 'c7', type: 'crisis', name: CRISIS_TYPES.SEVERE_SOCIAL_INEPTITUDE, text: 'Cannot play any cards on next turn.', penalty: 'SKIP_TURN' },
+  { id: 'c6', type: 'crisis', name: CRISIS_TYPES.CRYING_DURING_SEX, text: 'Discard 3 cards immediately.', penalty: 'TIMER_DISCARD' },
+  { id: 'c7', type: 'crisis', name: CRISIS_TYPES.SEVERE_SOCIAL_INEPTITUDE, text: 'Skip next card draws.', penalty: 'SKIP_TURN' },
   { id: 'c8', type: 'crisis', name: CRISIS_TYPES.PUBLIC_HUMILIATION, text: 'Discard half your hand.', penalty: 'DISCARD_HALF' },
 
-  // Coping Mechanisms (Drugs)
+  // Coping Mechanisms (White cards)
   { id: 'm1', type: 'coping', name: 'Pepto Bismol & Prayer', treats: CRISIS_TYPES.EXPLOSIVE_DIARRHEA, vulns: [CRISIS_TYPES.UNEXPLAINED_RASH, CRISIS_TYPES.IMPENDING_DOOM] },
   { id: 'm2', type: 'coping', name: 'Cortisone & Ignorance', treats: CRISIS_TYPES.UNEXPLAINED_RASH, vulns: [CRISIS_TYPES.ACCIDENTAL_FELONY, CRISIS_TYPES.CRIPPLING_DEBT] },
   { id: 'm3', type: 'coping', name: 'Whiskey & Doomscrolling', treats: CRISIS_TYPES.IMPENDING_DOOM, vulns: [CRISIS_TYPES.CRYING_DURING_SEX] },
@@ -393,21 +275,20 @@ const CARDS_MASTER = [
   { id: 'm6', type: 'coping', name: 'Aggressive Laughing', treats: CRISIS_TYPES.CRYING_DURING_SEX, vulns: [CRISIS_TYPES.CRIPPLING_DEBT, CRISIS_TYPES.IMPENDING_DOOM] },
   { id: 'm7', type: 'coping', name: 'Staying Home Forever', treats: CRISIS_TYPES.SEVERE_SOCIAL_INEPTITUDE, vulns: [CRISIS_TYPES.EXPLOSIVE_DIARRHEA] },
 
-  // Therapy (Wild removal)
-  { id: 't1', type: 'therapy', name: 'A Sudden Epiphany', text: 'Purge & discard an active Crisis stack.' },
+  // Therapy / Epiphany (Blue cards)
+  { id: 't1', type: 'therapy', name: 'A Sudden Epiphany', text: 'Purge & discard an active untreated Crisis stack.' },
 
-  // Drama / Call Out (Episodes)
-  { id: 'd1', type: 'drama', name: 'Exposed on Twitter', text: 'Trigger any untreated Crisis penalty.' }
+  // Drama / Episode (Red cards)
+  { id: 'd1', type: 'drama', name: 'Exposed on Twitter', text: 'Trigger the penalty on an untreated Crisis stack.' }
 ];
 
 // --- GAME STATE ---
 let deck = [];
 let discardPile = [];
 let players = [];
-let currentPlayerIndex = 3; // Human starts
+let currentPlayerIndex = 3; // Human is player 3
 let actionsRemaining = 2;
 let selectedCardIndex = null;
-let isProcessingTurn = false;
 
 // --- INITIALIZATION ---
 function initGame() {
@@ -420,35 +301,36 @@ function initGame() {
 
   buildDeck();
 
-  // Setup: 4 Crises placed directly in Psyche + 4 Hand Cards per player
+  // Setup Requirement: Every player starts with EXACTLY 4 random Untreated Crisis cards in Psyche & 4 in Hand
   players.forEach(p => {
-    // 4 Random Crises in Psyche
+    // 4 Crises in Psyche
     for (let i = 0; i < 4; i++) {
-      let crisisCard = drawCardOfType('crisis');
+      let crisisCard = pullCardOfType('crisis');
       if (crisisCard) {
         p.psyche.push([crisisCard]);
       }
     }
-    // 4 Random cards in Hand
+
+    // 4 Cards in Hand
     for (let i = 0; i < 4; i++) {
       if (deck.length > 0) p.hand.push(deck.pop());
     }
   });
 
-  log('Game started! Each player has 4 Crises in their profile and 4 cards in hand.');
-  startTurn(3);
+  log('🎲 Match started! All players received 4 starting Crises in Psyche and 4 Cards in hand.');
+  startTurn(3); // Start with human player
 }
 
 function buildDeck() {
   deck = [];
-  // Duplicate master cards to form ~90 card deck
+  // Build a rich card pool (~90 cards)
   for (let i = 0; i < 4; i++) {
-    CARDS_MASTER.forEach(c => deck.push({ ...c, instanceId: Math.random().toString(36).substr(2, 9) }));
+    CARDS_MASTER.forEach(c => deck.push({ ...c, uid: Math.random().toString(36).substr(2, 9) }));
   }
   shuffle(deck);
 }
 
-function drawCardOfType(type) {
+function pullCardOfType(type) {
   let idx = deck.findIndex(c => c.type === type);
   if (idx !== -1) {
     return deck.splice(idx, 1)[0];
@@ -463,15 +345,15 @@ function shuffle(arr) {
   }
 }
 
-// --- TURN FLOW ---
+// --- TURN LOGIC ---
 function startTurn(playerIdx) {
   currentPlayerIndex = playerIdx;
   let p = players[playerIdx];
 
-  // Handle Skip
+  // Handle Turn Skip logic
   if (p.skipTurns > 0) {
     p.skipTurns--;
-    log(`${p.name} sits out this round!`);
+    log(`🚫 ${p.name} sits out this turn due to an active Crisis penalty!`);
     nextTurn();
     return;
   }
@@ -479,13 +361,13 @@ function startTurn(playerIdx) {
   actionsRemaining = 2;
   updateUI();
 
-  // Draw 2 cards
+  // Turn Start Rule: Draw 2 cards
   drawCards(playerIdx, 2);
 
   if (p.isBot) {
-    setTimeout(() => botPlayTurn(playerIdx), 1000);
+    setTimeout(() => runBotTurn(playerIdx), 1200);
   } else {
-    log(`Your turn! You drew 2 cards. Actions left: ${actionsRemaining}`);
+    log(`👉 Your turn! Drew 2 cards. You have ${actionsRemaining} actions.`);
   }
 }
 
@@ -497,7 +379,7 @@ function drawCards(playerIdx, count) {
         deck = [...discardPile];
         discardPile = [];
         shuffle(deck);
-        log('Reshuffled discard pile into draw deck.');
+        log('🔄 Reshuffled discard pile into draw deck.');
       } else {
         break;
       }
@@ -514,16 +396,19 @@ function nextTurn() {
 }
 
 function endHumanTurn() {
+  if (currentPlayerIndex !== 3) return;
+
   let p = players[3];
+  // Hand limit check: >6 cards triggers modal discard
   if (p.hand.length > 6) {
-    showDiscardModal(p.hand.length - 6);
+    openDiscardModal(p.hand.length - 6);
   } else {
     selectedCardIndex = null;
     nextTurn();
   }
 }
 
-// --- CARD PLAYING LOGIC ---
+// --- CARD SELECTION & TARGETING ---
 function selectCard(idx) {
   if (currentPlayerIndex !== 3 || actionsRemaining <= 0) return;
   selectedCardIndex = (selectedCardIndex === idx) ? null : idx;
@@ -535,8 +420,11 @@ function playCardOnTarget(playerHandIdx, targetPlayerIdx, stackIdx) {
   let targetP = players[targetPlayerIdx];
   let card = p.hand[playerHandIdx];
 
-  // Logic checks
+  if (!card) return false;
+
+  // Rule Validation
   if (card.type === 'coping') {
+    // Coping must be played on OWN untreated crisis matching the treatment name
     if (targetPlayerIdx !== currentPlayerIndex) return false;
     let stack = targetP.psyche[stackIdx];
     let topCard = stack[stack.length - 1];
@@ -544,33 +432,36 @@ function playCardOnTarget(playerHandIdx, targetPlayerIdx, stackIdx) {
       stack.push(card);
       p.hand.splice(playerHandIdx, 1);
       actionsRemaining--;
-      log(`You played "${card.name}" to cover "${topCard.name}".`);
+      log(`💊 ${p.name} played "${card.name}" to treat "${topCard.name}".`);
       return true;
     }
   } else if (card.type === 'crisis') {
+    // Crisis must be played on OPPONENT coping mechanism that is vulnerable
     if (targetPlayerIdx === currentPlayerIndex) return false;
     let stack = targetP.psyche[stackIdx];
     let topCard = stack[stack.length - 1];
-    if (topCard.type === 'coping' && topCard.vulns.includes(card.name)) {
+    if (topCard.type === 'coping' && topCard.vulns && topCard.vulns.includes(card.name)) {
       stack.push(card);
       p.hand.splice(playerHandIdx, 1);
       actionsRemaining--;
-      log(`You dumped "${card.name}" onto ${targetP.name}'s profile!`);
+      log(`🔥 ${p.name} dumped "${card.name}" onto ${targetP.name}'s profile!`);
       return true;
     }
   } else if (card.type === 'therapy') {
+    // Epiphany purges an entire untreated Crisis stack on OWN profile
     if (targetPlayerIdx !== currentPlayerIndex) return false;
     let stack = targetP.psyche[stackIdx];
     let topCard = stack[stack.length - 1];
-    if (topCard.type === 'crisis' && topCard.name !== CRISIS_TYPES.CRYING_DURING_SEX) {
+    if (topCard.type === 'crisis') {
       discardPile.push(...stack, card);
       targetP.psyche.splice(stackIdx, 1);
       p.hand.splice(playerHandIdx, 1);
       actionsRemaining--;
-      log(`You had a Epiphany and purged a Crisis stack!`);
+      log(`🧠 ${p.name} had A Sudden Epiphany and purged an entire Crisis stack!`);
       return true;
     }
   } else if (card.type === 'drama') {
+    // Drama triggers penalty on an OPPONENT's untreated Crisis
     if (targetPlayerIdx === currentPlayerIndex) return false;
     let stack = targetP.psyche[stackIdx];
     let topCard = stack[stack.length - 1];
@@ -578,7 +469,7 @@ function playCardOnTarget(playerHandIdx, targetPlayerIdx, stackIdx) {
       p.hand.splice(playerHandIdx, 1);
       discardPile.push(card);
       actionsRemaining--;
-      log(`You triggered a Drama Call Out on ${targetP.name}'s "${topCard.name}"!`);
+      log(`📢 ${p.name} Exposed ${targetP.name} on Twitter! Triggering "${topCard.name}".`);
       executePenalty(topCard.penalty, targetPlayerIdx, currentPlayerIndex);
       return true;
     }
@@ -587,7 +478,7 @@ function playCardOnTarget(playerHandIdx, targetPlayerIdx, stackIdx) {
 }
 
 function handleStackClick(targetPlayerIdx, stackIdx) {
-  if (selectedCardIndex === null) return;
+  if (selectedCardIndex === null || currentPlayerIndex !== 3) return;
   if (playCardOnTarget(selectedCardIndex, targetPlayerIdx, stackIdx)) {
     selectedCardIndex = null;
     updateUI();
@@ -601,13 +492,13 @@ function executePenalty(penaltyType, victimIdx, attackerIdx) {
   switch (penaltyType) {
     case 'SKIP_ROUND':
       victim.skipTurns += 1;
-      log(`${victim.name} must sit out 1 round!`);
+      log(`🚨 ${victim.name} must sit out their next turn!`);
       break;
     case 'STEAL_CARD':
       if (victim.hand.length > 0) {
-        let stolen = victim.hand.pop();
+        let stolen = victim.hand.splice(Math.floor(Math.random() * victim.hand.length), 1)[0];
         attacker.hand.push(stolen);
-        log(`${attacker.name} stole a card from ${victim.name}!`);
+        log(`🖐️ ${attacker.name} stole a card from ${victim.name}!`);
       }
       break;
     case 'STRIP_COPING':
@@ -616,89 +507,93 @@ function executePenalty(penaltyType, victimIdx, attackerIdx) {
           discardPile.push(stack.pop());
         }
       });
-      log(`${victim.name} lost all Coping cards from their profile!`);
+      log(`⚠️ ${victim.name} lost all Coping cards on their profile!`);
       break;
     case 'DISCARD_HAND':
       discardPile.push(...victim.hand);
       victim.hand = [];
-      log(`${victim.name} discarded their ENTIRE hand!`);
+      log(`💥 ${victim.name} discarded their ENTIRE hand!`);
       break;
     case 'LOOT_3':
       for (let i = 0; i < 3 && victim.hand.length > 0; i++) {
-        let card = victim.hand.splice(Math.floor(Math.random() * victim.hand.length), 1)[0];
-        attacker.hand.push(card);
+        let stolen = victim.hand.splice(Math.floor(Math.random() * victim.hand.length), 1)[0];
+        attacker.hand.push(stolen);
       }
-      log(`${attacker.name} looted 3 cards from ${victim.name}!`);
+      log(`💰 ${attacker.name} looted 3 cards from ${victim.name}!`);
       break;
     case 'DISCARD_HALF':
       let count = Math.ceil(victim.hand.length / 2);
       for (let i = 0; i < count && victim.hand.length > 0; i++) {
         discardPile.push(victim.hand.pop());
       }
-      log(`${victim.name} discarded half their hand!`);
+      log(`📉 ${victim.name} discarded half their hand!`);
+      break;
+    case 'TIMER_DISCARD':
+      let dCount = Math.min(3, victim.hand.length);
+      for (let i = 0; i < dCount; i++) {
+        discardPile.push(victim.hand.pop());
+      }
+      log(`⏳ ${victim.name} discarded 3 cards!`);
       break;
   }
   updateUI();
 }
 
-// --- BOT AI ---
-function botPlayTurn(botIdx) {
+// --- BOT AI LOGIC ---
+function runBotTurn(botIdx) {
   let bot = players[botIdx];
 
   while (actionsRemaining > 0 && bot.hand.length > 0) {
-    let played = false;
+    let cardPlayed = false;
 
-    // 1. Try to cover own untreated crisis with Coping
+    // AI Priority 1: Treat own untreated Crises with Coping cards
     for (let h = 0; h < bot.hand.length; h++) {
-      let card = bot.hand[h];
-      if (card.type === 'coping') {
+      if (bot.hand[h].type === 'coping') {
         for (let s = 0; s < bot.psyche.length; s++) {
           if (playCardOnTarget(h, botIdx, s)) {
-            played = true; break;
+            cardPlayed = true; break;
           }
         }
       }
-      if (played) break;
+      if (cardPlayed) break;
     }
 
-    // 2. Try to use Therapy on own crisis
-    if (!played) {
+    // AI Priority 2: Use Therapy/Epiphany on own untreated Crises
+    if (!cardPlayed) {
       for (let h = 0; h < bot.hand.length; h++) {
-        let card = bot.hand[h];
-        if (card.type === 'therapy') {
+        if (bot.hand[h].type === 'therapy') {
           for (let s = 0; s < bot.psyche.length; s++) {
             if (playCardOnTarget(h, botIdx, s)) {
-              played = true; break;
+              cardPlayed = true; break;
             }
           }
         }
-        if (played) break;
+        if (cardPlayed) break;
       }
     }
 
-    // 3. Try to play Drama card on opponent untreated crisis
-    if (!played) {
+    // AI Priority 3: Attack opponents using Drama cards
+    if (!cardPlayed) {
       for (let h = 0; h < bot.hand.length; h++) {
-        let card = bot.hand[h];
-        if (card.type === 'drama') {
+        if (bot.hand[h].type === 'drama') {
           for (let p = 0; p < 4; p++) {
             if (p === botIdx) continue;
             for (let s = 0; s < players[p].psyche.length; s++) {
               if (playCardOnTarget(h, p, s)) {
-                played = true; break;
+                cardPlayed = true; break;
               }
             }
-            if (played) break;
+            if (cardPlayed) break;
           }
         }
-        if (played) break;
+        if (cardPlayed) break;
       }
     }
 
-    if (!played) break; // No viable moves left
+    if (!cardPlayed) break; // Pass if no valid moves exist
   }
 
-  // Discard down to 6 if needed
+  // Bot Discard hand limit check (>6 cards)
   while (bot.hand.length > 6) {
     discardPile.push(bot.hand.pop());
   }
@@ -710,31 +605,38 @@ function botPlayTurn(botIdx) {
 // --- WIN CONDITION ---
 function checkWinCondition() {
   players.forEach(p => {
-    let untreated = p.psyche.filter(stack => {
+    let untreatedCrises = p.psyche.filter(stack => {
       let top = stack[stack.length - 1];
       return top.type === 'crisis';
     });
-    if (untreated.length === 0) {
-      alert(`${p.name} WINS! All crises are covered or resolved!`);
-      initGame();
+
+    if (untreatedCrises.length === 0) {
+      log(`🏆 ${p.name.toUpperCase()} HAS HEALED ALL CRISES AND WON THE MATCH!`);
+      setTimeout(() => {
+        alert(`🎉 ${p.name} wins the match! All Crises have been treated or purged.`);
+        initGame();
+      }, 500);
     }
   });
 }
 
-// --- DISCARD MODAL ---
+// --- INTERACTIVE DISCARD MODAL ---
 let modalDiscardNeeded = 0;
 let modalSelectedIndices = [];
 
-function showDiscardModal(count) {
+function openDiscardModal(count) {
   modalDiscardNeeded = count;
   modalSelectedIndices = [];
-  document.getElementById('modal-title').innerText = `Discard ${count} card(s) to end turn`;
+  
+  document.getElementById('modal-title').innerText = `Discard ${count} Card(s)`;
+  document.getElementById('modal-subtitle').innerText = `Your hand exceeds the 6-card limit. Select ${count} card(s) to discard to end your turn.`;
+  
   let container = document.getElementById('modal-cards');
   container.innerHTML = '';
 
   let p = players[3];
   p.hand.forEach((card, idx) => {
-    let el = createCardUI(card);
+    let el = renderCardElement(card);
     el.onclick = () => {
       if (modalSelectedIndices.includes(idx)) {
         modalSelectedIndices = modalSelectedIndices.filter(i => i !== idx);
@@ -743,83 +645,96 @@ function showDiscardModal(count) {
         modalSelectedIndices.push(idx);
         el.classList.add('selected');
       }
+      document.getElementById('modal-btn').disabled = modalSelectedIndices.length !== modalDiscardNeeded;
     };
     container.appendChild(el);
   });
 
-  document.getElementById('modal-overlay').classList.add('active');
+  document.getElementById('modal-btn').disabled = true;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('modal-overlay').classList.add('flex');
 }
 
 function confirmModalDiscard() {
   if (modalSelectedIndices.length !== modalDiscardNeeded) return;
   let p = players[3];
-  // Sort descending to avoid splice shifting issues
+
   modalSelectedIndices.sort((a,b) => b - a).forEach(idx => {
     discardPile.push(p.hand.splice(idx, 1)[0]);
   });
-  document.getElementById('modal-overlay').classList.remove('active');
+
+  document.getElementById('modal-overlay').classList.add('hidden');
+  document.getElementById('modal-overlay').classList.remove('flex');
   selectedCardIndex = null;
   nextTurn();
 }
 
-// --- UI RENDER ---
-function createCardUI(card) {
+// --- UI RENDER ENGINE ---
+function renderCardElement(card) {
   let div = document.createElement('div');
-  div.className = `card ${card.type}`;
+  div.className = `cah-card ${card.type}`;
+  
+  let subText = card.text || (card.treats ? `Treats: ${card.treats}` : '');
+  
   div.innerHTML = `
-    <div class="card-title">${card.name}</div>
-    <div class="card-body">${card.text || (card.treats ? 'Treats: ' + card.treats : '')}</div>
-    <div class="card-footer">${card.type}</div>
+    <div class="font-extrabold leading-tight text-[10px] md:text-[11px]">${card.name}</div>
+    <div class="text-[8px] md:text-[9px] opacity-80 mt-1 font-normal leading-snug">${subText}</div>
+    <div class="text-[7px] font-black uppercase tracking-widest opacity-60 mt-auto">${card.type}</div>
   `;
   return div;
 }
 
 function updateUI() {
-  // Update decks
+  // Update Deck Counts
   document.getElementById('deck-count').innerText = deck.length;
   document.getElementById('discard-count').innerText = discardPile.length;
 
-  // Action button status
+  // Turn Action Button
   let btn = document.getElementById('btn-end-turn');
-  btn.innerText = `End Turn (${actionsRemaining} Actions Left)`;
+  btn.innerText = currentPlayerIndex === 3 ? `End Turn (${actionsRemaining} Actions Left)` : `Bot Turn in Progress...`;
   btn.disabled = currentPlayerIndex !== 3;
 
-  // Render Seats & Psyches
+  // Render Psyches for 4 Seats
   players.forEach((p, idx) => {
-    let seatEl = document.getElementById(`seat-${idx === 0 ? 'left' : idx === 1 ? 'top' : idx === 2 ? 'right' : 'bottom'}`);
-    if (idx === currentPlayerIndex) seatEl.classList.add('active-turn');
-    else seatEl.classList.remove('active-turn');
+    let seatIds = ['seat-left', 'seat-top', 'seat-right', 'seat-bottom'];
+    let seatEl = document.getElementById(seatIds[idx]);
+    
+    if (idx === currentPlayerIndex) {
+      seatEl.classList.add('border-amber-500/60', 'shadow-amber-500/10');
+    } else {
+      seatEl.classList.remove('border-amber-500/60', 'shadow-amber-500/10');
+    }
 
     document.getElementById(`hand-count-${idx}`).innerText = `${p.hand.length} Cards`;
 
-    let psycheEl = document.getElementById(`psyche-${idx}`);
-    psycheEl.innerHTML = '';
+    let psycheContainer = document.getElementById(`psyche-${idx}`);
+    psycheContainer.innerHTML = '';
 
     p.psyche.forEach((stack, stackIdx) => {
-      let stackContainer = document.createElement('div');
-      stackContainer.className = 'psyche-stack';
-      
-      // Targetable highlight
+      let stackEl = document.createElement('div');
+      stackEl.className = 'psyche-stack';
+
+      // Highlight targetable stacks during human turn card selection
       if (selectedCardIndex !== null && currentPlayerIndex === 3) {
-        stackContainer.classList.add('targetable');
+        stackEl.classList.add('targetable');
       }
-      stackContainer.onclick = () => handleStackClick(idx, stackIdx);
+      stackEl.onclick = () => handleStackClick(idx, stackIdx);
 
       stack.forEach((card, layerIdx) => {
-        let cardUI = createCardUI(card);
-        cardUI.classList.add(`stack-layer-${Math.min(layerIdx, 3)}`);
-        stackContainer.appendChild(cardUI);
+        let cardUI = renderCardElement(card);
+        cardUI.classList.add('stack-card', `stack-layer-${Math.min(layerIdx, 3)}`);
+        stackEl.appendChild(cardUI);
       });
 
-      psycheEl.appendChild(stackContainer);
+      psycheContainer.appendChild(stackEl);
     });
   });
 
-  // Render Human Hand
+  // Render Human Player Hand
   let handEl = document.getElementById('human-hand');
   handEl.innerHTML = '';
   players[3].hand.forEach((card, idx) => {
-    let cardUI = createCardUI(card);
+    let cardUI = renderCardElement(card);
     if (selectedCardIndex === idx) cardUI.classList.add('selected');
     cardUI.onclick = () => selectCard(idx);
     handEl.appendChild(cardUI);
@@ -834,7 +749,7 @@ function log(msg) {
   logEl.scrollTop = logEl.scrollHeight;
 }
 
-// Start game on load
+// Launch Game on Load
 window.onload = initGame;
 </script>
 </body>
