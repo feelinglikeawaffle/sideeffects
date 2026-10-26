@@ -190,10 +190,9 @@
         #table-container { min-height: 0; min-width: 0; }
         @media (min-width: 768px) {
             #table-container.desktop-table {
-                min-height: 820px;
-                overflow-y: auto !important;
-                overflow-x: hidden !important;
-                grid-auto-rows: minmax(0, 1fr);
+                min-height: 0 !important;
+                overflow: hidden !important;
+                grid-template-rows: repeat(12, minmax(0, 1fr));
             }
         }
         .card-base {
@@ -269,14 +268,23 @@
             #player-hand > .card-base { width: 105px; height: 145px; flex-basis: 105px; }
         }
         @media (max-width: 767px) {
-            #table-container { overflow-y: auto !important; }
-            #player-hand { min-height: 154px; }
-            #player-hand > .card-base { width: 100px; height: 140px; flex-basis: 100px; }
-            #psyche-container-0, #psyche-container-1, #psyche-container-2, #psyche-container-3 {
-                gap: 8px !important;
-            }
-            #table-container .slot-target { width: min(42vw, 150px); height: 132px; }
-            #table-container .slot-target > .card-base { width: 100%; height: 132px; }
+            html, body { height: 100%; min-height: 100%; }
+            body { height: 100dvh !important; overflow: hidden !important; }
+            #table-container { overflow-y: auto !important; overflow-x: hidden !important; gap: 10px !important; padding: 10px !important; }
+            #player-hand { height: 230px !important; min-height: 230px !important; flex: 0 0 230px !important; gap: 10px !important; align-items: stretch !important; padding: 8px !important; }
+            #player-hand > .card-base { width: 150px !important; height: 210px !important; flex: 0 0 150px !important; padding: 10px !important; }
+            #player-hand .card-disorder-header, #player-hand .card-drug-header, #player-hand .card-therapy-header, #player-hand .card-episode-header { font-size: 10px !important; }
+            #player-hand .font-black.text-\[9\.5px\] { font-size: 15px !important; line-height: 1.15 !important; }
+            #player-hand .text-\[7px\] { font-size: 11px !important; line-height: 1.25 !important; }
+            #player-hand .text-\[6px\] { font-size: 9px !important; line-height: 1.2 !important; }
+            #psyche-container-0, #psyche-container-1, #psyche-container-2, #psyche-container-3 { gap: 8px !important; }
+            #table-container .slot-target { width: min(42vw, 170px) !important; height: 190px !important; }
+            #table-container .slot-target > .card-base { width: 100% !important; height: 190px !important; padding: 9px !important; }
+            #table-container .slot-target .card-disorder-header, #table-container .slot-target .card-drug-header, #table-container .slot-target .card-therapy-header, #table-container .slot-target .card-episode-header { font-size: 9px !important; }
+            #table-container .slot-target .font-black.text-\[9\.5px\] { font-size: 12px !important; }
+            #table-container .slot-target .text-\[7px\] { font-size: 9px !important; }
+            #table-container .slot-target .text-\[6px\] { font-size: 8px !important; }
+            #table-container .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
         }
     </style>
 </head>
@@ -1227,6 +1235,16 @@
                     <button onclick="switchMobileTab(3)" class="py-1.5 text-[10px] font-black uppercase rounded-lg border ${activeTargetPlayer === 3 ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900 text-zinc-400 border-zinc-800'}">Bot 3 (${gameState.players[3].hand.length})</button>
                 </div>
 
+                <!-- HUMAN HAND (SCROLLABLE CARDS CONTAINER) -->
+                <div class="flex-1 bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-2.5 flex flex-col overflow-hidden min-h-[160px]">
+                    <div class="text-[11px] font-bold text-zinc-300 mb-1 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hand text-rose-400 mr-1"></i> Your Hand (${gameState.players[0].hand.length})</span>
+                        <span class="text-[9px] text-zinc-500">Select a card, then tap a stack below</span>
+                    </div>
+                    <div id="player-hand" class="flex-1 flex gap-2 overflow-x-auto items-center py-1 px-1"></div>
+                </div>
+
+
                 <!-- ACTIVE VIEWED PLAYER PSYCHE SLOTS -->
                 <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-3 flex flex-col items-center justify-center shrink-0">
                     <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center gap-1.5">
@@ -1235,14 +1253,6 @@
                     <div id="psyche-container-${activeTargetPlayer}" class="grid grid-cols-2 sm:grid-cols-4 gap-3 justify-center items-center w-full"></div>
                 </div>
 
-                <!-- HUMAN HAND (SCROLLABLE CARDS CONTAINER) -->
-                <div class="flex-1 bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-2.5 flex flex-col overflow-hidden min-h-[160px]">
-                    <div class="text-[11px] font-bold text-zinc-300 mb-1 flex items-center justify-between">
-                        <span><i class="fa-solid fa-hand text-rose-400 mr-1"></i> Your Hand (${gameState.players[0].hand.length})</span>
-                        <span class="text-[9px] text-zinc-500">Tap card to select, tap stack to play</span>
-                    </div>
-                    <div id="player-hand" class="flex-1 flex gap-2 overflow-x-auto items-center py-1 px-1"></div>
-                </div>
             `;
 
             populateTableElements();
