@@ -34,18 +34,18 @@
 
         /* CAH Card Base Aesthetic */
         .card-base {
-            width: 100px;
-            height: 145px;
+            width: 95px;
+            height: 135px;
             border-radius: 8px;
             position: absolute;
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
             cursor: grab;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
             border: 2px solid #27272a;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 8px;
+            padding: 6px;
             box-sizing: border-box;
             background: #ffffff;
             color: #000000;
@@ -53,9 +53,9 @@
 
         @media (min-width: 768px) {
             .card-base {
-                width: 120px;
-                height: 170px;
-                padding: 10px;
+                width: 110px;
+                height: 155px;
+                padding: 8px;
                 border-radius: 10px;
             }
         }
@@ -66,9 +66,14 @@
 
         .card-base.dragging {
             z-index: 1000 !important;
-            transition: none !important;
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.5);
+            box-shadow: 0 16px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.6);
             transform: scale(1.08) !important;
+        }
+
+        .card-base.selected-card {
+            border-color: #f43f5e !important;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.8), 0 0 5px rgba(255, 255, 255, 0.8) !important;
+            transform: translateY(-10px) !important;
         }
 
         /* Black Card (Episode / Disasters) */
@@ -89,10 +94,10 @@
         .card-disorder-header {
             background-color: #e11d48;
             color: #ffffff;
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 900;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 1.5px 4px;
+            border-radius: 3px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -100,10 +105,10 @@
         .card-drug-header {
             background-color: #2563eb;
             color: #ffffff;
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 900;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 1.5px 4px;
+            border-radius: 3px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -111,10 +116,10 @@
         .card-therapy-header {
             background-color: #059669;
             color: #ffffff;
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 900;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 1.5px 4px;
+            border-radius: 3px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -122,20 +127,12 @@
         .card-episode-header {
             background-color: #dc2626;
             color: #ffffff;
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 900;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 1.5px 4px;
+            border-radius: 3px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        /* Seat Orientations */
-        .side-seat-left {
-            transform: rotate(90deg);
-        }
-        .side-seat-right {
-            transform: rotate(-90deg);
         }
 
         /* Drop Target Glows */
@@ -144,15 +141,30 @@
             border-radius: 10px;
             transition: all 0.2s ease;
             background: rgba(24, 24, 27, 0.4);
+            position: relative;
+        }
+
+        .slot-target.valid-drop-target {
+            border-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.12);
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
         }
 
         .slot-target.drag-over {
-            border-color: #f43f5e;
-            background: rgba(244, 63, 94, 0.15);
-            transform: scale(1.04);
+            border-color: #fb7185;
+            background: rgba(244, 63, 94, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.7);
         }
 
-        /* Animated Sliding Floating Clone */
+        /* Locked Safe Slot (Therapy) */
+        .slot-locked-safe {
+            border: 2px solid #059669 !important;
+            background: rgba(5, 150, 105, 0.15) !important;
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important;
+        }
+
+        /* Animated Floating Clone for AI Play */
         .animated-card-clone {
             position: fixed;
             z-index: 9999;
@@ -204,18 +216,18 @@
     <!-- 4-PLAYER TABLETOP AREA -->
     <main class="flex-1 relative grid grid-cols-12 grid-rows-12 p-2 gap-1 overflow-hidden">
 
-        <!-- BOT 2: TOP SEAT (Horizontal) -->
+        <!-- BOT 2: TOP SEAT -->
         <div class="col-span-12 row-span-3 flex flex-col items-center justify-start z-10">
             <div class="flex items-center gap-2 bg-zinc-900/80 px-3 py-0.5 rounded-full border border-zinc-800 mb-1">
                 <span class="text-xs font-bold text-zinc-300"><i class="fa-solid fa-robot text-rose-500 mr-1"></i> Bot 2 (Top)</span>
-                <span id="bot2-card-count" class="text-[10px] text-zinc-500 font-medium">Hand: 5</span>
+                <span id="bot2-card-count" class="text-[10px] text-zinc-500 font-medium">Hand: 4</span>
             </div>
             <div id="bot2-psyche" class="flex gap-2 sm:gap-3 justify-center items-center h-28 sm:h-32">
                 <!-- Stacks inserted dynamically -->
             </div>
         </div>
 
-        <!-- BOT 1: LEFT SEAT (Vertical) -->
+        <!-- BOT 1: LEFT SEAT -->
         <div class="col-span-3 row-span-6 flex flex-col items-center justify-center z-10">
             <div class="flex items-center gap-1.5 bg-zinc-900/80 px-2 py-0.5 rounded-full border border-zinc-800 mb-2">
                 <span class="text-[11px] font-bold text-zinc-300"><i class="fa-solid fa-robot text-rose-500 mr-1"></i> Bot 1</span>
@@ -234,9 +246,9 @@
                     <div id="draw-deck" class="card-base card-black cursor-pointer hover:border-rose-500 hover:scale-105 transition-all relative flex flex-col items-center justify-center text-center">
                         <i class="fa-solid fa-fire-flame-curved text-xl text-rose-500 mb-1"></i>
                         <span class="font-black text-[10px] uppercase tracking-widest text-zinc-400">UNFILTERED</span>
-                        <span id="deck-count" class="text-sm font-black text-white mt-1">89</span>
+                        <span id="deck-count" class="text-sm font-black text-white mt-1">74</span>
                     </div>
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Draw (2 Cards)</span>
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Draw Deck</span>
                 </div>
 
                 <!-- Discard Pile -->
@@ -252,11 +264,11 @@
 
             <!-- Game Log / Action Message -->
             <div id="center-log" class="text-center px-4 py-1.5 bg-zinc-950/90 border border-zinc-800/80 rounded-lg max-w-xs backdrop-blur-sm shadow-xl">
-                <p id="log-text" class="text-xs text-rose-400 font-semibold">Your Turn! Drag cards or click Draw Deck.</p>
+                <p id="log-text" class="text-xs text-rose-400 font-semibold">Your Turn! Drag cards onto target slots.</p>
             </div>
         </div>
 
-        <!-- BOT 3: RIGHT SEAT (Vertical) -->
+        <!-- BOT 3: RIGHT SEAT -->
         <div class="col-span-3 row-span-6 flex flex-col items-center justify-center z-10">
             <div class="flex items-center gap-1.5 bg-zinc-900/80 px-2 py-0.5 rounded-full border border-zinc-800 mb-2">
                 <span class="text-[11px] font-bold text-zinc-300"><i class="fa-solid fa-robot text-rose-500 mr-1"></i> Bot 3</span>
@@ -267,7 +279,7 @@
             </div>
         </div>
 
-        <!-- HUMAN PLAYER: BOTTOM SEAT (Horizontal) -->
+        <!-- HUMAN PLAYER: BOTTOM SEAT -->
         <div class="col-span-12 row-span-3 flex flex-col items-center justify-end z-10">
             <!-- Player Psyche Stacks -->
             <div id="player0-psyche" class="flex gap-2 sm:gap-3 justify-center items-center h-28 sm:h-32 mb-1">
@@ -276,7 +288,7 @@
 
             <div class="flex items-center gap-2 bg-zinc-900/80 px-3 py-0.5 rounded-full border border-zinc-800">
                 <span class="text-xs font-bold text-zinc-200"><i class="fa-solid fa-user text-rose-400 mr-1"></i> Your Psyche</span>
-                <span class="text-[10px] text-zinc-500 font-medium">Clear all untreated disorders to win!</span>
+                <span class="text-[10px] text-zinc-500 font-medium">Use Therapy to purge & permanently lock slots safe!</span>
             </div>
 
             <!-- Player Hand -->
@@ -289,7 +301,7 @@
 
     </main>
 
-    <!-- MODAL: TREMORS 3-SECOND RAPID DISCARD -->
+    <!-- MODAL: TREMORS DISASTER -->
     <div id="tremors-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-zinc-900 border-2 border-rose-600 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl relative">
             <div class="text-4xl text-rose-500 mb-2 animate-bounce"><i class="fa-solid fa-hand-holding-medical"></i></div>
@@ -325,26 +337,29 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h2 class="text-xl font-black text-rose-500 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-skull"></i> UNFILTERED: DARK HUMOR RULES
+                <i class="fa-solid fa-skull"></i> UNFILTERED: RULES & MECHANICS
             </h2>
             <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-1 mt-3">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to have ZERO visible/untreated Disorders in your Psyche!
                 </div>
                 <div>
-                    <span class="font-bold text-white">1. Turn Flow:</span> At the start of your turn, you draw 2 cards. You get up to 2 Actions per turn (Draw 1 or Play 1 card). End turn requires discarding down to 6 cards.
+                    <span class="font-bold text-white">1. Starting Setup:</span> Each player starts with 4 random Disorders placed in their 4 Psyche slots, plus 4 random starting cards in hand.
                 </div>
                 <div>
-                    <span class="font-bold text-white">2. Disorders (Red):</span> Played onto empty slots in your Psyche. Each exposed Disorder creates vulnerabilities and risks opponent Episodes.
+                    <span class="font-bold text-white">2. Turn Flow:</span> Draw 2 cards at start of turn. Up to 2 actions per turn (Draw 1 or Drag & Drop card). Hand size limit is 6 at turn end.
                 </div>
                 <div>
-                    <span class="font-bold text-white">3. Drugs (Blue):</span> Played directly on top of matching Disorders. Shields the Disorder, but exposes new side-effect vulnerabilities on top of the stack!
+                    <span class="font-bold text-white">3. Drag and Drop:</span> Drag cards from your hand directly onto valid target slots across the table.
                 </div>
                 <div>
-                    <span class="font-bold text-white">4. Therapy (Green):</span> Rare (8 cards total). Completely purges and discards an untreated Disorder stack from your Psyche! Cannot be used on Severe Tremors.
+                    <span class="font-bold text-white">4. Therapy / Safe Zone Lock:</span> Playing a Therapy card on an untreated Disorder purges that stack and permanently turns the slot into an emerald <span class="text-emerald-400 font-bold">CURED Safe Zone</span>. Once cured, no player or bot can ever target or play on that slot again!
                 </div>
                 <div>
-                    <span class="font-bold text-white">5. Episode Cards (Black):</span> Wild attack cards played against any opponent's UNTREATED Disorder to trigger its specific punishment.
+                    <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
+                </div>
+                <div>
+                    <span class="font-bold text-white">6. Episode Cards (Black):</span> Wild attack cards dropped onto any opponent's UNTREATED Disorder to trigger its punishment.
                 </div>
             </div>
         </div>
@@ -364,7 +379,7 @@
         </div>
     </div>
 
-    <!-- AUDIO ENGINE (Web Audio API Synthesizer) -->
+    <!-- AUDIO SYNTHESIZER ENGINE -->
     <script>
         class SoundEngine {
             constructor() { this.ctx = null; }
@@ -378,6 +393,16 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + 0.08);
+            }
+            playCure() {
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(600, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.2);
             }
             playDisaster() {
                 this.init(); if (!this.ctx) return;
@@ -414,7 +439,6 @@
             EPISODE: 'episode'    // Black Wild
         };
 
-        // 8 Specific Disorders (Dark Crises) with side effects, vulnerabilities, & episode punishments
         const DISORDERS = {
             EXISTENTIAL_DREAD: {
                 id: 'EXISTENTIAL_DREAD',
@@ -422,7 +446,7 @@
                 flavor: 'Staring at the ceiling at 4 AM wondering what it all means.',
                 drugName: 'Chugging Cough Syrup',
                 sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'],
-                punishmentText: 'Reveal hand & attacker steals 1 card of choice.'
+                punishmentText: 'Reveal hand & attacker steals 1 card.'
             },
             CRIPPLING_DEBT: {
                 id: 'CRIPPLING_DEBT',
@@ -455,7 +479,7 @@
                 drugName: 'Sniffing Glue',
                 sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'],
                 punishmentText: '3-second rapid discard timer (discard 3 or wipe hand)!',
-                noTherapy: true // Cannot be cured with Therapy
+                noTherapy: true
             },
             IMPOTENCE: {
                 id: 'IMPOTENCE',
@@ -477,19 +501,18 @@
                 id: 'EATING_TRASH',
                 name: 'Eating Trash',
                 flavor: 'Digging through a dumpster behind a bakery at 2 AM.',
-                drugName: null, // THERAPY ONLY
+                drugName: null,
                 sideEffects: [],
                 punishmentText: 'Target discards half their hand.',
                 therapyOnly: true
             }
         };
 
-        // Construct Master Deck (~90 Cards Total)
         function generateMasterDeck() {
             const deck = [];
             let cardId = 0;
 
-            // 1. DISORDERS (~28 Total, ~3-4 each)
+            // 1. DISORDERS (~28 Total)
             Object.values(DISORDERS).forEach(disorder => {
                 const count = disorder.id === 'EATING_TRASH' ? 3 : 4;
                 for (let i = 0; i < count; i++) {
@@ -506,7 +529,7 @@
                 }
             });
 
-            // 2. DRUGS (~35 Total, matching treatable disorders)
+            // 2. DRUGS (~35 Total)
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
                     for (let i = 0; i < 5; i++) {
@@ -523,29 +546,29 @@
                 }
             });
 
-            // 3. THERAPY (Exactly 8 Cards Total - Rare)
+            // 3. THERAPY (8 Cards)
             for (let i = 0; i < 8; i++) {
                 deck.push({
                     uid: `card_${cardId++}`,
                     type: CARD_TYPES.THERAPY,
                     title: 'Actual Miracle',
                     flavor: 'A sudden moment of clarity that purges a crisis entirely.',
-                    desc: 'Purges and discards an untreated Disorder stack completely (Except Tremors).'
+                    desc: 'Purges & permanently locks slot safe! (Except Tremors).'
                 });
             }
 
-            // 4. EPISODES (18 Cards Total - Wild Attack Cards)
+            // 4. EPISODES (18 Cards)
             for (let i = 0; i < 18; i++) {
                 deck.push({
                     uid: `card_${cardId++}`,
                     type: CARD_TYPES.EPISODE,
                     title: 'Total Meltdown',
                     flavor: 'Publicly calling out an untreated dark crisis!',
-                    desc: 'Play on ANY opponent\'s untreated Disorder to trigger its harsh penalty.'
+                    desc: 'Play on ANY opponent\'s untreated Disorder to trigger its penalty.'
                 });
             }
 
-            // Fisher-Yates Shuffle
+            // Shuffle
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -558,15 +581,15 @@
         const gameState = {
             deck: [],
             discardPile: [],
-            activePlayer: 0, // 0 = Human, 1 = Bot 1, 2 = Bot 2, 3 = Bot 3
+            activePlayer: 0,
             actionsLeft: 2,
-            hasDrawnThisTurn: false,
             gameOver: false,
+            selectedHandIdx: null,
             players: [
-                { id: 0, name: 'You', isBot: false, hand: [], psyche: [[], [], [], []], skipNextTurn: false },
-                { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], skipNextTurn: false },
-                { id: 2, name: 'Bot 2', isBot: true, hand: [], psyche: [[], [], [], []], skipNextTurn: false },
-                { id: 3, name: 'Bot 3', isBot: true, hand: [], psyche: [[], [], [], []], skipNextTurn: false }
+                { id: 0, name: 'You', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 2, name: 'Bot 2', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 3, name: 'Bot 3', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
             ]
         };
 
@@ -585,23 +608,40 @@
             gameState.discardPile = [];
             gameState.activePlayer = 0;
             gameState.actionsLeft = 2;
-            gameState.hasDrawnThisTurn = false;
             gameState.gameOver = false;
+            gameState.selectedHandIdx = null;
 
             gameState.players.forEach(p => {
                 p.hand = [];
                 p.psyche = [[], [], [], []];
+                p.slotLocked = [false, false, false, false];
                 p.skipNextTurn = false;
             });
 
-            // Initial Deal: 4 cards each
+            // Extract 16 starting Disorders for the 4 Psyche slots of all 4 players
+            const startingDisorders = [];
+            for (let i = gameState.deck.length - 1; i >= 0 && startingDisorders.length < 16; i--) {
+                if (gameState.deck[i].type === CARD_TYPES.DISORDER) {
+                    startingDisorders.push(gameState.deck.splice(i, 1)[0]);
+                }
+            }
+
+            let dIdx = 0;
+            gameState.players.forEach(p => {
+                for (let s = 0; s < 4; s++) {
+                    if (dIdx < startingDisorders.length) {
+                        p.psyche[s].push(startingDisorders[dIdx++]);
+                    }
+                }
+            });
+
+            // Deal 4 random cards into hand for each player
             for (let i = 0; i < 4; i++) {
                 gameState.players.forEach(p => {
                     if (gameState.deck.length > 0) p.hand.push(gameState.deck.pop());
                 });
             }
 
-            // Start Human Turn with initial 2-card draw
             startTurn(0);
             renderAll();
         }
@@ -612,11 +652,10 @@
 
             gameState.activePlayer = playerIdx;
             gameState.actionsLeft = 2;
-            gameState.hasDrawnThisTurn = false;
+            gameState.selectedHandIdx = null;
 
             const player = gameState.players[playerIdx];
 
-            // Handle Skip Turn
             if (player.skipNextTurn) {
                 player.skipNextTurn = false;
                 logAction(`${player.name}'s turn was skipped due to a Crisis Penalty!`);
@@ -624,9 +663,7 @@
                 return;
             }
 
-            // Mandatory Draw 2 Cards at Turn Start
             drawCardsForPlayer(playerIdx, 2);
-
             logAction(`${player.name}'s turn! Drawn 2 cards. Take up to 2 actions.`);
             renderAll();
 
@@ -639,7 +676,6 @@
             const player = gameState.players[playerIdx];
             for (let i = 0; i < count; i++) {
                 if (gameState.deck.length === 0 && gameState.discardPile.length > 0) {
-                    // Reshuffle discard into deck
                     gameState.deck = [...gameState.discardPile];
                     gameState.discardPile = [];
                     for (let j = gameState.deck.length - 1; j > 0; j--) {
@@ -660,7 +696,7 @@
             drawCardsForPlayer(0, 1);
             gameState.actionsLeft--;
             sfx.playDraw();
-            logAction(`You drew 1 card. (${gameState.actionsLeft} actions remaining)`);
+            logAction(`You drew 1 card. (${gameState.actionsLeft} actions left)`);
 
             renderAll();
             checkTurnEnd();
@@ -673,16 +709,13 @@
 
         function checkTurnEnd() {
             if (gameState.actionsLeft <= 0) {
-                // Check Max Hand Limit (6 Cards)
                 const player = gameState.players[gameState.activePlayer];
                 if (player.hand.length > 6) {
                     if (player.id === 0) {
                         openDiscardModal();
                     } else {
-                        // Bot auto discards down to 6
                         while (player.hand.length > 6) {
-                            const discarded = player.hand.pop();
-                            gameState.discardPile.push(discarded);
+                            gameState.discardPile.push(player.hand.pop());
                         }
                         nextTurn();
                     }
@@ -713,31 +746,21 @@
             return top && top.type === CARD_TYPES.DISORDER;
         }
 
-        function getExposedVulnerabilities(player) {
-            const vulns = new Set();
-            player.psyche.forEach(stack => {
-                const top = getStackTopCard(stack);
-                if (top && top.type === CARD_TYPES.DRUG && top.sideEffects) {
-                    top.sideEffects.forEach(se => vulns.add(se));
-                }
-            });
-            return vulns;
-        }
-
         // --- CARD PLAY VALIDATION & LOGIC ---
         function canPlayCardOnStack(card, targetPlayerIdx, stackIdx) {
             const targetPlayer = gameState.players[targetPlayerIdx];
+            
+            // LOCKED SAFE ZONE RULE: Cannot play any card on a cured/locked slot
+            if (targetPlayer.slotLocked[stackIdx]) return false;
+
             const stack = targetPlayer.psyche[stackIdx];
             const topCard = getStackTopCard(stack);
 
-            // 1. Play DISORDER
+            // 1. DISORDER
             if (card.type === CARD_TYPES.DISORDER) {
-                // On Self: Can only play on an EMPTY slot
                 if (targetPlayerIdx === gameState.activePlayer) {
                     return stack.length === 0;
-                } 
-                // On Opponent: Can play if slot is empty OR if top card is a DRUG creating this vulnerability
-                else {
+                } else {
                     if (stack.length === 0) return true;
                     if (topCard && topCard.type === CARD_TYPES.DRUG) {
                         return topCard.sideEffects && topCard.sideEffects.includes(card.disorderId);
@@ -746,23 +769,23 @@
                 }
             }
 
-            // 2. Play DRUG (Must match untreated Disorder top card on own psyche)
+            // 2. DRUG
             if (card.type === CARD_TYPES.DRUG) {
-                if (targetPlayerIdx !== gameState.activePlayer) return false; // Own psyche only
+                if (targetPlayerIdx !== gameState.activePlayer) return false;
                 if (!topCard || topCard.type !== CARD_TYPES.DISORDER) return false;
                 return topCard.disorderId === card.disorderId;
             }
 
-            // 3. Play THERAPY (Must target an untreated Disorder stack on own psyche, except Tremors)
+            // 3. THERAPY
             if (card.type === CARD_TYPES.THERAPY) {
                 if (targetPlayerIdx !== gameState.activePlayer) return false;
                 if (!topCard || topCard.type !== CARD_TYPES.DISORDER) return false;
                 return !topCard.noTherapy; // Tremors cannot be cured with Therapy
             }
 
-            // 4. Play EPISODE (Wild Attack: Played on ANY opponent's UNTREATED Disorder)
+            // 4. EPISODE
             if (card.type === CARD_TYPES.EPISODE) {
-                if (targetPlayerIdx === gameState.activePlayer) return false; // Opponents only
+                if (targetPlayerIdx === gameState.activePlayer) return false;
                 return isStackUntreated(stack);
             }
 
@@ -775,31 +798,29 @@
             const targetPlayer = gameState.players[targetPlayerIdx];
             const stack = targetPlayer.psyche[stackIdx];
 
-            // Remove card from hand
             player.hand.splice(cardHandIdx, 1);
+            gameState.selectedHandIdx = null;
 
-            // Handle Card Logic Types
             if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
                 stack.push(card);
                 sfx.playCard();
                 logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
             } 
             else if (card.type === CARD_TYPES.THERAPY) {
-                // Purges and discards the entire stack!
+                // PURGE & PERMANENTLY LOCK SLOT SAFE
                 while (stack.length > 0) {
                     gameState.discardPile.push(stack.pop());
                 }
                 gameState.discardPile.push(card);
-                sfx.playCard();
-                logAction(`${player.name} used Therapy! Purged a Disorder stack on their Psyche.`);
+                targetPlayer.slotLocked[stackIdx] = true;
+                sfx.playCure();
+                logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
             } 
             else if (card.type === CARD_TYPES.EPISODE) {
                 sfx.playDisaster();
                 const topDisorder = getStackTopCard(stack);
                 gameState.discardPile.push(card);
                 logAction(`${player.name} triggered a Meltdown on ${targetPlayer.name}'s "${topDisorder.title}"!`);
-
-                // Execute Specific Episode Punishment
                 triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
             }
 
@@ -807,56 +828,43 @@
             renderAll();
         }
 
-        // --- EPISODE PUNISHMENT EXECUTIONS ---
+        // --- EPISODE PUNISHMENTS ---
         function triggerEpisodePunishment(targetIdx, disorderId, attackerIdx) {
             const target = gameState.players[targetIdx];
             const attacker = gameState.players[attackerIdx];
 
             switch (disorderId) {
                 case 'EXISTENTIAL_DREAD':
-                    // Reveal hand & attacker steals 1 card
                     if (target.hand.length > 0) {
                         const stolenIdx = Math.floor(Math.random() * target.hand.length);
-                        const stolenCard = target.hand.splice(stolenIdx, 1)[0];
-                        attacker.hand.push(stolenCard);
+                        attacker.hand.push(target.hand.splice(stolenIdx, 1)[0]);
                         logAction(`${attacker.name} stole a card from ${target.name}'s hand!`);
                     }
                     break;
-
                 case 'CRIPPLING_DEBT':
-                    // Attacker steals 3 random cards from target
                     for (let i = 0; i < 3; i++) {
                         if (target.hand.length > 0) {
-                            const stolenCard = target.hand.splice(Math.floor(Math.random() * target.hand.length), 1)[0];
-                            attacker.hand.push(stolenCard);
+                            attacker.hand.push(target.hand.splice(Math.floor(Math.random() * target.hand.length), 1)[0]);
                         }
                     }
                     logAction(`${attacker.name} looted cards from ${target.name}'s hand!`);
                     break;
-
                 case 'SOBBING':
-                    // Sit out 1 full round
                     target.skipNextTurn = true;
                     logAction(`${target.name} must sit out their next turn due to Uncontrollable Sobbing!`);
                     break;
-
                 case 'DIARRHEA':
-                    // Discard ALL attached Drug cards in Psyche
                     target.psyche.forEach(s => {
                         if (s.length > 1 && getStackTopCard(s).type === CARD_TYPES.DRUG) {
-                            const drug = s.pop();
-                            gameState.discardPile.push(drug);
+                            gameState.discardPile.push(s.pop());
                         }
                     });
                     logAction(`${target.name} lost all their Drug shields! Exposed crises!`);
                     break;
-
                 case 'TREMORS':
-                    // 3-Second Tremors Rapid Discard Timer
                     if (targetIdx === 0) {
                         triggerTremorsModal();
                     } else {
-                        // Bot attempts rapid discard
                         if (target.hand.length >= 3) {
                             for (let i = 0; i < 3; i++) gameState.discardPile.push(target.hand.pop());
                             logAction(`${target.name} discarded 3 cards under Tremors pressure.`);
@@ -866,20 +874,17 @@
                         }
                     }
                     break;
-
                 case 'IMPOTENCE':
                     target.skipNextTurn = true;
                     logAction(`${target.name} cannot act on their next turn!`);
                     break;
-
                 case 'PARANOIA':
                     while (target.hand.length > 0) gameState.discardPile.push(target.hand.pop());
                     logAction(`${target.name} discarded their ENTIRE hand in a panic!`);
                     break;
-
                 case 'EATING_TRASH':
-                    const discardCount = Math.ceil(target.hand.length / 2);
-                    for (let i = 0; i < discardCount; i++) {
+                    const count = Math.ceil(target.hand.length / 2);
+                    for (let i = 0; i < count; i++) {
                         if (target.hand.length > 0) gameState.discardPile.push(target.hand.pop());
                     }
                     logAction(`${target.name} discarded half their hand!`);
@@ -887,7 +892,7 @@
             }
         }
 
-        // --- TREMORS MODAL ENGINE ---
+        // --- MODALS ---
         let tremorsInterval = null;
         function triggerTremorsModal() {
             const modal = document.getElementById('tremors-modal');
@@ -899,7 +904,6 @@
             timerEl.textContent = timeLeft;
             modal.classList.remove('hidden');
 
-            // Render selectable cards
             selectorEl.innerHTML = '';
             player.hand.forEach((card, idx) => {
                 const btn = document.createElement('div');
@@ -916,7 +920,6 @@
                 if (timeLeft <= 0) {
                     clearInterval(tremorsInterval);
                     modal.classList.add('hidden');
-                    // Check selection
                     const selectedBtns = selectorEl.querySelectorAll('.bg-rose-600');
                     if (selectedBtns.length === 3) {
                         const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
@@ -943,7 +946,6 @@
             };
         }
 
-        // --- DISCARD MODAL ENGINE ---
         function openDiscardModal() {
             const modal = document.getElementById('discard-modal');
             const selectorEl = document.getElementById('discard-card-selector');
@@ -986,20 +988,10 @@
 
             const bot = gameState.players[botIdx];
 
-            // AI Decision Priority:
-            // 1. Play Therapy on own untreated Disorder
-            // 2. Play Drug to cover own untreated Disorder
-            // 3. Play Episode card on opponent's untreated Disorder
-            // 4. Play Disorder on vulnerable opponent or empty slot
-            // 5. Draw from deck if actions remain
-
-            let actionTaken = false;
-
-            // Try playing a card
             for (let i = 0; i < bot.hand.length; i++) {
                 const card = bot.hand[i];
 
-                // Priority 1: Therapy
+                // 1. Therapy
                 if (card.type === CARD_TYPES.THERAPY) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
@@ -1012,7 +1004,7 @@
                     }
                 }
 
-                // Priority 2: Drug
+                // 2. Drug
                 if (card.type === CARD_TYPES.DRUG) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
@@ -1025,7 +1017,7 @@
                     }
                 }
 
-                // Priority 3: Episode
+                // 3. Episode
                 if (card.type === CARD_TYPES.EPISODE) {
                     for (let opp = 0; opp < 4; opp++) {
                         if (opp !== botIdx) {
@@ -1042,7 +1034,7 @@
                     }
                 }
 
-                // Priority 4: Disorder
+                // 4. Disorder
                 if (card.type === CARD_TYPES.DISORDER) {
                     for (let opp = 0; opp < 4; opp++) {
                         if (opp !== botIdx) {
@@ -1078,7 +1070,6 @@
             }
         }
 
-        // --- VISUAL CARD SLIDING ANIMATION ENGINE ---
         function animateBotCardPlay(botIdx, cardHandIdx, targetPlayerIdx, targetStackIdx, onComplete) {
             const startEl = document.getElementById(`bot${botIdx}-psyche`) || document.getElementById('draw-deck');
             const targetEl = document.getElementById(`stack-${targetPlayerIdx}-${targetStackIdx}`);
@@ -1091,19 +1082,18 @@
             const startRect = startEl.getBoundingClientRect();
             const targetRect = targetEl.getBoundingClientRect();
 
-            // Create floating clone
             const clone = document.createElement('div');
             clone.className = 'card-base card-black animated-card-clone flex flex-col items-center justify-center font-bold text-xs text-white p-2';
-            clone.style.left = `${startRect.left + startRect.width / 2 - 50}px`;
-            clone.style.top = `${startRect.top + startRect.height / 2 - 70}px`;
+            clone.style.left = `${startRect.left + startRect.width / 2 - 45}px`;
+            clone.style.top = `${startRect.top + startRect.height / 2 - 65}px`;
             clone.innerHTML = `<i class="fa-solid fa-play text-rose-500 mb-1"></i> PLAYING`;
 
             document.body.appendChild(clone);
 
             requestAnimationFrame(() => {
-                clone.style.left = `${targetRect.left + targetRect.width / 2 - 50}px`;
-                clone.style.top = `${targetRect.top + targetRect.height / 2 - 70}px`;
-                clone.style.transform = 'scale(1.1)';
+                clone.style.left = `${targetRect.left + targetRect.width / 2 - 45}px`;
+                clone.style.top = `${targetRect.top + targetRect.height / 2 - 65}px`;
+                clone.style.transform = 'scale(1.08)';
             });
 
             setTimeout(() => {
@@ -1120,9 +1110,7 @@
                     if (isStackUntreated(s)) untreatedCount++;
                 });
 
-                // Win if all occupied stack slots are treated
-                const occupiedStacks = p.psyche.filter(s => s.length > 0);
-                if (occupiedStacks.length > 0 && untreatedCount === 0) {
+                if (untreatedCount === 0) {
                     triggerGameOver(p);
                 }
             });
@@ -1133,14 +1121,13 @@
             const modal = document.getElementById('game-over-modal');
             document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
             document.getElementById('winner-reason').textContent = winner.id === 0 
-                ? 'You successfully survived all dark adult crises!'
+                ? 'You successfully cured and cleared your mind of all dark crises!'
                 : `${winner.name} cleared their mind of all untreated disorders first!`;
             modal.classList.remove('hidden');
         }
 
         // --- UI RENDERING & DRAG ENGINE ---
         function renderAll() {
-            // Update Top Bar & Status Indicators
             elDeckCount.textContent = gameState.deck.length;
             elDiscardCount.textContent = gameState.discardPile.length;
 
@@ -1148,7 +1135,6 @@
             elTurnIndicator.textContent = activeP.id === 0 ? 'Your Turn' : `${activeP.name}'s Turn`;
             elActionsLeft.textContent = `${gameState.actionsLeft} Actions Left`;
 
-            // Update Bot Hand Counts
             document.getElementById('bot1-card-count').textContent = `Hand: ${gameState.players[1].hand.length}`;
             document.getElementById('bot2-card-count').textContent = `Hand: ${gameState.players[2].hand.length}`;
             document.getElementById('bot3-card-count').textContent = `Hand: ${gameState.players[3].hand.length}`;
@@ -1161,20 +1147,31 @@
                 psycheContainer.innerHTML = '';
 
                 for (let sIdx = 0; sIdx < 4; sIdx++) {
-                    const stack = gameState.players[pIdx].psyche[sIdx];
+                    const player = gameState.players[pIdx];
+                    const stack = player.psyche[sIdx];
+                    const isLocked = player.slotLocked[sIdx];
+
                     const slot = document.createElement('div');
                     slot.id = `stack-${pIdx}-${sIdx}`;
-                    slot.className = 'card-base slot-target relative flex items-center justify-center';
+                    slot.className = `card-base slot-target relative flex items-center justify-center ${isLocked ? 'slot-locked-safe' : ''}`;
                     slot.dataset.player = pIdx;
                     slot.dataset.stack = sIdx;
 
-                    if (stack.length === 0) {
-                        slot.innerHTML = `<span class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Empty</span>`;
+                    if (isLocked) {
+                        slot.innerHTML = `
+                            <div class="flex flex-col items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-shield-halved text-2xl mb-1"></i>
+                                <span class="text-[9px] font-black uppercase tracking-widest">CURED</span>
+                                <span class="text-[7px] text-emerald-600 font-bold">LOCKED SAFE</span>
+                            </div>
+                        `;
+                    } else if (stack.length === 0) {
+                        slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-600 uppercase tracking-widest">Empty</span>`;
                     } else {
-                        // Render Vertical Offset Cards in Stack
+                        // Render Stacked Cards with 6px offset for clean text reading
                         stack.forEach((c, cIdx) => {
                             const cardDOM = renderCardDOM(c);
-                            cardDOM.style.top = `${cIdx * 16}px`;
+                            cardDOM.style.top = `${cIdx * 6}px`;
                             cardDOM.style.zIndex = cIdx + 1;
                             slot.appendChild(cardDOM);
                         });
@@ -1183,19 +1180,32 @@
                     // Drag and Drop Listeners for Human Plays
                     slot.ondragover = (e) => {
                         e.preventDefault();
-                        slot.classList.add('drag-over');
+                        if (!isLocked) slot.classList.add('drag-over');
                     };
                     slot.ondragleave = () => slot.classList.remove('drag-over');
                     slot.ondrop = (e) => {
                         e.preventDefault();
                         slot.classList.remove('drag-over');
+                        if (isLocked) return;
                         const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
                         if (!isNaN(handIdx)) {
                             const card = gameState.players[0].hand[handIdx];
                             if (canPlayCardOnStack(card, pIdx, sIdx)) {
                                 executePlayCard(0, handIdx, pIdx, sIdx);
                             } else {
-                                logAction('Invalid card placement!');
+                                logAction('Invalid target slot for this card!');
+                            }
+                        }
+                    };
+
+                    // Tap-to-Target Listener for mobile / select mode
+                    slot.onclick = () => {
+                        if (gameState.selectedHandIdx !== null && !isLocked) {
+                            const card = gameState.players[0].hand[gameState.selectedHandIdx];
+                            if (canPlayCardOnStack(card, pIdx, sIdx)) {
+                                executePlayCard(0, gameState.selectedHandIdx, pIdx, sIdx);
+                            } else {
+                                logAction('Invalid target slot for this card!');
                             }
                         }
                     };
@@ -1212,24 +1222,55 @@
                     cardDOM.draggable = true;
                     cardDOM.dataset.handIdx = idx;
 
-                    // Hand Arc Positioning
+                    if (gameState.selectedHandIdx === idx) {
+                        cardDOM.classList.add('selected-card');
+                    }
+
                     const total = gameState.players[0].hand.length;
-                    const offset = (idx - (total - 1) / 2) * 28;
+                    const offset = (idx - (total - 1) / 2) * 26;
                     cardDOM.style.transform = `translateX(${offset}px)`;
                     cardDOM.style.zIndex = idx + 10;
 
                     cardDOM.ondragstart = (e) => {
                         e.dataTransfer.setData('text/plain', idx);
                         cardDOM.classList.add('dragging');
+                        highlightValidTargets(card);
                     };
-                    cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
+                    cardDOM.ondragend = () => {
+                        cardDOM.classList.remove('dragging');
+                        clearTargetHighlights();
+                    };
 
-                    // Click-to-Play Helper for Mobile/Touch
-                    cardDOM.onclick = () => handleCardClick(idx);
+                    cardDOM.onclick = () => {
+                        if (gameState.selectedHandIdx === idx) {
+                            gameState.selectedHandIdx = null;
+                            clearTargetHighlights();
+                        } else {
+                            gameState.selectedHandIdx = idx;
+                            highlightValidTargets(card);
+                        }
+                        renderAll();
+                    };
 
                     elPlayerHand.appendChild(cardDOM);
                 });
             }
+        }
+
+        function highlightValidTargets(card) {
+            clearTargetHighlights();
+            for (let pIdx = 0; pIdx < 4; pIdx++) {
+                for (let sIdx = 0; sIdx < 4; sIdx++) {
+                    if (canPlayCardOnStack(card, pIdx, sIdx)) {
+                        const targetEl = document.getElementById(`stack-${pIdx}-${sIdx}`);
+                        if (targetEl) targetEl.classList.add('valid-drop-target');
+                    }
+                }
+            }
+        }
+
+        function clearTargetHighlights() {
+            document.querySelectorAll('.valid-drop-target').forEach(el => el.classList.remove('valid-drop-target'));
         }
 
         function renderCardDOM(card, isHand = false) {
@@ -1262,36 +1303,18 @@
             cardEl.innerHTML = `
                 <div class="flex items-center justify-between w-full">
                     <span class="${headerClass}">${headerText}</span>
-                    <i class="fa-solid fa-skull text-[10px] opacity-40"></i>
+                    <i class="fa-solid fa-skull text-[9px] opacity-40"></i>
                 </div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[11px] leading-tight tracking-tight">${card.title}</div>
-                    <div class="text-[8px] opacity-75 mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="font-black text-[10px] sm:text-[11px] leading-tight tracking-tight">${card.title}</div>
+                    <div class="text-[7.5px] opacity-75 mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[7px] font-bold uppercase tracking-wider pt-1 border-t border-zinc-200/20 opacity-80">
+                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-0.5 border-t border-zinc-200/20 opacity-80">
                     ${card.treatsName ? `Shields: ${card.treatsName}` : (card.desc || card.punishmentText || '')}
                 </div>
             `;
 
             return cardEl;
-        }
-
-        // --- CLICK-TO-PLAY TOUCH HELPER ---
-        function handleCardClick(handIdx) {
-            if (gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) return;
-
-            const card = gameState.players[0].hand[handIdx];
-
-            // Auto-find first valid target stack
-            for (let pIdx = 0; pIdx < 4; pIdx++) {
-                for (let sIdx = 0; sIdx < 4; sIdx++) {
-                    if (canPlayCardOnStack(card, pIdx, sIdx)) {
-                        executePlayCard(0, handIdx, pIdx, sIdx);
-                        return;
-                    }
-                }
-            }
-            logAction('No valid target stack for this card right now!');
         }
 
         function logAction(msg) {
