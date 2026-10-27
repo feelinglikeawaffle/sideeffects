@@ -68,6 +68,15 @@
             transform: translateY(-10px) !important;
         }
 
+        /* Stacked Card Overlap within Slots */
+        .stacked-card {
+            position: absolute !important;
+            left: 0;
+            right: 0;
+            margin: auto;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
         /* Hand Hover Card Lift Animation */
         .hand-card-item {
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
@@ -237,7 +246,7 @@
         </div>
     </header>
 
-    <!-- CLEAN TAB-BASED TABLETOP CONTAINER -->
+    <!-- TABLETOP CONTAINER -->
     <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-6xl mx-auto w-full">
 
         <!-- DECK & STATUS ROW -->
@@ -262,7 +271,7 @@
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER (UNIFIED FOR DESKTOP & MOBILE) -->
+        <!-- PLAYER PSYCHE TABS SWITCHER -->
         <div class="grid grid-cols-4 gap-2 shrink-0">
             <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-user text-xs"></i> You
@@ -359,7 +368,7 @@
                     <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
                 </div>
                 <div>
-                    <span class="font-bold text-white">6. Episode Cards (Black):</span> Wild attack cards dropped onto any opponent's UNTREATED Disorder to trigger its punishment.
+                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then cleaned up into the trash pile!
                 </div>
             </div>
         </div>
@@ -558,7 +567,7 @@
                     type: CARD_TYPES.EPISODE,
                     title: 'Total Meltdown',
                     flavor: 'Publicly calling out an untreated dark crisis!',
-                    desc: 'Play on ANY opponent\'s untreated Disorder to trigger its penalty.'
+                    desc: 'Play temporarily on any opponent\'s untreated Disorder to trigger penalty, then remove!'
                 });
             }
 
@@ -577,7 +586,7 @@
             actionsLeft: 2,
             gameOver: false,
             selectedHandIdx: null,
-            activeTab: 0, // 0 = You, 1 = Bot 1, 2 = Bot 2, 3 = Bot 3
+            activeTab: 0,
             players: [
                 { id: 0, name: 'You', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
@@ -602,7 +611,6 @@
                 p.skipNextTurn = false;
             });
 
-            // Extract 16 starting Disorders for 4 Psyche slots across all 4 players
             const startingDisorders = [];
             for (let i = gameState.deck.length - 1; i >= 0 && startingDisorders.length < 16; i--) {
                 if (gameState.deck[i].type === CARD_TYPES.DISORDER) {
@@ -619,7 +627,6 @@
                 }
             });
 
-            // Deal 4 random cards into hand for each player
             for (let i = 0; i < 4; i++) {
                 gameState.players.forEach(p => {
                     if (gameState.deck.length > 0) p.hand.push(gameState.deck.pop());
@@ -780,6 +787,8 @@
                 stack.push(card);
                 sfx.playCard();
                 logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
+                consumeAction();
+                renderAll();
             } 
             else if (card.type === CARD_TYPES.THERAPY) {
                 while (stack.length > 0) {
@@ -789,17 +798,28 @@
                 targetPlayer.slotLocked[stackIdx] = true;
                 sfx.playCure();
                 logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
+                consumeAction();
+                renderAll();
             } 
             else if (card.type === CARD_TYPES.EPISODE) {
                 sfx.playDisaster();
                 const topDisorder = getStackTopCard(stack);
-                gameState.discardPile.push(card);
+                
+                // Temporarily place Meltdown card onto the stack to cover the card below it
+                stack.push(card);
+                renderAll();
+                
                 logAction(`${player.name} triggered a Meltdown on ${targetPlayer.name}'s "${topDisorder.title}"!`);
-                triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
-            }
 
-            consumeAction();
-            renderAll();
+                setTimeout(() => {
+                    // Remove the Meltdown card from the stack after animation & trigger penalty
+                    const removedCard = stack.pop();
+                    gameState.discardPile.push(removedCard);
+                    triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
+                    consumeAction();
+                    renderAll();
+                }, 750);
+            }
         }
 
         function triggerEpisodePunishment(targetIdx, disorderId, attackerIdx) {
@@ -1037,7 +1057,6 @@
         }
 
         function animateBotCardPlay(botIdx, cardHandIdx, targetPlayerIdx, targetStackIdx, onComplete) {
-            // Auto switch tab to target player so user sees the play
             gameState.activeTab = targetPlayerIdx;
             renderAll();
 
@@ -1107,7 +1126,6 @@
             document.getElementById('bot2-count').textContent = `(${gameState.players[2].hand.length})`;
             document.getElementById('bot3-count').textContent = `(${gameState.players[3].hand.length})`;
 
-            // Render Player Tab Buttons with Active Highlighting
             for (let i = 0; i < 4; i++) {
                 const btn = document.getElementById(`tab-btn-${i}`);
                 if (btn) {
@@ -1119,17 +1137,14 @@
                 }
             }
 
-            // Update Tab Title Header
             const activePlayerObj = gameState.players[gameState.activeTab];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
 
-            // Render Active Tab Psyche Slots Container
             const container = document.getElementById('active-psyche-container');
             container.innerHTML = '';
             
-            // Re-trigger slide animation on switch
             container.classList.remove('tab-slide-enter');
-            void container.offsetWidth; // Force reflow
+            void container.offsetWidth;
             container.classList.add('tab-slide-enter');
 
             for (let sIdx = 0; sIdx < 4; sIdx++) {
@@ -1155,13 +1170,14 @@
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
-                        cardDOM.style.top = `${Math.min(cIdx * 8, 24)}px`;
+                        cardDOM.classList.add('stacked-card');
+                        // Cascade stacked cards cleanly overlapping the card below it
+                        cardDOM.style.top = `${cIdx * 10}px`;
                         cardDOM.style.zIndex = cIdx + 1;
                         slot.appendChild(cardDOM);
                     });
                 }
 
-                // Drag & Drop
                 slot.ondragover = (e) => {
                     e.preventDefault();
                     if (!isLocked) slot.classList.add('drag-over');
@@ -1182,7 +1198,6 @@
                     }
                 };
 
-                // Tap / Click Play Handler
                 slot.onclick = () => {
                     if (gameState.selectedHandIdx !== null && !isLocked) {
                         const card = gameState.players[0].hand[gameState.selectedHandIdx];
@@ -1197,7 +1212,6 @@
                 container.appendChild(slot);
             }
 
-            // Render Human Hand
             const handContainer = document.getElementById('player-hand');
             document.getElementById('hand-count-num').textContent = gameState.players[0].hand.length;
 
@@ -1312,7 +1326,6 @@
             document.getElementById('rules-modal').classList.remove('hidden');
         };
         document.getElementById('close-rules').onclick = () => {
-            document.getElementById('rules-modal').classList.hidden = true;
             document.getElementById('rules-modal').classList.add('hidden');
         };
 
