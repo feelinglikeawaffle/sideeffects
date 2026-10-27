@@ -62,7 +62,7 @@
         .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* CAH Card Base Aesthetic (High Readability) */
+        /* CAH Card Base Aesthetic */
         .card-base {
             width: 108px;
             height: 152px;
@@ -77,8 +77,6 @@
             justify-content: space-between;
             padding: 8px;
             box-sizing: border-box;
-            background: #ffffff;
-            color: #09090b;
             flex-shrink: 0;
         }
 
@@ -112,9 +110,9 @@
             z-index: 50;
         }
 
-        /* Card Header Badges with high readability */
-        .card-black { background: #09090b !important; color: #ffffff !important; border-color: #52525b !important; }
+        /* Distinct Card Aesthetics & Readability */
         .card-white { background: #ffffff !important; color: #09090b !important; border-color: #d4d4d8 !important; }
+        .card-black { background: #09090b !important; color: #ffffff !important; border-color: #52525b !important; }
 
         .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -388,7 +386,7 @@
 
             <!-- Game Log Message -->
             <div id="center-log" class="text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950/90 rounded-xl border border-zinc-800/80 max-w-md truncate shadow-inner">
-                <span id="log-text">Your Turn! Drag cards or select a card then tap target slot.</span>
+                <span id="log-text">Your Turn! 2 cards drawn automatically. Take up to 2 actions.</span>
             </div>
         </div>
 
@@ -469,7 +467,8 @@
                 <div>
                     <h3 class="font-black text-white uppercase mb-1">Core Gameplay:</h3>
                     <ul class="list-disc pl-4 space-y-1 text-zinc-400">
-                        <li><strong>Turn Flow:</strong> Draw 2 cards at the start of your turn. You get up to 2 actions (Draw card or Play card). Max hand size at end of turn is 6.</li>
+                        <li><strong>Turn Flow:</strong> 2 cards are drawn automatically at the start of your turn (does not cost actions). You have 2 actions per turn to play cards or draw extra cards.</li>
+                        <li><strong>Hand Limit:</strong> At the end of your turn, you must have 6 or fewer cards in hand.</li>
                         <li><strong>Quick Fix Vulnerabilities:</strong> Playing a Quick Fix (Drug) shields your Disorder, but exposes specific vulnerable side-effect crises that opponents can play directly on top of!</li>
                         <li><strong>Therapy / Safe Zone:</strong> Playing an Actual Miracle (Therapy) on an untreated Disorder purges the stack and permanently locks that slot into a CURED Safe Zone.</li>
                         <li><strong>Meltdown (Black):</strong> Play temporarily on any untreated Disorder across any player to trigger its penalty punishment, then discard it.</li>
@@ -798,8 +797,9 @@
                 return;
             }
 
+            // Automatic card draw at start of turn (does NOT consume actions)
             drawCardsForPlayer(playerIdx, 2);
-            logAction(`${player.name}'s turn! Drawn 2 cards. Take up to 2 actions.`);
+            logAction(`${player.name}'s turn! 2 cards drawn automatically. 2 actions remaining.`);
             renderAll();
 
             if (player.isBot) {
@@ -831,7 +831,7 @@
             drawCardsForPlayer(0, 1);
             gameState.actionsLeft--;
             sfx.playDraw();
-            logAction(`You drew 1 card. (${gameState.actionsLeft} actions left)`);
+            logAction(`You drew 1 card using an action. (${gameState.actionsLeft} actions left)`);
 
             renderAll();
             checkTurnEnd();
@@ -1131,7 +1131,6 @@
             setTimeout(() => modal.classList.add('hidden'), 350);
         }
 
-        // Fixed Robust Bot & AI Turn Loop
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
 
@@ -1293,7 +1292,6 @@
             if (gameState.activeTab === tabIdx) return;
             gameState.activeTab = tabIdx;
             
-            // Sliding tab animation trigger
             const container = document.getElementById('active-psyche-container');
             container.classList.remove('tab-slide-enter');
             void container.offsetWidth;
@@ -1310,7 +1308,6 @@
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer].name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
 
-            // Dynamic Player Tabs
             const tabBar = document.getElementById('tab-bar-container');
             tabBar.innerHTML = '';
             gameState.players.forEach((p, idx) => {
@@ -1483,21 +1480,25 @@
             cardEl.className = `card-base ${typeClass} shadow-xl`;
 
             let subText = card.desc || card.punishmentText || '';
+            let titleColor = typeClass === 'card-black' ? 'text-white' : 'text-zinc-950';
+            let flavorColor = typeClass === 'card-black' ? 'text-zinc-300' : 'text-zinc-700';
+            let subTextStyling = typeClass === 'card-black' ? 'border-zinc-700 text-zinc-200 font-semibold' : 'border-zinc-300 text-zinc-800 font-bold';
+
             if (card.type === CARD_TYPES.DRUG) {
                 const sideEffectNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : '';
-                subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-bold">Vulnerable: ${sideEffectNames}</span>`;
+                subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-extrabold">Vulnerable: ${sideEffectNames}</span>`;
             }
 
             cardEl.innerHTML = `
                 <div class="flex items-center justify-between w-full">
                     <span class="${headerClass}">${headerText}</span>
-                    <i class="fa-solid fa-skull text-[9px] opacity-50"></i>
+                    <i class="fa-solid fa-skull text-[9px] opacity-70"></i>
                 </div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[10.5px] leading-tight tracking-tight text-zinc-950">${card.title}</div>
-                    <div class="text-[7.5px] text-zinc-700 font-medium mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="font-black text-[10.5px] leading-tight tracking-tight ${titleColor}">${card.title}</div>
+                    <div class="text-[7.5px] ${flavorColor} font-medium mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-1 border-t border-zinc-300 text-zinc-800 leading-tight">
+                <div class="text-[6.5px] uppercase tracking-wider pt-1 border-t ${subTextStyling} leading-tight">
                     ${subText}
                 </div>
             `;
