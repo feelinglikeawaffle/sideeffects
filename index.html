@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNFILTERED</title>
+    <title>UNFILTERED: Adult Party Card Game</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -192,7 +192,7 @@
             position: fixed;
             z-index: 9999;
             pointer-events: none;
-            transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* Tab Switch Slide & Fade Effect */
@@ -386,7 +386,7 @@
                     <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
                 </div>
                 <div>
-                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then removed into the trash!
+                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's or bot's UNTREATED Disorder to trigger its punishment, then removed into the trash!
                 </div>
             </div>
         </div>
@@ -667,7 +667,7 @@
             if (player.skipNextTurn) {
                 player.skipNextTurn = false;
                 logAction(`${player.name}'s turn was skipped due to a Crisis Penalty!`);
-                setTimeout(() => nextTurn(), 1200);
+                setTimeout(() => nextTurn(), 1400);
                 return;
             }
 
@@ -676,7 +676,8 @@
             renderAll();
 
             if (player.isBot) {
-                setTimeout(() => executeBotTurn(playerIdx), 1200);
+                // Pacing bot actions nicely so it's not instantly fast
+                setTimeout(() => executeBotTurn(playerIdx), 1500);
             }
         }
 
@@ -725,10 +726,10 @@
                         while (player.hand.length > 6) {
                             gameState.discardPile.push(player.hand.pop());
                         }
-                        nextTurn();
+                        setTimeout(() => nextTurn(), 1000);
                     }
                 } else {
-                    nextTurn();
+                    setTimeout(() => nextTurn(), 1000);
                 }
             } else {
                 renderAll();
@@ -834,7 +835,7 @@
                     triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
                     consumeAction();
                     renderAll();
-                }, 750);
+                }, 900);
             }
         }
 
@@ -1000,77 +1001,102 @@
             setTimeout(() => modal.classList.add('hidden'), 350);
         }
 
+        // IMPROVED BOT AI: Bots now attack anyone randomly (including other bots) and properly trigger Meltdowns on any untreated crisis across all players
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
 
             const bot = gameState.players[botIdx];
 
+            // Search bot hand for valid plays with natural pacing
+            let playedCard = false;
+
             for (let i = 0; i < bot.hand.length; i++) {
                 const card = bot.hand[i];
 
+                // 1. Therapy on self
                 if (card.type === CARD_TYPES.THERAPY) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
+                            playedCard = true;
                             animateBotCardPlay(botIdx, i, botIdx, s, () => {
                                 executePlayCard(botIdx, i, botIdx, s);
-                                continueBotSequence(botIdx);
+                                setTimeout(() => continueBotSequence(botIdx), 900);
                             });
                             return;
                         }
                     }
                 }
 
+                // 2. Drug on self
                 if (card.type === CARD_TYPES.DRUG) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
+                            playedCard = true;
                             animateBotCardPlay(botIdx, i, botIdx, s, () => {
                                 executePlayCard(botIdx, i, botIdx, s);
-                                continueBotSequence(botIdx);
+                                setTimeout(() => continueBotSequence(botIdx), 900);
                             });
                             return;
                         }
                     }
                 }
 
+                // 3. Meltdown (Episode) on ANY target with untreated disorder (can target human OR other bots!)
                 if (card.type === CARD_TYPES.EPISODE) {
-                    for (let opp = 0; opp < 4; opp++) {
-                        if (opp !== botIdx) {
-                            for (let s = 0; s < 4; s++) {
-                                if (canPlayCardOnStack(card, opp, s)) {
-                                    animateBotCardPlay(botIdx, i, opp, s, () => {
-                                        executePlayCard(botIdx, i, opp, s);
-                                        continueBotSequence(botIdx);
-                                    });
-                                    return;
-                                }
+                    // Randomize targets to prevent gang-up on player only
+                    const targets = [0, 1, 2, 3].filter(pIdx => pIdx !== botIdx);
+                    shuffleArray(targets);
+
+                    for (const opp of targets) {
+                        for (let s = 0; s < 4; s++) {
+                            if (canPlayCardOnStack(card, opp, s)) {
+                                playedCard = true;
+                                animateBotCardPlay(botIdx, i, opp, s, () => {
+                                    executePlayCard(botIdx, i, opp, s);
+                                    setTimeout(() => continueBotSequence(botIdx), 1200);
+                                });
+                                return;
                             }
                         }
                     }
                 }
 
+                // 4. Disorder on opponent or other bots
                 if (card.type === CARD_TYPES.DISORDER) {
-                    for (let opp = 0; opp < 4; opp++) {
-                        if (opp !== botIdx) {
-                            for (let s = 0; s < 4; s++) {
-                                if (canPlayCardOnStack(card, opp, s)) {
-                                    animateBotCardPlay(botIdx, i, opp, s, () => {
-                                        executePlayCard(botIdx, i, opp, s);
-                                        continueBotSequence(botIdx);
-                                    });
-                                    return;
-                                }
+                    const targets = [0, 1, 2, 3].filter(pIdx => pIdx !== botIdx);
+                    shuffleArray(targets);
+
+                    for (const opp of targets) {
+                        for (let s = 0; s < 4; s++) {
+                            if (canPlayCardOnStack(card, opp, s)) {
+                                playedCard = true;
+                                animateBotCardPlay(botIdx, i, opp, s, () => {
+                                    executePlayCard(botIdx, i, opp, s);
+                                    setTimeout(() => continueBotSequence(botIdx), 900);
+                                });
+                                return;
                             }
                         }
                     }
                 }
             }
 
-            if (gameState.actionsLeft > 0) {
+            // If no card was played, draw card with natural pacing
+            if (!playedCard && gameState.actionsLeft > 0) {
                 drawCardsForPlayer(botIdx, 1);
                 gameState.actionsLeft--;
                 logAction(`${bot.name} drew 1 card.`);
                 renderAll();
-                continueBotSequence(botIdx);
+                setTimeout(() => continueBotSequence(botIdx), 1000);
+            } else {
+                checkTurnEnd();
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
         }
 
@@ -1110,7 +1136,7 @@
             setTimeout(() => {
                 clone.remove();
                 onComplete();
-            }, 450);
+            }, 550);
         }
 
         function checkWinConditions() {
