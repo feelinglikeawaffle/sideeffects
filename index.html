@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNFILTERED: Adult Party Card Game</title>
+    <title>UNFILTERED</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -32,16 +32,13 @@
             background-size: 100% 100%, 24px 24px;
         }
 
-        /* CAH Card Base Aesthetic with Fluid Cubic-Bezier Springs */
+        /* CAH Card Base Aesthetic */
         .card-base {
             width: 105px;
             height: 148px;
-            border-radius: 10px;
+            border-radius: 8px;
             position: relative;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        box-shadow 0.35s ease, 
-                        border-color 0.25s ease,
-                        opacity 0.25s ease;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.25s ease;
             cursor: grab;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
             border: 2px solid #27272a;
@@ -53,8 +50,6 @@
             background: #ffffff;
             color: #000000;
             flex-shrink: 0;
-            backface-visibility: hidden;
-            will-change: transform, left, top;
         }
 
         .card-base:active {
@@ -63,41 +58,32 @@
 
         .card-base.dragging {
             z-index: 1000 !important;
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(225, 29, 72, 0.7);
-            transform: scale(1.12) rotate(2deg) !important;
+            box-shadow: 0 16px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.6);
+            transform: scale(1.08) !important;
         }
 
         .card-base.selected-card {
             border-color: #f43f5e !important;
-            box-shadow: 0 0 16px rgba(244, 63, 94, 0.8), 0 0 6px rgba(255, 255, 255, 0.9) !important;
-            transform: translateY(-14px) scale(1.05) !important;
+            box-shadow: 0 0 14px rgba(244, 63, 94, 0.8), 0 0 4px rgba(255, 255, 255, 0.8) !important;
+            transform: translateY(-10px) !important;
         }
 
-        /* Stacked Card Overlap within Slots with Hover Expansion */
+        /* Stacked Card Overlap within Slots */
         .stacked-card {
             position: absolute !important;
             left: 0;
             right: 0;
             margin: auto;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        box-shadow 0.3s ease;
-        }
-
-        /* Hover expansion to preview underlying cards seamlessly */
-        .slot-target:hover .stacked-card {
-            transform: translateY(calc(var(--stack-index) * 12px));
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* Hand Hover Card Lift Animation */
         .hand-card-item {
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
         }
         .hand-card-item:hover {
-            transform: translateY(-16px) scale(1.06) rotate(-1deg);
+            transform: translateY(-8px) scale(1.02);
             z-index: 50;
-            box-shadow: 0 14px 28px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.2);
         }
 
         /* Black Card (Episode / Disasters) */
@@ -162,8 +148,8 @@
         /* Drop Target Glows */
         .slot-target {
             border: 2px dashed #3f3f46;
-            border-radius: 12px;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 10px;
+            transition: all 0.25s ease;
             background: rgba(24, 24, 27, 0.4);
             position: relative;
         }
@@ -171,67 +157,68 @@
         .slot-target.valid-drop-target {
             border-color: #f43f5e;
             background: rgba(244, 63, 94, 0.12);
-            box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
             animation: pulseSlot 1.5s infinite ease-in-out;
         }
 
         @keyframes pulseSlot {
-            0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); transform: scale(1); }
-            50% { border-color: #fb7185; box-shadow: 0 0 22px rgba(244, 63, 94, 0.8); transform: scale(1.02); }
+            0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); }
+            50% { border-color: #fb7185; box-shadow: 0 0 18px rgba(244, 63, 94, 0.7); }
         }
 
         .slot-target.drag-over {
             border-color: #fb7185;
             background: rgba(244, 63, 94, 0.3);
-            transform: scale(1.06);
-            box-shadow: 0 0 24px rgba(244, 63, 94, 0.9);
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.8);
         }
 
         /* Locked Safe Slot (Therapy) */
         .slot-locked-safe {
             border: 2px solid #059669 !important;
             background: rgba(5, 150, 105, 0.15) !important;
-            box-shadow: 0 0 16px rgba(5, 150, 105, 0.4) !important;
-            animation: lockPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 12px rgba(5, 150, 105, 0.3) !important;
+            animation: lockPulse 0.5s ease-out;
         }
 
         @keyframes lockPulse {
-            0% { transform: scale(0.9); opacity: 0.5; }
-            50% { transform: scale(1.08); }
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Animated Flying Card Element */
-        .flying-card {
+        /* Animated Floating Clone for AI Play */
+        .animated-card-clone {
             position: fixed;
             z-index: 9999;
             pointer-events: none;
-            transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: center center;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.9);
+            transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Tab Switcher Indicator Bar Animation */
-        .tab-indicator {
-            position: absolute;
-            top: 4px;
-            bottom: 4px;
-            border-radius: 10px;
-            background: #e11d48;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 0;
-            box-shadow: 0 0 12px rgba(225, 29, 72, 0.5);
+        /* Tab Switch Slide & Fade Effect */
+        .tab-slide-enter {
+            animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* Impact Effect when cards land */
-        .impact-bounce {
-            animation: impactAnim 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        @keyframes slideInTab {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes impactAnim {
-            0% { transform: scale(1); }
-            40% { transform: scale(1.12) translateY(-4px); }
-            100% { transform: scale(1) translateY(0); }
+        /* Side Sliding Drawer Menus & Modals */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            transition: opacity 0.3s ease;
+        }
+
+        .side-drawer-content {
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .modal-active .side-drawer-content {
+            transform: translateX(0);
         }
 
         /* Custom Scrollbar */
@@ -288,7 +275,7 @@
                 </div>
 
                 <!-- Discard Pile -->
-                <div id="trash-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
+                <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
                     <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
@@ -300,19 +287,18 @@
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER WITH SLIDE INDICATOR -->
-        <div class="relative grid grid-cols-4 gap-2 shrink-0 bg-zinc-950/80 p-1 rounded-2xl border border-zinc-800/80">
-            <div id="tab-indicator" class="tab-indicator" style="width: 24%; left: 0.5%;"></div>
-            <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-white">
+        <!-- PLAYER PSYCHE TABS SWITCHER -->
+        <div class="grid grid-cols-4 gap-2 shrink-0">
+            <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-user text-xs"></i> You
             </button>
-            <button id="tab-btn-1" onclick="switchPlayerTab(1)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
+            <button id="tab-btn-1" onclick="switchPlayerTab(1)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 1 <span id="bot1-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
-            <button id="tab-btn-2" onclick="switchPlayerTab(2)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
+            <button id="tab-btn-2" onclick="switchPlayerTab(2)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 2 <span id="bot2-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
-            <button id="tab-btn-3" onclick="switchPlayerTab(3)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
+            <button id="tab-btn-3" onclick="switchPlayerTab(3)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 3 <span id="bot3-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
         </div>
@@ -324,7 +310,7 @@
             </div>
 
             <!-- 4 Slots Grid -->
-            <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
+            <div id="active-psyche-container" class="tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
                 <!-- Populated dynamically -->
             </div>
         </div>
@@ -344,9 +330,9 @@
 
     </main>
 
-    <!-- MODAL: TREMORS DISASTER -->
-    <div id="tremors-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-zinc-900 border-2 border-rose-600 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl relative">
+    <!-- MODAL: TREMORS DISASTER (SLIDING DRAWER) -->
+    <div id="tremors-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l-2 border-rose-600 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <div class="text-4xl text-rose-500 mb-2 animate-bounce"><i class="fa-solid fa-hand-holding-medical"></i></div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight">SEVERE TREMORS DISASTER!</h2>
             <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> from your hand in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds or lose your ENTIRE hand!</p>
@@ -357,9 +343,9 @@
         </div>
     </div>
 
-    <!-- MODAL: END TURN DISCARD (HAND > 6) -->
-    <div id="discard-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative">
+    <!-- MODAL: END TURN DISCARD (SLIDING DRAWER) -->
+    <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <h2 class="text-lg font-black text-white uppercase">HAND SIZE LIMIT EXCEEDED</h2>
             <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6 before ending turn.</p>
             <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-48 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
@@ -369,16 +355,18 @@
         </div>
     </div>
 
-    <!-- MODAL: RULES -->
-    <div id="rules-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col max-h-[90vh]">
-            <button id="close-rules" class="absolute top-4 right-4 text-zinc-400 hover:text-white text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h2 class="text-xl font-black text-rose-500 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-skull"></i> UNFILTERED: RULES & MECHANICS
-            </h2>
-            <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-1 mt-3">
+    <!-- MODAL: RULES (SLIDING DRAWER) -->
+    <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
+                    <i class="fa-solid fa-skull"></i> RULES & MECHANICS
+                </h2>
+                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-1 my-3 flex-1">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to have ZERO visible/untreated Disorders in your Psyche!
                 </div>
@@ -398,15 +386,15 @@
                     <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
                 </div>
                 <div>
-                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then smoothly slides into the trash pile!
+                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then removed into the trash!
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: GAME OVER -->
-    <div id="game-over-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-sm w-full p-6 text-center text-zinc-100 shadow-2xl relative">
+    <!-- MODAL: GAME OVER (SLIDING DRAWER) -->
+    <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl relative">
             <div id="winner-icon" class="text-4xl mb-2 text-rose-500">
                 <i class="fa-solid fa-trophy"></i>
             </div>
@@ -732,7 +720,7 @@
                 const player = gameState.players[gameState.activePlayer];
                 if (player.hand.length > 6) {
                     if (player.id === 0) {
-                        openDiscardModal();
+                        openModal('discard-modal');
                     } else {
                         while (player.hand.length > 6) {
                             gameState.discardPile.push(player.hand.pop());
@@ -804,37 +792,7 @@
             return false;
         }
 
-        /* DYNAMIC GLIDE FLY ANIMATION ENGINE */
-        function animateCardFlight(sourceEl, targetEl, cardData, onComplete) {
-            const srcRect = sourceEl ? sourceEl.getBoundingClientRect() : { left: window.innerWidth/2 - 52, top: window.innerHeight - 150, width: 105, height: 148 };
-            const tgtRect = targetEl ? targetEl.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 105, height: 148 };
-
-            const flyingCard = renderCardDOM(cardData);
-            flyingCard.classList.add('flying-card');
-            flyingCard.style.left = `${srcRect.left}px`;
-            flyingCard.style.top = `${srcRect.top}px`;
-            flyingCard.style.transform = 'scale(1) rotate(0deg)';
-
-            document.body.appendChild(flyingCard);
-
-            requestAnimationFrame(() => {
-                flyingCard.style.left = `${tgtRect.left + (tgtRect.width - 105) / 2}px`;
-                flyingCard.style.top = `${tgtRect.top + (tgtRect.height - 148) / 2}px`;
-                flyingCard.style.transform = 'scale(1.05) rotate(-2deg)';
-            });
-
-            setTimeout(() => {
-                if (targetEl) {
-                    targetEl.classList.add('impact-bounce');
-                    setTimeout(() => targetEl.classList.remove('impact-bounce'), 350);
-                }
-                flyingCard.remove();
-                if (onComplete) onComplete();
-            }, 550);
-        }
-
-        /* MELTDOWN CARD SLIDE-IN & SLIDE-OUT TO TRASH */
-        function animateMeltdownSequence(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
+        function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
             const player = gameState.players[playerIdx];
             const card = player.hand[cardHandIdx];
             const targetPlayer = gameState.players[targetPlayerIdx];
@@ -843,70 +801,41 @@
             player.hand.splice(cardHandIdx, 1);
             gameState.selectedHandIdx = null;
 
-            sfx.playDisaster();
-            const topDisorder = getStackTopCard(stack);
-
-            const sourceHandCard = document.querySelector(`[data-hand-idx="${cardHandIdx}"]`);
-            const targetSlot = document.getElementById(`stack-${targetPlayerIdx}-${stackIdx}`);
-            const trashEl = document.getElementById('trash-deck');
-
-            animateCardFlight(sourceHandCard, targetSlot, card, () => {
-                // Cover card below dynamically
+            if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
+                stack.push(card);
+                sfx.playCard();
+                logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
+                consumeAction();
+                renderAll();
+            } 
+            else if (card.type === CARD_TYPES.THERAPY) {
+                while (stack.length > 0) {
+                    gameState.discardPile.push(stack.pop());
+                }
+                gameState.discardPile.push(card);
+                targetPlayer.slotLocked[stackIdx] = true;
+                sfx.playCure();
+                logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
+                consumeAction();
+                renderAll();
+            } 
+            else if (card.type === CARD_TYPES.EPISODE) {
+                sfx.playDisaster();
+                const topDisorder = getStackTopCard(stack);
+                
                 stack.push(card);
                 renderAll();
+                
                 logAction(`${player.name} triggered a Meltdown on ${targetPlayer.name}'s "${topDisorder.title}"!`);
 
                 setTimeout(() => {
-                    // Fly from target slot to Trash Deck
-                    const currentSlotCard = targetSlot ? targetSlot.lastElementChild : null;
-                    animateCardFlight(currentSlotCard, trashEl, card, () => {
-                        const removedCard = stack.pop();
-                        gameState.discardPile.push(removedCard);
-                        triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
-                        consumeAction();
-                        renderAll();
-                    });
-                }, 800);
-            });
-        }
-
-        function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
-            const player = gameState.players[playerIdx];
-            const card = player.hand[cardHandIdx];
-            const targetPlayer = gameState.players[targetPlayerIdx];
-            const stack = targetPlayer.psyche[stackIdx];
-
-            if (card.type === CARD_TYPES.EPISODE) {
-                animateMeltdownSequence(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx);
-                return;
+                    const removedCard = stack.pop();
+                    gameState.discardPile.push(removedCard);
+                    triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
+                    consumeAction();
+                    renderAll();
+                }, 750);
             }
-
-            const sourceHandCard = document.querySelector(`[data-hand-idx="${cardHandIdx}"]`);
-            const targetSlot = document.getElementById(`stack-${targetPlayerIdx}-${stackIdx}`);
-
-            animateCardFlight(sourceHandCard, targetSlot, card, () => {
-                player.hand.splice(cardHandIdx, 1);
-                gameState.selectedHandIdx = null;
-
-                if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
-                    stack.push(card);
-                    sfx.playCard();
-                    logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
-                    consumeAction();
-                    renderAll();
-                } 
-                else if (card.type === CARD_TYPES.THERAPY) {
-                    while (stack.length > 0) {
-                        gameState.discardPile.push(stack.pop());
-                    }
-                    gameState.discardPile.push(card);
-                    targetPlayer.slotLocked[stackIdx] = true;
-                    sfx.playCure();
-                    logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
-                    consumeAction();
-                    renderAll();
-                }
-            });
         }
 
         function triggerEpisodePunishment(targetIdx, disorderId, attackerIdx) {
@@ -981,7 +910,7 @@
 
             let timeLeft = 3;
             timerEl.textContent = timeLeft;
-            modal.classList.remove('hidden');
+            openModal('tremors-modal');
 
             selectorEl.innerHTML = '';
             player.hand.forEach((card, idx) => {
@@ -998,7 +927,7 @@
                 timerEl.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(tremorsInterval);
-                    modal.classList.add('hidden');
+                    closeModal('tremors-modal');
                     const selectedBtns = selectorEl.querySelectorAll('.bg-rose-600');
                     if (selectedBtns.length === 3) {
                         const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
@@ -1016,7 +945,7 @@
                 const selectedBtns = selectorEl.querySelectorAll('.bg-rose-600');
                 if (selectedBtns.length === 3) {
                     clearInterval(tremorsInterval);
-                    modal.classList.add('hidden');
+                    closeModal('tremors-modal');
                     const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
                     indices.forEach(i => gameState.discardPile.push(player.hand.splice(i, 1)[0]));
                     logAction('You survived Tremors by discarding 3 cards!');
@@ -1025,14 +954,11 @@
             };
         }
 
-        function openDiscardModal() {
-            const modal = document.getElementById('discard-modal');
+        function setupDiscardModal() {
             const selectorEl = document.getElementById('discard-card-selector');
             const player = gameState.players[0];
 
-            modal.classList.remove('hidden');
             selectorEl.innerHTML = '';
-
             player.hand.forEach((card, idx) => {
                 const btn = document.createElement('div');
                 btn.className = 'px-2.5 py-1.5 bg-zinc-800 text-white rounded-lg text-xs font-bold cursor-pointer border border-zinc-700 hover:border-rose-500 flex items-center justify-between gap-2';
@@ -1050,7 +976,7 @@
                 const neededCount = player.hand.length - 6;
 
                 if (selectedBtns.length === neededCount) {
-                    modal.classList.add('hidden');
+                    closeModal('discard-modal');
                     const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
                     indices.forEach(i => gameState.discardPile.push(player.hand.splice(i, 1)[0]));
                     logAction(`Discarded ${neededCount} card(s) down to max hand limit.`);
@@ -1059,6 +985,19 @@
                     alert(`Please select exactly ${neededCount} card(s) to discard.`);
                 }
             };
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (id === 'discard-modal') setupDiscardModal();
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('modal-active'), 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('modal-active');
+            setTimeout(() => modal.classList.add('hidden'), 350);
         }
 
         function executeBotTurn(botIdx) {
@@ -1072,9 +1011,10 @@
                 if (card.type === CARD_TYPES.THERAPY) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
-                            switchPlayerTab(botIdx);
-                            executePlayCard(botIdx, i, botIdx, s);
-                            setTimeout(() => continueBotSequence(botIdx), 800);
+                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
+                                executePlayCard(botIdx, i, botIdx, s);
+                                continueBotSequence(botIdx);
+                            });
                             return;
                         }
                     }
@@ -1083,9 +1023,10 @@
                 if (card.type === CARD_TYPES.DRUG) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
-                            switchPlayerTab(botIdx);
-                            executePlayCard(botIdx, i, botIdx, s);
-                            setTimeout(() => continueBotSequence(botIdx), 800);
+                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
+                                executePlayCard(botIdx, i, botIdx, s);
+                                continueBotSequence(botIdx);
+                            });
                             return;
                         }
                     }
@@ -1096,9 +1037,10 @@
                         if (opp !== botIdx) {
                             for (let s = 0; s < 4; s++) {
                                 if (canPlayCardOnStack(card, opp, s)) {
-                                    switchPlayerTab(opp);
-                                    executePlayCard(botIdx, i, opp, s);
-                                    setTimeout(() => continueBotSequence(botIdx), 1600);
+                                    animateBotCardPlay(botIdx, i, opp, s, () => {
+                                        executePlayCard(botIdx, i, opp, s);
+                                        continueBotSequence(botIdx);
+                                    });
                                     return;
                                 }
                             }
@@ -1111,9 +1053,10 @@
                         if (opp !== botIdx) {
                             for (let s = 0; s < 4; s++) {
                                 if (canPlayCardOnStack(card, opp, s)) {
-                                    switchPlayerTab(opp);
-                                    executePlayCard(botIdx, i, opp, s);
-                                    setTimeout(() => continueBotSequence(botIdx), 800);
+                                    animateBotCardPlay(botIdx, i, opp, s, () => {
+                                        executePlayCard(botIdx, i, opp, s);
+                                        continueBotSequence(botIdx);
+                                    });
                                     return;
                                 }
                             }
@@ -1139,6 +1082,37 @@
             }
         }
 
+        function animateBotCardPlay(botIdx, cardHandIdx, targetPlayerIdx, targetStackIdx, onComplete) {
+            gameState.activeTab = targetPlayerIdx;
+            renderAll();
+
+            const targetEl = document.getElementById(`stack-${targetPlayerIdx}-${targetStackIdx}`);
+            if (!targetEl) {
+                onComplete();
+                return;
+            }
+
+            const targetRect = targetEl.getBoundingClientRect();
+            const clone = document.createElement('div');
+            clone.className = 'card-base card-black animated-card-clone flex flex-col items-center justify-center font-bold text-xs text-white p-2 shadow-2xl';
+            clone.style.left = `50%`;
+            clone.style.top = `20%`;
+            clone.innerHTML = `<i class="fa-solid fa-play text-rose-500 mb-1"></i> PLAYING`;
+
+            document.body.appendChild(clone);
+
+            requestAnimationFrame(() => {
+                clone.style.left = `${targetRect.left + targetRect.width / 2 - 50}px`;
+                clone.style.top = `${targetRect.top + targetRect.height / 2 - 70}px`;
+                clone.style.transform = 'scale(1.05)';
+            });
+
+            setTimeout(() => {
+                clone.remove();
+                onComplete();
+            }, 450);
+        }
+
         function checkWinConditions() {
             gameState.players.forEach(p => {
                 let untreatedCount = 0;
@@ -1154,34 +1128,15 @@
 
         function triggerGameOver(winner) {
             gameState.gameOver = true;
-            const modal = document.getElementById('game-over-modal');
             document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
             document.getElementById('winner-reason').textContent = winner.id === 0 
                 ? 'You successfully cured and cleared your mind of all dark crises!'
                 : `${winner.name} cleared their mind of all untreated disorders first!`;
-            modal.classList.remove('hidden');
+            openModal('game-over-modal');
         }
 
-        /* TAB SWITCHER WITH SMOOTH SLIDE INDICATOR */
         function switchPlayerTab(tabIdx) {
             gameState.activeTab = tabIdx;
-            
-            const indicator = document.getElementById('tab-indicator');
-            if (indicator) {
-                indicator.style.left = `${(tabIdx * 25) + 0.5}%`;
-            }
-
-            for (let i = 0; i < 4; i++) {
-                const btn = document.getElementById(`tab-btn-${i}`);
-                if (btn) {
-                    if (i === tabIdx) {
-                        btn.className = "relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-white font-bold scale-105";
-                    } else {
-                        btn.className = "relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400 hover:text-white";
-                    }
-                }
-            }
-
             renderAll();
         }
 
@@ -1196,11 +1151,26 @@
             document.getElementById('bot2-count').textContent = `(${gameState.players[2].hand.length})`;
             document.getElementById('bot3-count').textContent = `(${gameState.players[3].hand.length})`;
 
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`tab-btn-${i}`);
+                if (btn) {
+                    if (gameState.activeTab === i) {
+                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-rose-600 text-white border-rose-500 shadow-lg scale-105 transition-all flex items-center justify-center gap-2";
+                    } else {
+                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2 shadow-md";
+                    }
+                }
+            }
+
             const activePlayerObj = gameState.players[gameState.activeTab];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
 
             const container = document.getElementById('active-psyche-container');
             container.innerHTML = '';
+            
+            container.classList.remove('tab-slide-enter');
+            void container.offsetWidth;
+            container.classList.add('tab-slide-enter');
 
             for (let sIdx = 0; sIdx < 4; sIdx++) {
                 const stack = activePlayerObj.psyche[sIdx];
@@ -1226,9 +1196,7 @@
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
                         cardDOM.classList.add('stacked-card');
-                        // Cascade vertical offsets with hover expansion variable
-                        cardDOM.style.top = `${cIdx * 8}px`;
-                        cardDOM.style.setProperty('--stack-index', cIdx);
+                        cardDOM.style.top = `${cIdx * 10}px`;
                         cardDOM.style.zIndex = cIdx + 1;
                         slot.appendChild(cardDOM);
                     });
@@ -1379,15 +1347,15 @@
         }
 
         document.getElementById('btn-rules').onclick = () => {
-            document.getElementById('rules-modal').classList.remove('hidden');
+            openModal('rules-modal');
         };
         document.getElementById('close-rules').onclick = () => {
-            document.getElementById('rules-modal').classList.add('hidden');
+            closeModal('rules-modal');
         };
 
         document.getElementById('btn-restart').onclick = initGame;
         document.getElementById('btn-play-again').onclick = () => {
-            document.getElementById('game-over-modal').classList.add('hidden');
+            closeModal('game-over-modal');
             initGame();
         };
 
