@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNFILTERED</title>
+    <title>UNFILTERED: Adult Party Card Game</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -32,6 +32,36 @@
             background-size: 100% 100%, 24px 24px;
         }
 
+        /* Main Menu Opening Animation */
+        .main-menu-container {
+            animation: menuEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes menuEntrance {
+            0% { opacity: 0; transform: scale(0.85) translateY(30px); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        /* Animated Title Glow */
+        .title-glow {
+            text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3);
+            animation: pulseGlow 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3); }
+            50% { text-shadow: 0 0 35px rgba(244, 63, 94, 0.9), 0 0 60px rgba(225, 29, 72, 0.6); }
+        }
+
+        /* Gradient Text Presets */
+        .gradient-neon { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-cyber { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-emerald { background: linear-gradient(135deg, #34d399, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-toxic { background: linear-gradient(135deg, #a3e635, #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-blood { background: linear-gradient(135deg, #dc2626, #9f1239); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
         /* CAH Card Base Aesthetic */
         .card-base {
             width: 105px;
@@ -52,9 +82,7 @@
             flex-shrink: 0;
         }
 
-        .card-base:active {
-            cursor: grabbing;
-        }
+        .card-base:active { cursor: grabbing; }
 
         .card-base.dragging {
             z-index: 1000 !important;
@@ -78,72 +106,20 @@
         }
 
         /* Hand Hover Card Lift Animation */
-        .hand-card-item {
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
-        }
+        .hand-card-item { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease; }
         .hand-card-item:hover {
             transform: translateY(-8px) scale(1.02);
             z-index: 50;
         }
 
-        /* Black Card (Episode / Disasters) */
-        .card-black {
-            background: #09090b !important;
-            color: #ffffff !important;
-            border-color: #3f3f46 !important;
-        }
+        /* Card Header Badges */
+        .card-black { background: #09090b !important; color: #ffffff !important; border-color: #3f3f46 !important; }
+        .card-white { background: #fafafa !important; color: #09090b !important; border-color: #d4d4d8 !important; }
 
-        /* White Card (Disorders, Drugs, Therapy) */
-        .card-white {
-            background: #fafafa !important;
-            color: #09090b !important;
-            border-color: #d4d4d8 !important;
-        }
-
-        /* Distinctive Header Banners on White Cards */
-        .card-disorder-header {
-            background-color: #e11d48;
-            color: #ffffff;
-            font-size: 7.5px;
-            font-weight: 900;
-            padding: 1px 4px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-drug-header {
-            background-color: #2563eb;
-            color: #ffffff;
-            font-size: 7.5px;
-            font-weight: 900;
-            padding: 1px 4px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-therapy-header {
-            background-color: #059669;
-            color: #ffffff;
-            font-size: 7.5px;
-            font-weight: 900;
-            padding: 1px 4px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-episode-header {
-            background-color: #dc2626;
-            color: #ffffff;
-            font-size: 7.5px;
-            font-weight: 900;
-            padding: 1px 4px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Drop Target Glows */
         .slot-target {
@@ -178,16 +154,8 @@
             border: 2px solid #059669 !important;
             background: rgba(5, 150, 105, 0.15) !important;
             box-shadow: 0 0 12px rgba(5, 150, 105, 0.3) !important;
-            animation: lockPulse 0.5s ease-out;
         }
 
-        @keyframes lockPulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Animated Floating Clone for AI Play */
         .animated-card-clone {
             position: fixed;
             z-index: 9999;
@@ -195,11 +163,7 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Tab Switch Slide & Fade Effect */
-        .tab-slide-enter {
-            animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
+        .tab-slide-enter { animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes slideInTab {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
@@ -207,8 +171,8 @@
 
         /* Side Sliding Drawer Menus & Modals */
         .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(6px);
+            background-color: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
             transition: opacity 0.3s ease;
         }
 
@@ -217,29 +181,165 @@
             transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .modal-active .side-drawer-content {
-            transform: translateX(0);
-        }
+        .modal-active .side-drawer-content { transform: translateX(0); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #09090b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 3px;
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
 
+    <!-- MAIN MENU SCREEN -->
+    <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-xl">
+        <div class="main-menu-container max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/80 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
+            <!-- Background Glow Decor -->
+            <div class="absolute -top-24 -left-24 w-60 h-60 bg-rose-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center gap-2 mb-2">
+                <span class="bg-rose-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full tracking-wider uppercase">18+ ADULT PARTY</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 title-glow flex items-center gap-3">
+                <i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED
+            </h1>
+            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or ruin your friends!</p>
+
+            <!-- ACCOUNT / PROFILE SETTINGS -->
+            <div class="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
+                <div class="text-xs font-bold text-zinc-300 mb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card text-rose-500"></i> Player Profile</span>
+                    <span id="account-stats" class="text-[10px] text-zinc-500">Wins: 0 | Games: 0</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Username</label>
+                        <input id="input-username" type="text" maxlength="12" value="PsychPlayer" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-500 transition">
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Name Color Style</label>
+                        <select id="select-gradient" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-500 transition">
+                            <option value="gradient-neon">Neon Sunset</option>
+                            <option value="gradient-cyber">Cyberpunk Blue</option>
+                            <option value="gradient-emerald">Emerald Cure</option>
+                            <option value="gradient-toxic">Toxic Slime</option>
+                            <option value="gradient-blood">Blood Moon</option>
+                            <option value="gradient-gold">Hyper Gold</option>
+                            <option value="gradient-vapor">Vaporwave Purple</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODE SELECT BUTTONS -->
+            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button id="btn-mode-single" onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
+                    <i class="fa-solid fa-robot text-lg text-rose-500 group-hover:rotate-12 transition"></i>
+                    Singleplayer
+                    <span class="text-[9px] font-normal text-zinc-400">Play vs AI Bots</span>
+                </button>
+
+                <button id="btn-mode-host" onclick="openHostModal()" class="py-3.5 px-4 bg-rose-600 hover:bg-rose-500 border border-rose-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg shadow-rose-900/30 group">
+                    <i class="fa-solid fa-gamepad text-lg group-hover:scale-110 transition"></i>
+                    Host Game
+                    <span class="text-[9px] font-normal text-rose-100">Create Room Code</span>
+                </button>
+
+                <button id="btn-mode-join" onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
+                    <i class="fa-solid fa-right-to-bracket text-lg text-amber-500 group-hover:translate-x-1 transition"></i>
+                    Join Game
+                    <span class="text-[9px] font-normal text-zinc-400">Enter Room Code</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOST ROOM MODAL (DRAWER) -->
+    <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+            <div>
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                    <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
+                        <i class="fa-solid fa-crown"></i> HOST LOBBY
+                    </h2>
+                    <button onclick="closeModal('host-modal')" class="text-zinc-400 hover:text-white text-xl p-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (3 - 8)</label>
+                        <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-500">
+                            <option value="3">3 Players</option>
+                            <option value="4" selected>4 Players</option>
+                            <option value="5">5 Players</option>
+                            <option value="6">6 Players</option>
+                            <option value="7">7 Players</option>
+                            <option value="8">8 Players</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800">
+                        <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Your Lobby Code</span>
+                        <div class="flex items-center justify-between">
+                            <span id="created-room-code" class="text-2xl font-black tracking-widest text-rose-400">------</span>
+                            <button onclick="copyRoomCode()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold rounded-lg transition border border-zinc-700">
+                                <i class="fa-solid fa-copy mr-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-xs font-bold text-zinc-400 block mb-2">Connected Players:</span>
+                        <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto">
+                            <!-- Players populate dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="launchMultiplayerGame()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
+                Start Match
+            </button>
+        </div>
+    </div>
+
+    <!-- JOIN ROOM MODAL (DRAWER) -->
+    <div id="join-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+            <div>
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                    <h2 class="text-lg font-black text-amber-500 flex items-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> JOIN LOBBY
+                    </h2>
+                    <button onclick="closeModal('join-modal')" class="text-zinc-400 hover:text-white text-xl p-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
+                        <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
+                    </div>
+                    <p class="text-xs text-zinc-500">Ask the room host for their code to join their UNFILTERED match.</p>
+                </div>
+            </div>
+
+            <button onclick="submitJoinCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 font-black text-zinc-950 text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-amber-950/40">
+                Join Lobby
+            </button>
+        </div>
+    </div>
+
     <!-- TOP NAV HEADER -->
     <header class="h-12 bg-zinc-950 border-b border-zinc-800 px-4 flex items-center justify-between z-30 shrink-0">
         <div class="flex items-center gap-2">
+            <button onclick="returnToMainMenu()" class="text-zinc-400 hover:text-white text-sm pr-2 border-r border-zinc-800 transition" title="Main Menu">
+                <i class="fa-solid fa-house"></i>
+            </button>
             <span class="bg-rose-600 text-white font-black text-[10px] px-2 py-0.5 rounded tracking-wider uppercase">18+ ADULT</span>
             <h1 class="text-base font-black tracking-tighter text-zinc-100 flex items-center gap-1.5">
                 <i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED
@@ -287,20 +387,9 @@
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER -->
-        <div class="grid grid-cols-4 gap-2 shrink-0">
-            <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
-                <i class="fa-solid fa-user text-xs"></i> You
-            </button>
-            <button id="tab-btn-1" onclick="switchPlayerTab(1)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
-                <i class="fa-solid fa-robot text-xs"></i> Bot 1 <span id="bot1-count" class="text-[10px] opacity-75 font-normal">(4)</span>
-            </button>
-            <button id="tab-btn-2" onclick="switchPlayerTab(2)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
-                <i class="fa-solid fa-robot text-xs"></i> Bot 2 <span id="bot2-count" class="text-[10px] opacity-75 font-normal">(4)</span>
-            </button>
-            <button id="tab-btn-3" onclick="switchPlayerTab(3)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
-                <i class="fa-solid fa-robot text-xs"></i> Bot 3 <span id="bot3-count" class="text-[10px] opacity-75 font-normal">(4)</span>
-            </button>
+        <!-- PLAYER PSYCHE TABS SWITCHER (Scales 3 to 8 Players) -->
+        <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1">
+            <!-- Dynamically populated up to 8 players -->
         </div>
 
         <!-- ACTIVE VIEWED PLAYER PSYCHE SLOTS -->
@@ -377,16 +466,13 @@
                     <span class="font-bold text-white">2. Turn Flow:</span> Draw 2 cards at start of turn. Up to 2 actions per turn (Draw 1 or Drag & Drop card). Hand size limit is 6 at turn end.
                 </div>
                 <div>
-                    <span class="font-bold text-white">3. Drag and Drop:</span> Drag cards from your hand directly onto valid target slots across the tabs.
+                    <span class="font-bold text-white">3. Quick Fix Vulnerabilities:</span> Playing a Quick Fix (Drug) card shields a Disorder, but exposes specific **Vulnerable Side-Effect Crises**. Opponents can play those matching Dark Crises directly on top of your Quick Fix!
                 </div>
                 <div>
-                    <span class="font-bold text-white">4. Therapy / Safe Zone Lock:</span> Playing a Therapy card on an untreated Disorder purges that stack and permanently turns the slot into an emerald <span class="text-emerald-400 font-bold">CURED Safe Zone</span>. Once cured, no player or bot can ever target or play on that slot again!
+                    <span class="font-bold text-white">4. Therapy / Safe Zone Lock:</span> Playing a Therapy card on an untreated Disorder purges that stack and permanently turns the slot into an emerald <span class="text-emerald-400 font-bold">CURED Safe Zone</span>.
                 </div>
                 <div>
-                    <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
-                </div>
-                <div>
-                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's or bot's UNTREATED Disorder to trigger its punishment, then removed into the trash!
+                    <span class="font-bold text-white">5. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then removed into the trash!
                 </div>
             </div>
         </div>
@@ -400,8 +486,8 @@
             </div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
             <p id="winner-reason" class="text-xs text-zinc-400 mb-5">You successfully cleared your Psyche of all dark crises!</p>
-            <button id="btn-play-again" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">
-                Play Again
+            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">
+                Main Menu
             </button>
         </div>
     </div>
@@ -455,82 +541,39 @@
         const sfx = new SoundEngine();
     </script>
 
-    <!-- CORE GAME SCRIPT -->
+    <!-- CORE GAME & MULTIPLAYER SCRIPT -->
     <script>
-        const CARD_TYPES = {
-            DISORDER: 'disorder',
-            DRUG: 'drug',
-            THERAPY: 'therapy',
-            EPISODE: 'episode'
-        };
+        const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
 
         const DISORDERS = {
-            EXISTENTIAL_DREAD: {
-                id: 'EXISTENTIAL_DREAD',
-                name: 'Existential Dread',
-                flavor: 'Staring at the ceiling at 4 AM wondering what it all means.',
-                drugName: 'Chugging Cough Syrup',
-                sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'],
-                punishmentText: 'Reveal hand & attacker steals 1 card.'
-            },
-            CRIPPLING_DEBT: {
-                id: 'CRIPPLING_DEBT',
-                name: 'Crippling Debt',
-                flavor: 'Knee-cracking loan sharks are waiting outside.',
-                drugName: 'Gas Station Pills',
-                sideEffects: ['IMPOTENCE'],
-                punishmentText: 'Attacker draws 3 random cards from target hand.'
-            },
-            SOBBING: {
-                id: 'SOBBING',
-                name: 'Uncontrollable Sobbing',
-                flavor: 'Crying uncontrollably in a crowded Applebee\'s.',
-                drugName: 'Drowning Sorrows in Cheap Gin',
-                sideEffects: ['EXISTENTIAL_DREAD', 'EATING_TRASH', 'PARANOIA'],
-                punishmentText: 'Target sits out 1 full round.'
-            },
-            DIARRHEA: {
-                id: 'DIARRHEA',
-                name: 'Explosive Diarrhea',
-                flavor: 'Occurred during a high-stakes job interview.',
-                drugName: 'Aggressive Denial',
-                sideEffects: ['TREMORS'],
-                punishmentText: 'Discard ALL attached Drug cards in Psyche!'
-            },
-            TREMORS: {
-                id: 'TREMORS',
-                name: 'Severe Tremors',
-                flavor: 'Shaking so violently you can\'t hold a beer.',
-                drugName: 'Sniffing Glue',
-                sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'],
-                punishmentText: '3-second rapid discard timer (discard 3 or wipe hand)!',
-                noTherapy: true
-            },
-            IMPOTENCE: {
-                id: 'IMPOTENCE',
-                name: 'Impotence',
-                flavor: 'Complete system failure when performance matters most.',
-                drugName: 'Impulse Buying Tattoos',
-                sideEffects: ['SOBBING'],
-                punishmentText: 'Target skips next turn.'
-            },
-            PARANOIA: {
-                id: 'PARANOIA',
-                name: 'Paranoia',
-                flavor: 'Convinced the pigeons outside are FBI drones.',
-                drugName: 'Swiping Aggressively',
-                sideEffects: ['DIARRHEA'],
-                punishmentText: 'Target discards their entire hand.'
-            },
-            EATING_TRASH: {
-                id: 'EATING_TRASH',
-                name: 'Eating Trash',
-                flavor: 'Digging through a dumpster behind a bakery at 2 AM.',
-                drugName: null,
-                sideEffects: [],
-                punishmentText: 'Target discards half their hand.',
-                therapyOnly: true
-            }
+            EXISTENTIAL_DREAD: { id: 'EXISTENTIAL_DREAD', name: 'Existential Dread', flavor: 'Staring at the ceiling at 4 AM wondering what it all means.', drugName: 'Chugging Cough Syrup', sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'], punishmentText: 'Reveal hand & attacker steals 1 card.' },
+            CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Knee-cracking loan sharks are waiting outside.', drugName: 'Gas Station Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 3 random cards from target hand.' },
+            SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying uncontrollably in a crowded Applebee\'s.', drugName: 'Drowning Sorrows in Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'EATING_TRASH', 'PARANOIA'], punishmentText: 'Target sits out 1 full round.' },
+            DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Occurred during a high-stakes job interview.', drugName: 'Aggressive Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard ALL attached Drug cards in Psyche!' },
+            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking so violently you can\'t hold a beer.', drugName: 'Sniffing Glue', sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: '3-second rapid discard timer (discard 3 or wipe hand)!', noTherapy: true },
+            IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'Complete system failure when performance matters most.', drugName: 'Impulse Buying Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Target skips next turn.' },
+            PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Convinced the pigeons outside are FBI drones.', drugName: 'Swiping Aggressively', sideEffects: ['DIARRHEA'], punishmentText: 'Target discards their entire hand.' },
+            EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Digging through a dumpster behind a bakery at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Target discards half their hand.', therapyOnly: true }
+        };
+
+        const localProfile = {
+            username: localStorage.getItem('unfiltered_username') || 'PsychPlayer',
+            gradient: localStorage.getItem('unfiltered_gradient') || 'gradient-neon',
+            wins: parseInt(localStorage.getItem('unfiltered_wins') || '0'),
+            games: parseInt(localStorage.getItem('unfiltered_games') || '0')
+        };
+
+        const gameState = {
+            mode: 'single', // 'single', 'host', 'join'
+            roomCode: '',
+            deck: [],
+            discardPile: [],
+            activePlayer: 0,
+            actionsLeft: 2,
+            gameOver: false,
+            selectedHandIdx: null,
+            activeTab: 0,
+            players: []
         };
 
         function generateMasterDeck() {
@@ -538,55 +581,26 @@
             let cardId = 0;
 
             Object.values(DISORDERS).forEach(disorder => {
-                const count = disorder.id === 'EATING_TRASH' ? 3 : 4;
+                const count = disorder.id === 'EATING_TRASH' ? 4 : 5;
                 for (let i = 0; i < count; i++) {
-                    deck.push({
-                        uid: `card_${cardId++}`,
-                        type: CARD_TYPES.DISORDER,
-                        disorderId: disorder.id,
-                        title: disorder.name,
-                        flavor: disorder.flavor,
-                        punishmentText: disorder.punishmentText,
-                        noTherapy: !!disorder.noTherapy,
-                        therapyOnly: !!disorder.therapyOnly
-                    });
+                    deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DISORDER, disorderId: disorder.id, title: disorder.name, flavor: disorder.flavor, punishmentText: disorder.punishmentText, noTherapy: !!disorder.noTherapy, therapyOnly: !!disorder.therapyOnly });
                 }
             });
 
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
-                    for (let i = 0; i < 5; i++) {
-                        deck.push({
-                            uid: `card_${cardId++}`,
-                            type: CARD_TYPES.DRUG,
-                            disorderId: disorder.id,
-                            title: disorder.drugName,
-                            treatsName: disorder.name,
-                            sideEffects: disorder.sideEffects,
-                            flavor: `Shields ${disorder.name}. Exposes side effects.`
-                        });
+                    for (let i = 0; i < 6; i++) {
+                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}. Exposes side-effect vulnerabilities.` });
                     }
                 }
             });
 
-            for (let i = 0; i < 8; i++) {
-                deck.push({
-                    uid: `card_${cardId++}`,
-                    type: CARD_TYPES.THERAPY,
-                    title: 'Actual Miracle',
-                    flavor: 'A sudden moment of clarity that purges a crisis entirely.',
-                    desc: 'Purges & permanently locks slot safe! (Except Tremors).'
-                });
+            for (let i = 0; i < 12; i++) {
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'A sudden moment of clarity that purges a crisis entirely.', desc: 'Purges & permanently locks slot safe! (Except Tremors).' });
             }
 
-            for (let i = 0; i < 18; i++) {
-                deck.push({
-                    uid: `card_${cardId++}`,
-                    type: CARD_TYPES.EPISODE,
-                    title: 'Total Meltdown',
-                    flavor: 'Publicly calling out an untreated dark crisis!',
-                    desc: 'Play temporarily on any opponent\'s untreated Disorder to trigger penalty, then remove!'
-                });
+            for (let i = 0; i < 24; i++) {
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Publicly calling out an untreated dark crisis!', desc: 'Play temporarily on any opponent\'s untreated Disorder to trigger penalty, then remove!' });
             }
 
             for (let i = deck.length - 1; i > 0; i--) {
@@ -597,21 +611,115 @@
             return deck;
         }
 
-        const gameState = {
-            deck: [],
-            discardPile: [],
-            activePlayer: 0,
-            actionsLeft: 2,
-            gameOver: false,
-            selectedHandIdx: null,
-            activeTab: 0,
-            players: [
-                { id: 0, name: 'You', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 2, name: 'Bot 2', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 3, name: 'Bot 3', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
-            ]
-        };
+        function saveProfile() {
+            const usernameInput = document.getElementById('input-username').value.trim() || 'PsychPlayer';
+            const gradientSelect = document.getElementById('select-gradient').value;
+            localProfile.username = usernameInput;
+            localProfile.gradient = gradientSelect;
+            localStorage.setItem('unfiltered_username', localProfile.username);
+            localStorage.setItem('unfiltered_gradient', localProfile.gradient);
+        }
+
+        function startSingleplayer() {
+            saveProfile();
+            document.getElementById('screen-main-menu').classList.add('hidden');
+            gameState.mode = 'single';
+            
+            gameState.players = [
+                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 1, name: 'Bot 1', gradient: 'gradient-cyber', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 2, name: 'Bot 2', gradient: 'gradient-emerald', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 3, name: 'Bot 3', gradient: 'gradient-toxic', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
+            ];
+
+            initGame();
+        }
+
+        function openHostModal() {
+            saveProfile();
+            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            gameState.roomCode = code;
+            document.getElementById('created-room-code').textContent = code;
+            
+            updateHostPlayerList();
+            openModal('host-modal');
+        }
+
+        function updateHostPlayerList() {
+            const listEl = document.getElementById('host-player-list');
+            listEl.innerHTML = `
+                <div class="px-3 py-2 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between text-xs font-bold">
+                    <span class="${localProfile.gradient}"><i class="fa-solid fa-crown text-amber-400 mr-1.5"></i> ${localProfile.username} (Host)</span>
+                    <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Ready</span>
+                </div>
+            `;
+        }
+
+        function copyRoomCode() {
+            navigator.clipboard.writeText(gameState.roomCode);
+            logAction('Room code copied to clipboard!');
+        }
+
+        function openJoinModal() {
+            saveProfile();
+            openModal('join-modal');
+        }
+
+        function submitJoinCode() {
+            const code = document.getElementById('input-join-code').value.trim().toUpperCase();
+            if (code.length !== 6) {
+                alert('Please enter a valid 6-character Room Code.');
+                return;
+            }
+            closeModal('join-modal');
+            document.getElementById('screen-main-menu').classList.add('hidden');
+            
+            // Simulating multiplayer room joining
+            gameState.mode = 'join';
+            gameState.roomCode = code;
+            
+            gameState.players = [
+                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 1, name: 'Host Player', gradient: 'gradient-gold', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 2, name: 'Player 3', gradient: 'gradient-cyber', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 3, name: 'Player 4', gradient: 'gradient-emerald', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
+            ];
+
+            initGame();
+        }
+
+        function launchMultiplayerGame() {
+            closeModal('host-modal');
+            document.getElementById('screen-main-menu').classList.add('hidden');
+            gameState.mode = 'host';
+
+            const maxP = parseInt(document.getElementById('select-max-players').value);
+            const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor', 'gradient-neon'];
+
+            gameState.players = [
+                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
+            ];
+
+            for (let i = 1; i < maxP; i++) {
+                gameState.players.push({
+                    id: i,
+                    name: `Player ${i + 1}`,
+                    gradient: gradients[(i - 1) % gradients.length],
+                    isBot: false,
+                    hand: [],
+                    psyche: [[], [], [], []],
+                    slotLocked: [false, false, false, false],
+                    skipNextTurn: false
+                });
+            }
+
+            initGame();
+        }
+
+        function returnToMainMenu() {
+            closeModal('game-over-modal');
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+        }
 
         function initGame() {
             gameState.deck = generateMasterDeck();
@@ -629,8 +737,9 @@
                 p.skipNextTurn = false;
             });
 
+            const totalSlots = gameState.players.length * 4;
             const startingDisorders = [];
-            for (let i = gameState.deck.length - 1; i >= 0 && startingDisorders.length < 16; i--) {
+            for (let i = gameState.deck.length - 1; i >= 0 && startingDisorders.length < totalSlots; i--) {
                 if (gameState.deck[i].type === CARD_TYPES.DISORDER) {
                     startingDisorders.push(gameState.deck.splice(i, 1)[0]);
                 }
@@ -676,7 +785,6 @@
             renderAll();
 
             if (player.isBot) {
-                // Pacing bot actions nicely so it's not instantly fast
                 setTimeout(() => executeBotTurn(playerIdx), 1500);
             }
         }
@@ -740,7 +848,7 @@
             checkWinConditions();
             if (gameState.gameOver) return;
 
-            const nextIdx = (gameState.activePlayer + 1) % 4;
+            const nextIdx = (gameState.activePlayer + 1) % gameState.players.length;
             startTurn(nextIdx);
         }
 
@@ -805,7 +913,11 @@
             if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
                 stack.push(card);
                 sfx.playCard();
-                logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
+                if (card.type === CARD_TYPES.DISORDER && stack.length > 1) {
+                    logAction(`${player.name} targeted ${targetPlayer.name}'s Quick Fix vulnerability with "${card.title}"!`);
+                } else {
+                    logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
+                }
                 consumeAction();
                 renderAll();
             } 
@@ -1001,19 +1113,15 @@
             setTimeout(() => modal.classList.add('hidden'), 350);
         }
 
-        // IMPROVED BOT AI: Bots now attack anyone randomly (including other bots) and properly trigger Meltdowns on any untreated crisis across all players
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
 
             const bot = gameState.players[botIdx];
-
-            // Search bot hand for valid plays with natural pacing
             let playedCard = false;
 
             for (let i = 0; i < bot.hand.length; i++) {
                 const card = bot.hand[i];
 
-                // 1. Therapy on self
                 if (card.type === CARD_TYPES.THERAPY) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
@@ -1027,7 +1135,6 @@
                     }
                 }
 
-                // 2. Drug on self
                 if (card.type === CARD_TYPES.DRUG) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
@@ -1041,10 +1148,8 @@
                     }
                 }
 
-                // 3. Meltdown (Episode) on ANY target with untreated disorder (can target human OR other bots!)
                 if (card.type === CARD_TYPES.EPISODE) {
-                    // Randomize targets to prevent gang-up on player only
-                    const targets = [0, 1, 2, 3].filter(pIdx => pIdx !== botIdx);
+                    const targets = gameState.players.map((_, pIdx) => pIdx).filter(pIdx => pIdx !== botIdx);
                     shuffleArray(targets);
 
                     for (const opp of targets) {
@@ -1061,9 +1166,8 @@
                     }
                 }
 
-                // 4. Disorder on opponent or other bots
                 if (card.type === CARD_TYPES.DISORDER) {
-                    const targets = [0, 1, 2, 3].filter(pIdx => pIdx !== botIdx);
+                    const targets = gameState.players.map((_, pIdx) => pIdx).filter(pIdx => pIdx !== botIdx);
                     shuffleArray(targets);
 
                     for (const opp of targets) {
@@ -1081,7 +1185,6 @@
                 }
             }
 
-            // If no card was played, draw card with natural pacing
             if (!playedCard && gameState.actionsLeft > 0) {
                 drawCardsForPlayer(botIdx, 1);
                 gameState.actionsLeft--;
@@ -1147,6 +1250,12 @@
                 });
 
                 if (untreatedCount === 0) {
+                    if (p.id === 0) {
+                        localProfile.wins++;
+                        localStorage.setItem('unfiltered_wins', localProfile.wins);
+                    }
+                    localProfile.games++;
+                    localStorage.setItem('unfiltered_games', localProfile.games);
                     triggerGameOver(p);
                 }
             });
@@ -1167,26 +1276,26 @@
         }
 
         function renderAll() {
+            document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
             document.getElementById('deck-count').textContent = gameState.deck.length;
             document.getElementById('discard-count').textContent = gameState.discardPile.length;
 
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer].name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
 
-            document.getElementById('bot1-count').textContent = `(${gameState.players[1].hand.length})`;
-            document.getElementById('bot2-count').textContent = `(${gameState.players[2].hand.length})`;
-            document.getElementById('bot3-count').textContent = `(${gameState.players[3].hand.length})`;
-
-            for (let i = 0; i < 4; i++) {
-                const btn = document.getElementById(`tab-btn-${i}`);
-                if (btn) {
-                    if (gameState.activeTab === i) {
-                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-rose-600 text-white border-rose-500 shadow-lg scale-105 transition-all flex items-center justify-center gap-2";
-                    } else {
-                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2 shadow-md";
-                    }
-                }
-            }
+            // Dynamic Player Tabs (3 to 8 Players)
+            const tabBar = document.getElementById('tab-bar-container');
+            tabBar.innerHTML = '';
+            gameState.players.forEach((p, idx) => {
+                const isSelected = gameState.activeTab === idx;
+                const btn = document.createElement('button');
+                btn.onclick = () => switchPlayerTab(idx);
+                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shadow-md shrink-0 ${
+                    isSelected ? 'bg-rose-600 text-white border-rose-500 scale-105' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800'
+                }`;
+                btn.innerHTML = `<span class="${p.gradient} font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
+                tabBar.appendChild(btn);
+            });
 
             const activePlayerObj = gameState.players[gameState.activeTab];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
@@ -1350,6 +1459,12 @@
 
             cardEl.className = `card-base ${typeClass} shadow-xl`;
 
+            let subText = card.desc || card.punishmentText || '';
+            if (card.type === CARD_TYPES.DRUG) {
+                const sideEffectNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : '';
+                subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-bold">Vulnerable: ${sideEffectNames}</span>`;
+            }
+
             cardEl.innerHTML = `
                 <div class="flex items-center justify-between w-full">
                     <span class="${headerClass}">${headerText}</span>
@@ -1359,8 +1474,8 @@
                     <div class="font-black text-[10px] leading-tight tracking-tight">${card.title}</div>
                     <div class="text-[7.5px] opacity-75 mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-0.5 border-t border-zinc-200/20 opacity-80 truncate">
-                    ${card.treatsName ? `Shields: ${card.treatsName}` : (card.desc || card.punishmentText || '')}
+                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-0.5 border-t border-zinc-200/20 opacity-90 leading-tight">
+                    ${subText}
                 </div>
             `;
 
@@ -1372,21 +1487,14 @@
             if (logEl) logEl.textContent = msg;
         }
 
-        document.getElementById('btn-rules').onclick = () => {
-            openModal('rules-modal');
-        };
-        document.getElementById('close-rules').onclick = () => {
-            closeModal('rules-modal');
-        };
-
+        document.getElementById('btn-rules').onclick = () => { openModal('rules-modal'); };
+        document.getElementById('close-rules').onclick = () => { closeModal('rules-modal'); };
         document.getElementById('btn-restart').onclick = initGame;
-        document.getElementById('btn-play-again').onclick = () => {
-            closeModal('game-over-modal');
-            initGame();
-        };
 
         window.onload = () => {
-            initGame();
+            document.getElementById('input-username').value = localProfile.username;
+            document.getElementById('select-gradient').value = localProfile.gradient;
+            document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
         };
     </script>
 </body>
