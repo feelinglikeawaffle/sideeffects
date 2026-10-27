@@ -13,6 +13,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
+    <!-- Firebase SDKs (Modular Compat Version for easy script embedding) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -23,7 +27,6 @@
             touch-action: manipulation;
         }
 
-        /* Dark Table Atmosphere */
         .table-bg {
             background-color: #050505;
             background-image: 
@@ -32,7 +35,6 @@
             background-size: 100% 100%, 24px 24px;
         }
 
-        /* Main Menu Opening Animation */
         .main-menu-container {
             animation: menuEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -42,7 +44,6 @@
             100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
 
-        /* Animated Title Glow */
         .title-glow {
             text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3);
             animation: pulseGlow 2.5s infinite ease-in-out;
@@ -53,7 +54,6 @@
             50% { text-shadow: 0 0 35px rgba(244, 63, 94, 0.9), 0 0 60px rgba(225, 29, 72, 0.6); }
         }
 
-        /* Gradient Text Presets */
         .gradient-neon { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-cyber { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-emerald { background: linear-gradient(135deg, #34d399, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -62,7 +62,6 @@
         .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* CAH Card Base Aesthetic */
         .card-base {
             width: 108px;
             height: 152px;
@@ -94,7 +93,6 @@
             transform: translateY(-10px) !important;
         }
 
-        /* Stacked Card Overlap within Slots */
         .stacked-card {
             position: absolute !important;
             left: 0;
@@ -103,14 +101,12 @@
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Hand Hover Card Lift Animation */
         .hand-card-item { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease; }
         .hand-card-item:hover {
             transform: translateY(-8px) scale(1.02);
             z-index: 50;
         }
 
-        /* Distinct Card Aesthetics & Readability */
         .card-white { background: #ffffff !important; color: #09090b !important; border-color: #d4d4d8 !important; }
         .card-black { background: #09090b !important; color: #ffffff !important; border-color: #52525b !important; }
 
@@ -119,7 +115,6 @@
         .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Drop Target Glows */
         .slot-target {
             border: 2px dashed #52525b;
             border-radius: 12px;
@@ -147,7 +142,6 @@
             box-shadow: 0 0 22px rgba(244, 63, 94, 0.9);
         }
 
-        /* Locked Safe Slot (Therapy) */
         .slot-locked-safe {
             border: 2px solid #059669 !important;
             background: rgba(5, 150, 105, 0.18) !important;
@@ -161,7 +155,6 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Sliding Tab Animation */
         .tab-slide-container {
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
@@ -172,7 +165,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Side Sliding Drawer Menus & Modals */
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(8px);
@@ -196,7 +188,6 @@
     <!-- MAIN MENU SCREEN -->
     <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-xl">
         <div class="main-menu-container max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
-            <!-- Background Glow Decor -->
             <div class="absolute -top-24 -left-24 w-60 h-60 bg-rose-600/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -209,7 +200,6 @@
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
 
-            <!-- ACCOUNT / PROFILE SETTINGS -->
             <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
                 <div class="text-xs font-bold text-zinc-300 mb-3 flex items-center justify-between">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card text-rose-500"></i> Player Profile</span>
@@ -235,7 +225,6 @@
                 </div>
             </div>
 
-            <!-- MODE SELECT BUTTONS -->
             <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button id="btn-mode-single" onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
                     <i class="fa-solid fa-robot text-lg text-rose-500 group-hover:rotate-12 transition"></i>
@@ -297,13 +286,13 @@
                     <div>
                         <span class="text-xs font-bold text-zinc-400 block mb-2">Connected Players:</span>
                         <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto">
-                            <!-- Players populate dynamically -->
+                            <!-- Populated dynamically -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="launchMultiplayerGame()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
+            <button onclick="launchCloudMultiplayer()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
                 Start Match
             </button>
         </div>
@@ -327,7 +316,7 @@
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
                         <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
                     </div>
-                    <p class="text-xs text-zinc-500">Enter a code to join an active local multiplayer lobby session.</p>
+                    <p class="text-xs text-zinc-500">Enter a code to join an active Firebase cloud room.</p>
                 </div>
             </div>
 
@@ -367,151 +356,97 @@
 
     <!-- TABLETOP CONTAINER -->
     <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-6xl mx-auto w-full">
-
-        <!-- DECK & STATUS ROW -->
         <div class="flex items-center justify-between bg-zinc-900/90 p-3 rounded-2xl border border-zinc-800/80 shadow-xl shrink-0 backdrop-blur-md">
             <div class="flex items-center gap-4">
-                <!-- Draw Deck -->
                 <div id="draw-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-rose-500/60 hover:border-rose-500 hover:scale-105 transition-all cursor-pointer shadow-md">
                     <i class="fa-solid fa-fire-flame-curved text-rose-500 text-sm animate-pulse"></i>
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Draw Deck (<span id="deck-count" class="text-rose-400">0</span>)</span>
                 </div>
-
-                <!-- Discard Pile -->
                 <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
                     <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
             </div>
-
-            <!-- Game Log Message -->
             <div id="center-log" class="text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950/90 rounded-xl border border-zinc-800/80 max-w-md truncate shadow-inner">
                 <span id="log-text">Your Turn! 2 cards drawn automatically. Take up to 2 actions.</span>
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER -->
-        <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1">
-            <!-- Dynamically populated up to 8 players -->
-        </div>
+        <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1"></div>
 
-        <!-- ACTIVE VIEWED PLAYER PSYCHE SLOTS -->
         <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 backdrop-blur-md shadow-2xl relative min-h-[190px]">
             <div id="active-tab-title" class="text-xs font-bold text-zinc-300 mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
-
-            <!-- 4 Slots Grid with Sliding Animation Container -->
-            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
-                <!-- Populated dynamically -->
-            </div>
+            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
-        <!-- HUMAN HAND CONTAINER -->
         <div class="flex-1 bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-3 flex flex-col overflow-hidden shadow-2xl min-h-[185px]">
             <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between shrink-0">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-400"></i> Your Hand (<span id="hand-count-num">4</span> Cards)</span>
                 <span class="text-[10px] text-zinc-500">Drag card onto stack above OR tap card then tap slot</span>
             </div>
-            
-            <!-- Horizontal Scrollable Row for Hand Cards -->
-            <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1">
-                <!-- Cards populated dynamically -->
-            </div>
+            <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1"></div>
         </div>
-
     </main>
 
-    <!-- MODAL: TREMORS DISASTER (SLIDING DRAWER) -->
+    <!-- MODALS -->
     <div id="tremors-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l-2 border-rose-600 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <div class="text-4xl text-rose-500 mb-2 animate-bounce"><i class="fa-solid fa-hand-holding-medical"></i></div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight">SEVERE TREMORS DISASTER!</h2>
-            <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> from your hand in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds or lose your ENTIRE hand!</p>
+            <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds!</p>
             <div id="tremors-card-selector" class="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-submit-tremors" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">
-                Discard Selected Cards
-            </button>
+            <button id="btn-submit-tremors" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Discard Selected</button>
         </div>
     </div>
 
-    <!-- MODAL: END TURN DISCARD (SLIDING DRAWER) -->
     <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <h2 class="text-lg font-black text-white uppercase">HAND SIZE LIMIT EXCEEDED</h2>
-            <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6 before ending turn.</p>
+            <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6.</p>
             <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-48 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-confirm-discard" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">
-                Confirm Discard & Pass Turn
-            </button>
+            <button id="btn-confirm-discard" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Confirm Discard</button>
         </div>
     </div>
 
-    <!-- MODAL: RULES & CARD GUIDE (SLIDING DRAWER) -->
     <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-lg w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
-                    <i class="fa-solid fa-book"></i> RULES & CARD GUIDE
-                </h2>
-                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <h2 class="text-lg font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
+                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div class="overflow-y-auto space-y-4 text-xs leading-relaxed text-zinc-300 pr-2 my-3 flex-1">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                    <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to clear all visible/untreated Disorders from your Psyche!
-                </div>
-
-                <div>
-                    <h3 class="font-black text-white uppercase mb-1">Core Gameplay:</h3>
-                    <ul class="list-disc pl-4 space-y-1 text-zinc-400">
-                        <li><strong>Turn Flow:</strong> 2 cards are drawn automatically at the start of your turn (does not cost actions). You have 2 actions per turn to play cards or draw extra cards.</li>
-                        <li><strong>Hand Limit:</strong> At the end of your turn, you must have 6 or fewer cards in hand.</li>
-                        <li><strong>Quick Fix Vulnerabilities:</strong> Playing a Quick Fix (Drug) shields your Disorder, but exposes specific vulnerable side-effect crises that opponents can play directly on top of!</li>
-                        <li><strong>Therapy / Safe Zone:</strong> Playing an Actual Miracle (Therapy) on an untreated Disorder purges the stack and permanently locks that slot into a CURED Safe Zone.</li>
-                        <li><strong>Meltdown (Black):</strong> Play temporarily on any untreated Disorder across any player to trigger its penalty punishment, then discard it.</li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="font-black text-rose-400 uppercase mb-1">Card Lexicon & Guide:</h3>
-                    <div class="space-y-2 text-[11px]">
-                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
-                            <strong class="text-rose-400">Dark Crisis (White Card):</strong> Psychological conditions that start in your Psyche slots. Must be treated or purged to win.
-                        </div>
-                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
-                            <strong class="text-blue-400">Quick Fix / Drug (White Card):</strong> Played on matching Disorders to shield them. Exposes side-effect vulnerabilities for opponents to exploit.
-                        </div>
-                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
-                            <strong class="text-emerald-400">Actual Miracle / Therapy (White Card):</strong> Purges a disorder stack entirely and turns the slot into an unassailable Cured Safe Zone.
-                        </div>
-                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
-                            <strong class="text-rose-500">Total Meltdown (Black Card):</strong> Played temporarily on any untreated crisis to instantly trigger its devastating punishment.
-                        </div>
-                    </div>
-                </div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-400">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: GAME OVER (SLIDING DRAWER) -->
     <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl relative">
-            <div id="winner-icon" class="text-4xl mb-2 text-rose-500">
-                <i class="fa-solid fa-trophy"></i>
-            </div>
+            <div id="winner-icon" class="text-4xl mb-2 text-rose-500"><i class="fa-solid fa-trophy"></i></div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
-            <p id="winner-reason" class="text-xs text-zinc-400 mb-5">You successfully cleared your Psyche of all dark crises!</p>
-            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">
-                Main Menu
-            </button>
+            <p id="winner-reason" class="text-xs text-zinc-400 mb-5">Successfully cleared Psyche!</p>
+            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
         </div>
     </div>
 
-    <!-- AUDIO SYNTHESIZER ENGINE -->
+    <!-- AUDIO & FIREBASE INITIALIZATION SCRIPT -->
     <script>
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUSK6ehu4PSCmAJ34q-FayFXmym1V3tlY",
+            authDomain: "unfiltered-card-game.firebaseapp.com",
+            projectId: "unfiltered-card-game",
+            storageBucket: "unfiltered-card-game.firebasestorage.app",
+            messagingSenderId: "679305863949",
+            appId: "1:679305863949:web:02bea47227aeb0d31cc644",
+            measurementId: "G-VPKF51TBEC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         class SoundEngine {
             constructor() { this.ctx = null; }
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -559,7 +494,7 @@
         const sfx = new SoundEngine();
     </script>
 
-    <!-- CORE GAME & MULTIPLAYER SCRIPT -->
+    <!-- CORE GAME & CLOUD SYNC LOGIC -->
     <script>
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
 
@@ -568,7 +503,7 @@
             CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Knee-cracking loan sharks are waiting outside.', drugName: 'Gas Station Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 3 random cards from target hand.' },
             SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying uncontrollably in a crowded Applebee\'s.', drugName: 'Drowning Sorrows in Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'EATING_TRASH', 'PARANOIA'], punishmentText: 'Target sits out 1 full round.' },
             DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Occurred during a high-stakes job interview.', drugName: 'Aggressive Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard ALL attached Drug cards in Psyche!' },
-            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking so violently you can\'t hold a beer.', drugName: 'Sniffing Glue', sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: '3-second rapid discard timer (discard 3 or wipe hand)!', noTherapy: true },
+            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking so violently you can\'t hold a beer.', drugName: 'Sniffing Glue', sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: '3-second rapid discard timer!', noTherapy: true },
             IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'Complete system failure when performance matters most.', drugName: 'Impulse Buying Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Target skips next turn.' },
             PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Convinced the pigeons outside are FBI drones.', drugName: 'Swiping Aggressively', sideEffects: ['DIARRHEA'], punishmentText: 'Target discards their entire hand.' },
             EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Digging through a dumpster behind a bakery at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Target discards half their hand.', therapyOnly: true }
@@ -591,86 +526,98 @@
             gameOver: false,
             selectedHandIdx: null,
             activeTab: 0,
-            players: []
+            players: [],
+            unsubscribeFirestore: null
         };
 
         function generateMasterDeck() {
             const deck = [];
             let cardId = 0;
-
             Object.values(DISORDERS).forEach(disorder => {
                 const count = disorder.id === 'EATING_TRASH' ? 4 : 5;
                 for (let i = 0; i < count; i++) {
                     deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DISORDER, disorderId: disorder.id, title: disorder.name, flavor: disorder.flavor, punishmentText: disorder.punishmentText, noTherapy: !!disorder.noTherapy, therapyOnly: !!disorder.therapyOnly });
                 }
             });
-
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
                     for (let i = 0; i < 6; i++) {
-                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}. Exposes side-effect vulnerabilities.` });
+                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}.` });
                     }
                 }
             });
-
             for (let i = 0; i < 12; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'A sudden moment of clarity that purges a crisis entirely.', desc: 'Purges & permanently locks slot safe! (Except Tremors).' });
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges a crisis entirely.', desc: 'Permanently locks slot safe!' });
             }
-
             for (let i = 0; i < 24; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Publicly calling out an untreated dark crisis!', desc: 'Play temporarily on any opponent\'s untreated Disorder to trigger penalty, then remove!' });
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers disorder penalty.', desc: 'Play temporarily on any opponent stack!' });
             }
-
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
             }
-
             return deck;
         }
 
         function saveProfile() {
-            const usernameInput = document.getElementById('input-username').value.trim() || 'PsychPlayer';
-            const gradientSelect = document.getElementById('select-gradient').value;
-            localProfile.username = usernameInput;
-            localProfile.gradient = gradientSelect;
+            localProfile.username = document.getElementById('input-username').value.trim() || 'PsychPlayer';
+            localProfile.gradient = document.getElementById('select-gradient').value;
             localStorage.setItem('unfiltered_username', localProfile.username);
             localStorage.setItem('unfiltered_gradient', localProfile.gradient);
         }
 
         function startSingleplayer() {
             saveProfile();
+            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.add('hidden');
             gameState.mode = 'single';
-            
             gameState.players = [
                 { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 1, name: 'Bot 1', gradient: 'gradient-cyber', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 2, name: 'Bot 2', gradient: 'gradient-emerald', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 3, name: 'Bot 3', gradient: 'gradient-toxic', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
             ];
-
             initGame();
         }
 
-        function openHostModal() {
+        async function openHostModal() {
             saveProfile();
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             gameState.roomCode = code;
             document.getElementById('created-room-code').textContent = code;
-            
-            updateHostPlayerList();
+
+            const initialRoomData = {
+                host: localProfile.username,
+                maxPlayers: 4,
+                players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }],
+                status: 'waiting',
+                state: null
+            };
+
+            await db.collection('rooms').doc(code).set(initialRoomData);
+            updateHostPlayerList([initialRoomData.players[0]]);
             openModal('host-modal');
+
+            // Listen for players joining
+            gameState.unsubscribeFirestore = db.collection('rooms').doc(code).onSnapshot(doc => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    updateHostPlayerList(data.players);
+                    if(data.status === 'started' && gameState.mode === 'host') {
+                        // Game launched by host
+                    }
+                }
+            });
         }
 
-        function updateHostPlayerList() {
+        function updateHostPlayerList(players) {
             const listEl = document.getElementById('host-player-list');
-            listEl.innerHTML = `
+            listEl.innerHTML = players.map((p, idx) => `
                 <div class="px-3 py-2 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between text-xs font-bold">
-                    <span class="${localProfile.gradient}"><i class="fa-solid fa-crown text-amber-400 mr-1.5"></i> ${localProfile.username} (Host)</span>
-                    <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Ready</span>
+                    <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'text-rose-500'} mr-1.5"></i> ${p.name}</span>
+                    <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Connected</span>
                 </div>
-            `;
+            `).join('');
         }
 
         function copyRoomCode() {
@@ -683,58 +630,95 @@
             openModal('join-modal');
         }
 
-        function submitJoinCode() {
+        async function submitJoinCode() {
             const code = document.getElementById('input-join-code').value.trim().toUpperCase();
             if (code.length !== 6) {
                 alert('Please enter a valid 6-character Room Code.');
                 return;
             }
+
+            const roomRef = db.collection('rooms').doc(code);
+            const doc = await roomRef.get();
+            if(!doc.exists) {
+                alert('Room code not found!');
+                return;
+            }
+
+            const roomData = doc.data();
+            const newPlayerId = roomData.players.length;
+            const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor'];
+            const assignedGradient = gradients[newPlayerId % gradients.length];
+
+            roomData.players.push({
+                id: newPlayerId,
+                name: localProfile.username,
+                gradient: assignedGradient
+            });
+
+            await roomRef.update({ players: roomData.players });
+
             closeModal('join-modal');
             document.getElementById('screen-main-menu').classList.add('hidden');
-            
             gameState.mode = 'join';
             gameState.roomCode = code;
-            
-            gameState.players = [
-                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 1, name: 'Host Player', gradient: 'gradient-gold', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 2, name: 'Player 3', gradient: 'gradient-cyber', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 3, name: 'Player 4', gradient: 'gradient-emerald', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
-            ];
 
-            initGame();
+            // Listen to real-time sync for this room
+            gameState.unsubscribeFirestore = roomRef.onSnapshot(snapshot => {
+                if(snapshot.exists) {
+                    const cloudData = snapshot.data();
+                    if(cloudData.state) {
+                        Object.assign(gameState, cloudData.state);
+                        renderAll();
+                    }
+                }
+            });
         }
 
-        function launchMultiplayerGame() {
+        async function launchCloudMultiplayer() {
             closeModal('host-modal');
+            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.add('hidden');
             gameState.mode = 'host';
 
             const maxP = parseInt(document.getElementById('select-max-players').value);
-            const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor', 'gradient-neon'];
+            const docRef = db.collection('rooms').doc(gameState.roomCode);
+            const doc = await docRef.get();
+            const existingPlayers = doc.exists ? doc.data().players : [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }];
 
-            gameState.players = [
-                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
-            ];
-
-            for (let i = 1; i < maxP; i++) {
-                gameState.players.push({
-                    id: i,
-                    name: `Player ${i + 1}`,
-                    gradient: gradients[(i - 1) % gradients.length],
-                    isBot: false,
-                    hand: [],
-                    psyche: [[], [], [], []],
-                    slotLocked: [false, false, false, false],
-                    skipNextTurn: false
-                });
-            }
+            // Fill remaining slots with AI or wait for real players
+            gameState.players = existingPlayers.map(p => ({
+                id: p.id,
+                name: p.name,
+                gradient: p.gradient,
+                isBot: false,
+                hand: [],
+                psyche: [[], [], [], []],
+                slotLocked: [false, false, false, false],
+                skipNextTurn: false
+            }));
 
             initGame();
+            syncCloudState();
+        }
+
+        async function syncCloudState() {
+            if(gameState.mode !== 'host') return;
+            await db.collection('rooms').doc(gameState.roomCode).update({
+                status: 'started',
+                state: {
+                    deck: gameState.deck,
+                    discardPile: gameState.discardPile,
+                    activePlayer: gameState.activePlayer,
+                    actionsLeft: gameState.actionsLeft,
+                    gameOver: gameState.gameOver,
+                    players: gameState.players
+                }
+            });
         }
 
         function returnToMainMenu() {
             closeModal('game-over-modal');
+            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.remove('hidden');
         }
 
@@ -765,9 +749,7 @@
             let dIdx = 0;
             gameState.players.forEach(p => {
                 for (let s = 0; s < 4; s++) {
-                    if (dIdx < startingDisorders.length) {
-                        p.psyche[s].push(startingDisorders[dIdx++]);
-                    }
+                    if (dIdx < startingDisorders.length) p.psyche[s].push(startingDisorders[dIdx++]);
                 }
             });
 
@@ -783,28 +765,22 @@
 
         function startTurn(playerIdx) {
             if (gameState.gameOver) return;
-
             gameState.activePlayer = playerIdx;
             gameState.actionsLeft = 2;
             gameState.selectedHandIdx = null;
 
             const player = gameState.players[playerIdx];
-
             if (player.skipNextTurn) {
                 player.skipNextTurn = false;
-                logAction(`${player.name}'s turn was skipped due to a Crisis Penalty!`);
+                logAction(`${player.name}'s turn was skipped!`);
                 setTimeout(() => nextTurn(), 1400);
                 return;
             }
 
-            // Automatic card draw at start of turn (does NOT consume actions)
             drawCardsForPlayer(playerIdx, 2);
-            logAction(`${player.name}'s turn! 2 cards drawn automatically. 2 actions remaining.`);
+            logAction(`${player.name}'s turn! 2 cards drawn.`);
             renderAll();
-
-            if (player.isBot) {
-                setTimeout(() => executeBotTurn(playerIdx), 1500);
-            }
+            if(gameState.mode === 'host') syncCloudState();
         }
 
         function drawCardsForPlayer(playerIdx, count) {
@@ -813,10 +789,7 @@
                 if (gameState.deck.length === 0 && gameState.discardPile.length > 0) {
                     gameState.deck = [...gameState.discardPile];
                     gameState.discardPile = [];
-                    for (let j = gameState.deck.length - 1; j > 0; j--) {
-                        const k = Math.floor(Math.random() * (j + 1));
-                        [gameState.deck[j], gameState.deck[k]] = [gameState.deck[k], gameState.deck[j]];
-                    }
+                    shuffleArray(gameState.deck);
                 }
                 if (gameState.deck.length > 0) {
                     player.hand.push(gameState.deck.pop());
@@ -827,12 +800,10 @@
 
         function handleHumanDrawAction() {
             if (gameState.activePlayer !== 0 || gameState.actionsLeft <= 0 || gameState.gameOver) return;
-
             drawCardsForPlayer(0, 1);
             gameState.actionsLeft--;
             sfx.playDraw();
-            logAction(`You drew 1 card using an action. (${gameState.actionsLeft} actions left)`);
-
+            logAction(`Drew 1 card. (${gameState.actionsLeft} actions left)`);
             renderAll();
             checkTurnEnd();
         }
@@ -846,14 +817,7 @@
             if (gameState.actionsLeft <= 0) {
                 const player = gameState.players[gameState.activePlayer];
                 if (player.hand.length > 6) {
-                    if (player.id === 0) {
-                        openModal('discard-modal');
-                    } else {
-                        while (player.hand.length > 6) {
-                            gameState.discardPile.push(player.hand.pop());
-                        }
-                        setTimeout(() => nextTurn(), 1000);
-                    }
+                    openModal('discard-modal');
                 } else {
                     setTimeout(() => nextTurn(), 1000);
                 }
@@ -865,57 +829,32 @@
         function nextTurn() {
             checkWinConditions();
             if (gameState.gameOver) return;
-
             const nextIdx = (gameState.activePlayer + 1) % gameState.players.length;
             startTurn(nextIdx);
         }
 
-        function getStackTopCard(stack) {
-            if (!stack || stack.length === 0) return null;
-            return stack[stack.length - 1];
-        }
-
-        function isStackUntreated(stack) {
-            const top = getStackTopCard(stack);
-            return top && top.type === CARD_TYPES.DISORDER;
-        }
+        function getStackTopCard(stack) { return stack.length > 0 ? stack[stack.length - 1] : null; }
+        function isStackUntreated(stack) { const top = getStackTopCard(stack); return top && top.type === CARD_TYPES.DISORDER; }
 
         function canPlayCardOnStack(card, targetPlayerIdx, stackIdx) {
             const targetPlayer = gameState.players[targetPlayerIdx];
             if (targetPlayer.slotLocked[stackIdx]) return false;
-
             const stack = targetPlayer.psyche[stackIdx];
             const topCard = getStackTopCard(stack);
 
             if (card.type === CARD_TYPES.DISORDER) {
-                if (targetPlayerIdx === gameState.activePlayer) {
-                    return stack.length === 0;
-                } else {
-                    if (stack.length === 0) return true;
-                    if (topCard && topCard.type === CARD_TYPES.DRUG) {
-                        return topCard.sideEffects && topCard.sideEffects.includes(card.disorderId);
-                    }
-                    return false;
-                }
+                if (targetPlayerIdx === gameState.activePlayer) return stack.length === 0;
+                return stack.length === 0 || (topCard && topCard.type === CARD_TYPES.DRUG && topCard.sideEffects?.includes(card.disorderId));
             }
-
             if (card.type === CARD_TYPES.DRUG) {
-                if (targetPlayerIdx !== gameState.activePlayer) return false;
-                if (!topCard || topCard.type !== CARD_TYPES.DISORDER) return false;
-                return topCard.disorderId === card.disorderId;
+                return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && topCard.disorderId === card.disorderId;
             }
-
             if (card.type === CARD_TYPES.THERAPY) {
-                if (targetPlayerIdx !== gameState.activePlayer) return false;
-                if (!topCard || topCard.type !== CARD_TYPES.DISORDER) return false;
-                return !topCard.noTherapy;
+                return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && !topCard.noTherapy;
             }
-
             if (card.type === CARD_TYPES.EPISODE) {
-                if (targetPlayerIdx === gameState.activePlayer) return false;
-                return isStackUntreated(stack);
+                return targetPlayerIdx !== gameState.activePlayer && isStackUntreated(stack);
             }
-
             return false;
         }
 
@@ -931,287 +870,47 @@
             if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
                 stack.push(card);
                 sfx.playCard();
-                if (card.type === CARD_TYPES.DISORDER && stack.length > 1) {
-                    logAction(`${player.name} targeted ${targetPlayer.name}'s Quick Fix vulnerability with "${card.title}"!`);
-                } else {
-                    logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
-                }
+                logAction(`${player.name} played "${card.title}".`);
                 consumeAction();
-                renderAll();
-            } 
-            else if (card.type === CARD_TYPES.THERAPY) {
-                while (stack.length > 0) {
-                    gameState.discardPile.push(stack.pop());
-                }
+            } else if (card.type === CARD_TYPES.THERAPY) {
+                while (stack.length > 0) gameState.discardPile.push(stack.pop());
                 gameState.discardPile.push(card);
                 targetPlayer.slotLocked[stackIdx] = true;
                 sfx.playCure();
-                logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
+                logAction(`${player.name} used Therapy! Locked slot safe!`);
                 consumeAction();
-                renderAll();
-            } 
-            else if (card.type === CARD_TYPES.EPISODE) {
+            } else if (card.type === CARD_TYPES.EPISODE) {
                 sfx.playDisaster();
                 const topDisorder = getStackTopCard(stack);
-                
                 stack.push(card);
                 renderAll();
-                
-                logAction(`${player.name} triggered a Meltdown on ${targetPlayer.name}'s "${topDisorder.title}"!`);
-
                 setTimeout(() => {
-                    const removedCard = stack.pop();
-                    gameState.discardPile.push(removedCard);
-                    triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
+                    stack.pop();
+                    gameState.discardPile.push(card);
+                    logAction(`${player.name} triggered Meltdown on ${topDisorder.title}!`);
                     consumeAction();
-                    renderAll();
                 }, 900);
             }
+            renderAll();
+            if(gameState.mode === 'host') syncCloudState();
         }
 
-        function triggerEpisodePunishment(targetIdx, disorderId, attackerIdx) {
-            const target = gameState.players[targetIdx];
-            const attacker = gameState.players[attackerIdx];
-
-            switch (disorderId) {
-                case 'EXISTENTIAL_DREAD':
-                    if (target.hand.length > 0) {
-                        const stolenIdx = Math.floor(Math.random() * target.hand.length);
-                        attacker.hand.push(target.hand.splice(stolenIdx, 1)[0]);
-                        logAction(`${attacker.name} stole a card from ${target.name}'s hand!`);
-                    }
-                    break;
-                case 'CRIPPLING_DEBT':
-                    for (let i = 0; i < 3; i++) {
-                        if (target.hand.length > 0) {
-                            attacker.hand.push(target.hand.splice(Math.floor(Math.random() * target.hand.length), 1)[0]);
-                        }
-                    }
-                    logAction(`${attacker.name} looted cards from ${target.name}'s hand!`);
-                    break;
-                case 'SOBBING':
-                    target.skipNextTurn = true;
-                    logAction(`${target.name} must sit out their next turn due to Uncontrollable Sobbing!`);
-                    break;
-                case 'DIARRHEA':
-                    target.psyche.forEach(s => {
-                        if (s.length > 1 && getStackTopCard(s).type === CARD_TYPES.DRUG) {
-                            gameState.discardPile.push(s.pop());
-                        }
-                    });
-                    logAction(`${target.name} lost all their Drug shields! Exposed crises!`);
-                    break;
-                case 'TREMORS':
-                    if (targetIdx === 0) {
-                        triggerTremorsModal();
-                    } else {
-                        if (target.hand.length >= 3) {
-                            for (let i = 0; i < 3; i++) gameState.discardPile.push(target.hand.pop());
-                            logAction(`${target.name} discarded 3 cards under Tremors pressure.`);
-                        } else {
-                            target.hand = [];
-                            logAction(`${target.name} failed Tremors and lost their ENTIRE hand!`);
-                        }
-                    }
-                    break;
-                case 'IMPOTENCE':
-                    target.skipNextTurn = true;
-                    logAction(`${target.name} cannot act on their next turn!`);
-                    break;
-                case 'PARANOIA':
-                    while (target.hand.length > 0) gameState.discardPile.push(target.hand.pop());
-                    logAction(`${target.name} discarded their ENTIRE hand in a panic!`);
-                    break;
-                case 'EATING_TRASH':
-                    const count = Math.ceil(target.hand.length / 2);
-                    for (let i = 0; i < count; i++) {
-                        if (target.hand.length > 0) gameState.discardPile.push(target.hand.pop());
-                    }
-                    logAction(`${target.name} discarded half their hand!`);
-                    break;
-            }
-        }
-
-        let tremorsInterval = null;
-        function triggerTremorsModal() {
-            const modal = document.getElementById('tremors-modal');
-            const timerEl = document.getElementById('tremors-timer');
-            const selectorEl = document.getElementById('tremors-card-selector');
-            const player = gameState.players[0];
-
-            let timeLeft = 3;
-            timerEl.textContent = timeLeft;
-            openModal('tremors-modal');
-
-            selectorEl.innerHTML = '';
-            player.hand.forEach((card, idx) => {
-                const btn = document.createElement('div');
-                btn.className = 'px-2 py-1 bg-zinc-800 text-white rounded text-[10px] font-bold cursor-pointer border border-zinc-700 hover:border-rose-500';
-                btn.textContent = card.title;
-                btn.dataset.idx = idx;
-                btn.onclick = () => btn.classList.toggle('bg-rose-600');
-                selectorEl.appendChild(btn);
+        function checkWinConditions() {
+            gameState.players.forEach(p => {
+                let untreatedCount = 0;
+                p.psyche.forEach(s => { if (isStackUntreated(s)) untreatedCount++; });
+                if (untreatedCount === 0) {
+                    if (p.id === 0) { localProfile.wins++; localStorage.setItem('unfiltered_wins', localProfile.wins); }
+                    localProfile.games++; localStorage.setItem('unfiltered_games', localProfile.games);
+                    triggerGameOver(p);
+                }
             });
-
-            tremorsInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(tremorsInterval);
-                    closeModal('tremors-modal');
-                    const selectedBtns = selectorEl.querySelectorAll('.bg-rose-600');
-                    if (selectedBtns.length === 3) {
-                        const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
-                        indices.forEach(i => gameState.discardPile.push(player.hand.splice(i, 1)[0]));
-                        logAction('You survived Tremors by discarding 3 cards!');
-                    } else {
-                        while (player.hand.length > 0) gameState.discardPile.push(player.hand.pop());
-                        logAction('Tremors failed! You lost your entire hand!');
-                    }
-                    renderAll();
-                }
-            }, 1000);
-
-            document.getElementById('btn-submit-tremors').onclick = () => {
-                const selectedBtns = selectorEl.querySelectorAll('.bg-rose-600');
-                if (selectedBtns.length === 3) {
-                    clearInterval(tremorsInterval);
-                    closeModal('tremors-modal');
-                    const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
-                    indices.forEach(i => gameState.discardPile.push(player.hand.splice(i, 1)[0]));
-                    logAction('You survived Tremors by discarding 3 cards!');
-                    renderAll();
-                }
-            };
         }
 
-        function setupDiscardModal() {
-            const selectorEl = document.getElementById('discard-card-selector');
-            const player = gameState.players[0];
-
-            selectorEl.innerHTML = '';
-            player.hand.forEach((card, idx) => {
-                const btn = document.createElement('div');
-                btn.className = 'px-2.5 py-1.5 bg-zinc-800 text-white rounded-lg text-xs font-bold cursor-pointer border border-zinc-700 hover:border-rose-500 flex items-center justify-between gap-2';
-                btn.innerHTML = `<span>${card.title}</span> <i class="fa-solid fa-check opacity-0 text-rose-400"></i>`;
-                btn.dataset.idx = idx;
-                btn.onclick = () => {
-                    btn.classList.toggle('border-rose-500');
-                    btn.querySelector('i').classList.toggle('opacity-0');
-                };
-                selectorEl.appendChild(btn);
-            });
-
-            document.getElementById('btn-confirm-discard').onclick = () => {
-                const selectedBtns = selectorEl.querySelectorAll('.border-rose-500');
-                const neededCount = player.hand.length - 6;
-
-                if (selectedBtns.length === neededCount) {
-                    closeModal('discard-modal');
-                    const indices = Array.from(selectedBtns).map(b => parseInt(b.dataset.idx)).sort((a,b) => b-a);
-                    indices.forEach(i => gameState.discardPile.push(player.hand.splice(i, 1)[0]));
-                    logAction(`Discarded ${neededCount} card(s) down to max hand limit.`);
-                    nextTurn();
-                } else {
-                    alert(`Please select exactly ${neededCount} card(s) to discard.`);
-                }
-            };
-        }
-
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if (id === 'discard-modal') setupDiscardModal();
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.add('modal-active'), 10);
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('modal-active');
-            setTimeout(() => modal.classList.add('hidden'), 350);
-        }
-
-        function executeBotTurn(botIdx) {
-            if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
-
-            const bot = gameState.players[botIdx];
-            let playedCard = false;
-
-            for (let i = 0; i < bot.hand.length; i++) {
-                const card = bot.hand[i];
-
-                if (card.type === CARD_TYPES.THERAPY) {
-                    for (let s = 0; s < 4; s++) {
-                        if (canPlayCardOnStack(card, botIdx, s)) {
-                            playedCard = true;
-                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
-                                executePlayCard(botIdx, i, botIdx, s);
-                                setTimeout(() => continueBotSequence(botIdx), 900);
-                            });
-                            return;
-                        }
-                    }
-                }
-
-                if (card.type === CARD_TYPES.DRUG) {
-                    for (let s = 0; s < 4; s++) {
-                        if (canPlayCardOnStack(card, botIdx, s)) {
-                            playedCard = true;
-                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
-                                executePlayCard(botIdx, i, botIdx, s);
-                                setTimeout(() => continueBotSequence(botIdx), 900);
-                            });
-                            return;
-                        }
-                    }
-                }
-
-                if (card.type === CARD_TYPES.EPISODE) {
-                    const targets = gameState.players.map((_, pIdx) => pIdx).filter(pIdx => pIdx !== botIdx);
-                    shuffleArray(targets);
-
-                    for (const opp of targets) {
-                        for (let s = 0; s < 4; s++) {
-                            if (canPlayCardOnStack(card, opp, s)) {
-                                playedCard = true;
-                                animateBotCardPlay(botIdx, i, opp, s, () => {
-                                    executePlayCard(botIdx, i, opp, s);
-                                    setTimeout(() => continueBotSequence(botIdx), 1200);
-                                });
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                if (card.type === CARD_TYPES.DISORDER) {
-                    const targets = gameState.players.map((_, pIdx) => pIdx).filter(pIdx => pIdx !== botIdx);
-                    shuffleArray(targets);
-
-                    for (const opp of targets) {
-                        for (let s = 0; s < 4; s++) {
-                            if (canPlayCardOnStack(card, opp, s)) {
-                                playedCard = true;
-                                animateBotCardPlay(botIdx, i, opp, s, () => {
-                                    executePlayCard(botIdx, i, opp, s);
-                                    setTimeout(() => continueBotSequence(botIdx), 900);
-                                });
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!playedCard && gameState.actionsLeft > 0) {
-                drawCardsForPlayer(botIdx, 1);
-                gameState.actionsLeft--;
-                logAction(`${bot.name} drew 1 card.`);
-                renderAll();
-                setTimeout(() => continueBotSequence(botIdx), 1000);
-            } else {
-                checkTurnEnd();
-            }
+        function triggerGameOver(winner) {
+            gameState.gameOver = true;
+            document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
+            openModal('game-over-modal');
         }
 
         function shuffleArray(array) {
@@ -1221,82 +920,8 @@
             }
         }
 
-        function continueBotSequence(botIdx) {
-            if (gameState.actionsLeft > 0 && !gameState.gameOver) {
-                setTimeout(() => executeBotTurn(botIdx), 1000);
-            } else {
-                checkTurnEnd();
-            }
-        }
-
-        function animateBotCardPlay(botIdx, cardHandIdx, targetPlayerIdx, targetStackIdx, onComplete) {
-            gameState.activeTab = targetPlayerIdx;
-            renderAll();
-
-            const targetEl = document.getElementById(`stack-${targetPlayerIdx}-${targetStackIdx}`);
-            if (!targetEl) {
-                onComplete();
-                return;
-            }
-
-            const targetRect = targetEl.getBoundingClientRect();
-            const clone = document.createElement('div');
-            clone.className = 'card-base card-black animated-card-clone flex flex-col items-center justify-center font-bold text-xs text-white p-2 shadow-2xl';
-            clone.style.left = `50%`;
-            clone.style.top = `20%`;
-            clone.innerHTML = `<i class="fa-solid fa-play text-rose-500 mb-1"></i> PLAYING`;
-
-            document.body.appendChild(clone);
-
-            requestAnimationFrame(() => {
-                clone.style.left = `${targetRect.left + targetRect.width / 2 - 50}px`;
-                clone.style.top = `${targetRect.top + targetRect.height / 2 - 70}px`;
-                clone.style.transform = 'scale(1.05)';
-            });
-
-            setTimeout(() => {
-                clone.remove();
-                onComplete();
-            }, 550);
-        }
-
-        function checkWinConditions() {
-            gameState.players.forEach(p => {
-                let untreatedCount = 0;
-                p.psyche.forEach(s => {
-                    if (isStackUntreated(s)) untreatedCount++;
-                });
-
-                if (untreatedCount === 0) {
-                    if (p.id === 0) {
-                        localProfile.wins++;
-                        localStorage.setItem('unfiltered_wins', localProfile.wins);
-                    }
-                    localProfile.games++;
-                    localStorage.setItem('unfiltered_games', localProfile.games);
-                    triggerGameOver(p);
-                }
-            });
-        }
-
-        function triggerGameOver(winner) {
-            gameState.gameOver = true;
-            document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
-            document.getElementById('winner-reason').textContent = winner.id === 0 
-                ? 'You successfully cured and cleared your mind of all dark crises!'
-                : `${winner.name} cleared their mind of all untreated disorders first!`;
-            openModal('game-over-modal');
-        }
-
         function switchPlayerTab(tabIdx) {
-            if (gameState.activeTab === tabIdx) return;
             gameState.activeTab = tabIdx;
-            
-            const container = document.getElementById('active-psyche-container');
-            container.classList.remove('tab-slide-enter');
-            void container.offsetWidth;
-            container.classList.add('tab-slide-enter');
-            
             renderAll();
         }
 
@@ -1304,8 +929,7 @@
             document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
             document.getElementById('deck-count').textContent = gameState.deck.length;
             document.getElementById('discard-count').textContent = gameState.discardPile.length;
-
-            document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer].name}'s Turn`;
+            document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
 
             const tabBar = document.getElementById('tab-bar-container');
@@ -1314,14 +938,12 @@
                 const isSelected = gameState.activeTab === idx;
                 const btn = document.createElement('button');
                 btn.onclick = () => switchPlayerTab(idx);
-                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shadow-md shrink-0 ${
-                    isSelected ? 'bg-rose-600 text-white border-rose-500 scale-105' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800'
-                }`;
+                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shadow-md shrink-0 ${isSelected ? 'bg-rose-600 text-white border-rose-500 scale-105' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
                 btn.innerHTML = `<span class="${p.gradient} font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
                 tabBar.appendChild(btn);
             });
 
-            const activePlayerObj = gameState.players[gameState.activeTab];
+            const activePlayerObj = gameState.players[gameState.activeTab] || gameState.players[0];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
 
             const container = document.getElementById('active-psyche-container');
@@ -1330,23 +952,13 @@
             for (let sIdx = 0; sIdx < 4; sIdx++) {
                 const stack = activePlayerObj.psyche[sIdx];
                 const isLocked = activePlayerObj.slotLocked[sIdx];
-
                 const slot = document.createElement('div');
-                slot.id = `stack-${gameState.activeTab}-${sIdx}`;
                 slot.className = `card-base slot-target relative flex items-center justify-center ${isLocked ? 'slot-locked-safe' : ''}`;
-                slot.dataset.player = gameState.activeTab;
-                slot.dataset.stack = sIdx;
 
                 if (isLocked) {
-                    slot.innerHTML = `
-                        <div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1">
-                            <i class="fa-solid fa-shield-halved text-xl mb-1 animate-pulse"></i>
-                            <span class="text-[9px] font-black uppercase tracking-wider">CURED</span>
-                            <span class="text-[7px] text-emerald-600 font-bold">LOCKED SAFE</span>
-                        </div>
-                    `;
+                    slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[9px] font-black uppercase">CURED</span></div>`;
                 } else if (stack.length === 0) {
-                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Empty</span>`;
+                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
@@ -1357,169 +969,63 @@
                     });
                 }
 
-                slot.ondragover = (e) => {
-                    e.preventDefault();
-                    if (!isLocked) slot.classList.add('drag-over');
-                };
-                slot.ondragleave = () => slot.classList.remove('drag-over');
-                slot.ondrop = (e) => {
-                    e.preventDefault();
-                    slot.classList.remove('drag-over');
-                    if (isLocked) return;
-                    const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
-                    if (!isNaN(handIdx)) {
-                        const card = gameState.players[0].hand[handIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
-                            executePlayCard(0, handIdx, gameState.activeTab, sIdx);
-                        } else {
-                            logAction('Invalid target slot for this card!');
-                        }
-                    }
-                };
-
                 slot.onclick = () => {
                     if (gameState.selectedHandIdx !== null && !isLocked) {
                         const card = gameState.players[0].hand[gameState.selectedHandIdx];
                         if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
                             executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
-                        } else {
-                            logAction('Invalid target slot for this card!');
                         }
                     }
                 };
-
                 container.appendChild(slot);
             }
 
             const handContainer = document.getElementById('player-hand');
-            document.getElementById('hand-count-num').textContent = gameState.players[0].hand.length;
-
+            document.getElementById('hand-count-num').textContent = gameState.players[0]?.hand.length || 0;
             if (handContainer) {
                 handContainer.innerHTML = '';
-                gameState.players[0].hand.forEach((card, idx) => {
-                    const cardDOM = renderCardDOM(card, true);
-                    cardDOM.draggable = true;
-                    cardDOM.dataset.handIdx = idx;
+                gameState.players[0]?.hand.forEach((card, idx) => {
+                    const cardDOM = renderCardDOM(card);
                     cardDOM.classList.add('hand-card-item');
-
-                    if (gameState.selectedHandIdx === idx) {
-                        cardDOM.classList.add('selected-card');
-                    }
-
-                    cardDOM.ondragstart = (e) => {
-                        e.dataTransfer.setData('text/plain', idx);
-                        cardDOM.classList.add('dragging');
-                        highlightValidTargets(card);
-                    };
-                    cardDOM.ondragend = () => {
-                        cardDOM.classList.remove('dragging');
-                        clearTargetHighlights();
-                    };
-
+                    if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
                     cardDOM.onclick = (e) => {
                         e.stopPropagation();
-                        if (gameState.selectedHandIdx === idx) {
-                            gameState.selectedHandIdx = null;
-                            clearTargetHighlights();
-                        } else {
-                            gameState.selectedHandIdx = idx;
-                            highlightValidTargets(card);
-                        }
+                        gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
                         renderAll();
                     };
-
                     handContainer.appendChild(cardDOM);
                 });
             }
-
-            const drawDeckEl = document.getElementById('draw-deck');
-            if (drawDeckEl) {
-                drawDeckEl.onclick = handleHumanDrawAction;
-            }
-        }
-
-        function highlightValidTargets(card) {
-            clearTargetHighlights();
-            for (let sIdx = 0; sIdx < 4; sIdx++) {
-                if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
-                    const targetEl = document.getElementById(`stack-${gameState.activeTab}-${sIdx}`);
-                    if (targetEl) targetEl.classList.add('valid-drop-target');
-                }
-            }
-        }
-
-        function clearTargetHighlights() {
-            document.querySelectorAll('.valid-drop-target').forEach(el => el.classList.remove('valid-drop-target'));
+            document.getElementById('draw-deck').onclick = handleHumanDrawAction;
         }
 
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
-            
-            let typeClass = 'card-white';
-            let headerText = 'CRISIS';
+            let typeClass = card.type === CARD_TYPES.EPISODE ? 'card-black' : 'card-white';
+            let headerText = card.type.toUpperCase();
             let headerClass = 'card-disorder-header';
-
-            if (card.type === CARD_TYPES.DISORDER) {
-                typeClass = 'card-white';
-                headerText = card.therapyOnly ? 'THERAPY ONLY' : 'DARK CRISIS';
-                headerClass = 'card-disorder-header';
-            } else if (card.type === CARD_TYPES.DRUG) {
-                typeClass = 'card-white';
-                headerText = 'QUICK FIX';
-                headerClass = 'card-drug-header';
-            } else if (card.type === CARD_TYPES.THERAPY) {
-                typeClass = 'card-white';
-                headerText = 'ACTUAL MIRACLE';
-                headerClass = 'card-therapy-header';
-            } else if (card.type === CARD_TYPES.EPISODE) {
-                typeClass = 'card-black';
-                headerText = 'MELTDOWN';
-                headerClass = 'card-episode-header';
-            }
+            if(card.type === CARD_TYPES.DRUG) headerClass = 'card-drug-header';
+            if(card.type === CARD_TYPES.THERAPY) headerClass = 'card-therapy-header';
+            if(card.type === CARD_TYPES.EPISODE) headerClass = 'card-episode-header';
 
             cardEl.className = `card-base ${typeClass} shadow-xl`;
-
-            let subText = card.desc || card.punishmentText || '';
-            let titleColor = typeClass === 'card-black' ? 'text-white' : 'text-zinc-950';
-            let flavorColor = typeClass === 'card-black' ? 'text-zinc-300' : 'text-zinc-700';
-            let subTextStyling = typeClass === 'card-black' ? 'border-zinc-700 text-zinc-200 font-semibold' : 'border-zinc-300 text-zinc-800 font-bold';
-
-            if (card.type === CARD_TYPES.DRUG) {
-                const sideEffectNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : '';
-                subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-extrabold">Vulnerable: ${sideEffectNames}</span>`;
-            }
-
             cardEl.innerHTML = `
-                <div class="flex items-center justify-between w-full">
-                    <span class="${headerClass}">${headerText}</span>
-                    <i class="fa-solid fa-skull text-[9px] opacity-70"></i>
-                </div>
+                <div class="flex items-center justify-between w-full"><span class="${headerClass}">${headerText}</span></div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[10.5px] leading-tight tracking-tight ${titleColor}">${card.title}</div>
-                    <div class="text-[7.5px] ${flavorColor} font-medium mt-0.5 line-clamp-2">${card.flavor || ''}</div>
-                </div>
-                <div class="text-[6.5px] uppercase tracking-wider pt-1 border-t ${subTextStyling} leading-tight">
-                    ${subText}
+                    <div class="font-black text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
+                    <div class="text-[7.5px] ${typeClass==='card-black'?'text-zinc-300':'text-zinc-700'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
             `;
-
             return cardEl;
         }
 
-        function logAction(msg) {
-            const logEl = document.getElementById('log-text');
-            if (logEl) logEl.textContent = msg;
-        }
+        function logAction(msg) { document.getElementById('log-text').textContent = msg; }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); setTimeout(() => document.getElementById(id).classList.add('modal-active'), 10); }
+        function closeModal(id) { document.getElementById(id).classList.remove('modal-active'); setTimeout(() => document.getElementById(id).classList.add('hidden'), 350); }
 
-        document.getElementById('btn-rules').onclick = () => { openModal('rules-modal'); };
-        document.getElementById('close-rules').onclick = () => { closeModal('rules-modal'); };
+        document.getElementById('btn-rules').onclick = () => openModal('rules-modal');
+        document.getElementById('close-rules').onclick = () => closeModal('rules-modal');
         document.getElementById('btn-restart').onclick = initGame;
-
-        window.onload = () => {
-            document.getElementById('input-username').value = localProfile.username;
-            document.getElementById('select-gradient').value = localProfile.gradient;
-            document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
-        };
     </script>
 </body>
 </html>
