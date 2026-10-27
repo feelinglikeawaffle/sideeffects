@@ -62,23 +62,23 @@
         .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* CAH Card Base Aesthetic */
+        /* CAH Card Base Aesthetic (High Readability) */
         .card-base {
-            width: 105px;
-            height: 148px;
-            border-radius: 8px;
+            width: 108px;
+            height: 152px;
+            border-radius: 9px;
             position: relative;
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.25s ease;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease;
             cursor: grab;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
-            border: 2px solid #27272a;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9);
+            border: 2px solid #3f3f46;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 7px;
+            padding: 8px;
             box-sizing: border-box;
             background: #ffffff;
-            color: #000000;
+            color: #09090b;
             flex-shrink: 0;
         }
 
@@ -86,13 +86,13 @@
 
         .card-base.dragging {
             z-index: 1000 !important;
-            box-shadow: 0 16px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.6);
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(225, 29, 72, 0.6);
             transform: scale(1.08) !important;
         }
 
         .card-base.selected-card {
             border-color: #f43f5e !important;
-            box-shadow: 0 0 14px rgba(244, 63, 94, 0.8), 0 0 4px rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 0 16px rgba(244, 63, 94, 0.85), 0 0 6px rgba(255, 255, 255, 0.9) !important;
             transform: translateY(-10px) !important;
         }
 
@@ -112,48 +112,48 @@
             z-index: 50;
         }
 
-        /* Card Header Badges */
-        .card-black { background: #09090b !important; color: #ffffff !important; border-color: #3f3f46 !important; }
-        .card-white { background: #fafafa !important; color: #09090b !important; border-color: #d4d4d8 !important; }
+        /* Card Header Badges with high readability */
+        .card-black { background: #09090b !important; color: #ffffff !important; border-color: #52525b !important; }
+        .card-white { background: #ffffff !important; color: #09090b !important; border-color: #d4d4d8 !important; }
 
-        .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Drop Target Glows */
         .slot-target {
-            border: 2px dashed #3f3f46;
-            border-radius: 10px;
+            border: 2px dashed #52525b;
+            border-radius: 12px;
             transition: all 0.25s ease;
-            background: rgba(24, 24, 27, 0.4);
+            background: rgba(24, 24, 27, 0.5);
             position: relative;
         }
 
         .slot-target.valid-drop-target {
             border-color: #f43f5e;
-            background: rgba(244, 63, 94, 0.12);
-            box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
+            background: rgba(244, 63, 94, 0.15);
+            box-shadow: 0 0 14px rgba(244, 63, 94, 0.5);
             animation: pulseSlot 1.5s infinite ease-in-out;
         }
 
         @keyframes pulseSlot {
             0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); }
-            50% { border-color: #fb7185; box-shadow: 0 0 18px rgba(244, 63, 94, 0.7); }
+            50% { border-color: #fb7185; box-shadow: 0 0 20px rgba(244, 63, 94, 0.8); }
         }
 
         .slot-target.drag-over {
             border-color: #fb7185;
-            background: rgba(244, 63, 94, 0.3);
+            background: rgba(244, 63, 94, 0.35);
             transform: scale(1.04);
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.8);
+            box-shadow: 0 0 22px rgba(244, 63, 94, 0.9);
         }
 
         /* Locked Safe Slot (Therapy) */
         .slot-locked-safe {
             border: 2px solid #059669 !important;
-            background: rgba(5, 150, 105, 0.15) !important;
-            box-shadow: 0 0 12px rgba(5, 150, 105, 0.3) !important;
+            background: rgba(5, 150, 105, 0.18) !important;
+            box-shadow: 0 0 14px rgba(5, 150, 105, 0.4) !important;
         }
 
         .animated-card-clone {
@@ -163,10 +163,15 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
+        /* Sliding Tab Animation */
+        .tab-slide-container {
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
         .tab-slide-enter { animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes slideInTab {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateX(15px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Side Sliding Drawer Menus & Modals */
@@ -185,14 +190,14 @@
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #09090b; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
 
     <!-- MAIN MENU SCREEN -->
     <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-xl">
-        <div class="main-menu-container max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/80 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
+        <div class="main-menu-container max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
             <!-- Background Glow Decor -->
             <div class="absolute -top-24 -left-24 w-60 h-60 bg-rose-600/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -204,10 +209,10 @@
             <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 title-glow flex items-center gap-3">
                 <i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED
             </h1>
-            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or ruin your friends!</p>
+            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
 
             <!-- ACCOUNT / PROFILE SETTINGS -->
-            <div class="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
+            <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
                 <div class="text-xs font-bold text-zinc-300 mb-3 flex items-center justify-between">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card text-rose-500"></i> Player Profile</span>
                     <span id="account-stats" class="text-[10px] text-zinc-500">Wins: 0 | Games: 0</span>
@@ -324,7 +329,7 @@
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
                         <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
                     </div>
-                    <p class="text-xs text-zinc-500">Ask the room host for their code to join their UNFILTERED match.</p>
+                    <p class="text-xs text-zinc-500">Enter a code to join an active local multiplayer lobby session.</p>
                 </div>
             </div>
 
@@ -354,7 +359,7 @@
 
         <div class="flex items-center gap-2">
             <button id="btn-rules" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition">
-                <i class="fa-solid fa-book mr-1"></i> Rules
+                <i class="fa-solid fa-book mr-1"></i> Rules & Guide
             </button>
             <button id="btn-restart" class="px-3 py-1 text-xs font-bold bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 rounded-md transition">
                 <i class="fa-solid fa-rotate-right mr-1"></i> Reset
@@ -387,7 +392,7 @@
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER (Scales 3 to 8 Players) -->
+        <!-- PLAYER PSYCHE TABS SWITCHER -->
         <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1">
             <!-- Dynamically populated up to 8 players -->
         </div>
@@ -398,8 +403,8 @@
                 <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
 
-            <!-- 4 Slots Grid -->
-            <div id="active-psyche-container" class="tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
+            <!-- 4 Slots Grid with Sliding Animation Container -->
+            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
                 <!-- Populated dynamically -->
             </div>
         </div>
@@ -444,35 +449,49 @@
         </div>
     </div>
 
-    <!-- MODAL: RULES (SLIDING DRAWER) -->
+    <!-- MODAL: RULES & CARD GUIDE (SLIDING DRAWER) -->
     <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
+        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-lg w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
-                    <i class="fa-solid fa-skull"></i> RULES & MECHANICS
+                    <i class="fa-solid fa-book"></i> RULES & CARD GUIDE
                 </h2>
                 <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-1 my-3 flex-1">
+            
+            <div class="overflow-y-auto space-y-4 text-xs leading-relaxed text-zinc-300 pr-2 my-3 flex-1">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                    <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to have ZERO visible/untreated Disorders in your Psyche!
+                    <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to clear all visible/untreated Disorders from your Psyche!
                 </div>
+
                 <div>
-                    <span class="font-bold text-white">1. Starting Setup:</span> Each player starts with 4 random Disorders placed in their 4 Psyche slots, plus 4 random starting cards in hand.
+                    <h3 class="font-black text-white uppercase mb-1">Core Gameplay:</h3>
+                    <ul class="list-disc pl-4 space-y-1 text-zinc-400">
+                        <li><strong>Turn Flow:</strong> Draw 2 cards at the start of your turn. You get up to 2 actions (Draw card or Play card). Max hand size at end of turn is 6.</li>
+                        <li><strong>Quick Fix Vulnerabilities:</strong> Playing a Quick Fix (Drug) shields your Disorder, but exposes specific vulnerable side-effect crises that opponents can play directly on top of!</li>
+                        <li><strong>Therapy / Safe Zone:</strong> Playing an Actual Miracle (Therapy) on an untreated Disorder purges the stack and permanently locks that slot into a CURED Safe Zone.</li>
+                        <li><strong>Meltdown (Black):</strong> Play temporarily on any untreated Disorder across any player to trigger its penalty punishment, then discard it.</li>
+                    </ul>
                 </div>
+
                 <div>
-                    <span class="font-bold text-white">2. Turn Flow:</span> Draw 2 cards at start of turn. Up to 2 actions per turn (Draw 1 or Drag & Drop card). Hand size limit is 6 at turn end.
-                </div>
-                <div>
-                    <span class="font-bold text-white">3. Quick Fix Vulnerabilities:</span> Playing a Quick Fix (Drug) card shields a Disorder, but exposes specific **Vulnerable Side-Effect Crises**. Opponents can play those matching Dark Crises directly on top of your Quick Fix!
-                </div>
-                <div>
-                    <span class="font-bold text-white">4. Therapy / Safe Zone Lock:</span> Playing a Therapy card on an untreated Disorder purges that stack and permanently turns the slot into an emerald <span class="text-emerald-400 font-bold">CURED Safe Zone</span>.
-                </div>
-                <div>
-                    <span class="font-bold text-white">5. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then removed into the trash!
+                    <h3 class="font-black text-rose-400 uppercase mb-1">Card Lexicon & Guide:</h3>
+                    <div class="space-y-2 text-[11px]">
+                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
+                            <strong class="text-rose-400">Dark Crisis (White Card):</strong> Psychological conditions that start in your Psyche slots. Must be treated or purged to win.
+                        </div>
+                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
+                            <strong class="text-blue-400">Quick Fix / Drug (White Card):</strong> Played on matching Disorders to shield them. Exposes side-effect vulnerabilities for opponents to exploit.
+                        </div>
+                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
+                            <strong class="text-emerald-400">Actual Miracle / Therapy (White Card):</strong> Purges a disorder stack entirely and turns the slot into an unassailable Cured Safe Zone.
+                        </div>
+                        <div class="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800">
+                            <strong class="text-rose-500">Total Meltdown (Black Card):</strong> Played temporarily on any untreated crisis to instantly trigger its devastating punishment.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -674,7 +693,6 @@
             closeModal('join-modal');
             document.getElementById('screen-main-menu').classList.add('hidden');
             
-            // Simulating multiplayer room joining
             gameState.mode = 'join';
             gameState.roomCode = code;
             
@@ -1113,6 +1131,7 @@
             setTimeout(() => modal.classList.add('hidden'), 350);
         }
 
+        // Fixed Robust Bot & AI Turn Loop
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
 
@@ -1271,7 +1290,15 @@
         }
 
         function switchPlayerTab(tabIdx) {
+            if (gameState.activeTab === tabIdx) return;
             gameState.activeTab = tabIdx;
+            
+            // Sliding tab animation trigger
+            const container = document.getElementById('active-psyche-container');
+            container.classList.remove('tab-slide-enter');
+            void container.offsetWidth;
+            container.classList.add('tab-slide-enter');
+            
             renderAll();
         }
 
@@ -1283,7 +1310,7 @@
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer].name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
 
-            // Dynamic Player Tabs (3 to 8 Players)
+            // Dynamic Player Tabs
             const tabBar = document.getElementById('tab-bar-container');
             tabBar.innerHTML = '';
             gameState.players.forEach((p, idx) => {
@@ -1302,10 +1329,6 @@
 
             const container = document.getElementById('active-psyche-container');
             container.innerHTML = '';
-            
-            container.classList.remove('tab-slide-enter');
-            void container.offsetWidth;
-            container.classList.add('tab-slide-enter');
 
             for (let sIdx = 0; sIdx < 4; sIdx++) {
                 const stack = activePlayerObj.psyche[sIdx];
@@ -1326,7 +1349,7 @@
                         </div>
                     `;
                 } else if (stack.length === 0) {
-                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-600 uppercase tracking-widest">Empty</span>`;
+                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Empty</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
@@ -1468,13 +1491,13 @@
             cardEl.innerHTML = `
                 <div class="flex items-center justify-between w-full">
                     <span class="${headerClass}">${headerText}</span>
-                    <i class="fa-solid fa-skull text-[8px] opacity-40"></i>
+                    <i class="fa-solid fa-skull text-[9px] opacity-50"></i>
                 </div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[10px] leading-tight tracking-tight">${card.title}</div>
-                    <div class="text-[7.5px] opacity-75 mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="font-black text-[10.5px] leading-tight tracking-tight text-zinc-950">${card.title}</div>
+                    <div class="text-[7.5px] text-zinc-700 font-medium mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-0.5 border-t border-zinc-200/20 opacity-90 leading-tight">
+                <div class="text-[6.5px] font-bold uppercase tracking-wider pt-1 border-t border-zinc-300 text-zinc-800 leading-tight">
                     ${subText}
                 </div>
             `;
