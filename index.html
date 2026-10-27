@@ -13,9 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDKs (Modular Compat Version) -->
+    <!-- Firebase SDKs (Realtime Database Compatible) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
         body {
@@ -27,7 +27,6 @@
             touch-action: manipulation;
         }
 
-        /* Dark Table Atmosphere */
         .table-bg {
             background-color: #050505;
             background-image: 
@@ -36,7 +35,6 @@
             background-size: 100% 100%, 24px 24px;
         }
 
-        /* Main Menu Opening Animation */
         .main-menu-container {
             animation: menuEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -46,7 +44,6 @@
             100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
 
-        /* Animated Title Glow */
         .title-glow {
             text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3);
             animation: pulseGlow 2.5s infinite ease-in-out;
@@ -57,7 +54,6 @@
             50% { text-shadow: 0 0 35px rgba(244, 63, 94, 0.9), 0 0 60px rgba(225, 29, 72, 0.6); }
         }
 
-        /* Gradient Text Presets */
         .gradient-neon { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-cyber { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-emerald { background: linear-gradient(135deg, #34d399, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -66,7 +62,6 @@
         .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* CAH Card Base Aesthetic */
         .card-base {
             width: 108px;
             height: 152px;
@@ -98,7 +93,6 @@
             transform: translateY(-10px) !important;
         }
 
-        /* Stacked Card Overlap within Slots */
         .stacked-card {
             position: absolute !important;
             left: 0;
@@ -107,14 +101,12 @@
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Hand Hover Card Lift Animation */
         .hand-card-item { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease; }
         .hand-card-item:hover {
             transform: translateY(-8px) scale(1.02);
             z-index: 50;
         }
 
-        /* Card Aesthetics & Readability */
         .card-white { background: #ffffff !important; color: #09090b !important; border-color: #d4d4d8 !important; }
         .card-black { background: #09090b !important; color: #ffffff !important; border-color: #52525b !important; }
 
@@ -123,7 +115,6 @@
         .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Drop Target Glows */
         .slot-target {
             border: 2px dashed #52525b;
             border-radius: 12px;
@@ -151,32 +142,12 @@
             box-shadow: 0 0 22px rgba(244, 63, 94, 0.9);
         }
 
-        /* Locked Safe Slot (Therapy) */
         .slot-locked-safe {
             border: 2px solid #059669 !important;
             background: rgba(5, 150, 105, 0.18) !important;
             box-shadow: 0 0 14px rgba(5, 150, 105, 0.4) !important;
         }
 
-        .animated-card-clone {
-            position: fixed;
-            z-index: 9999;
-            pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        /* Sliding Tab Animation */
-        .tab-slide-container {
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
-        }
-
-        .tab-slide-enter { animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes slideInTab {
-            from { opacity: 0; transform: translateX(15px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* Side Sliding Drawer Menus & Modals */
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(8px);
@@ -299,9 +270,7 @@
 
                     <div>
                         <span class="text-xs font-bold text-zinc-400 block mb-2">Connected Players:</span>
-                        <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto">
-                            <!-- Players populate dynamically -->
-                        </div>
+                        <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
@@ -370,132 +339,82 @@
 
     <!-- TABLETOP CONTAINER -->
     <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-6xl mx-auto w-full">
-
-        <!-- DECK & STATUS ROW -->
         <div class="flex items-center justify-between bg-zinc-900/90 p-3 rounded-2xl border border-zinc-800/80 shadow-xl shrink-0 backdrop-blur-md">
             <div class="flex items-center gap-4">
-                <!-- Draw Deck -->
                 <div id="draw-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-rose-500/60 hover:border-rose-500 hover:scale-105 transition-all cursor-pointer shadow-md">
                     <i class="fa-solid fa-fire-flame-curved text-rose-500 text-sm animate-pulse"></i>
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Draw Deck (<span id="deck-count" class="text-rose-400">0</span>)</span>
                 </div>
-
-                <!-- Discard Pile -->
                 <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
                     <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
             </div>
-
-            <!-- Game Log Message -->
             <div id="center-log" class="text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950/90 rounded-xl border border-zinc-800/80 max-w-md truncate shadow-inner">
                 <span id="log-text">Your Turn! 2 cards drawn automatically. Take up to 2 actions.</span>
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER -->
-        <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1">
-            <!-- Dynamically populated up to 8 players -->
-        </div>
+        <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1"></div>
 
-        <!-- ACTIVE VIEWED PLAYER PSYCHE SLOTS -->
         <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 backdrop-blur-md shadow-2xl relative min-h-[190px]">
             <div id="active-tab-title" class="text-xs font-bold text-zinc-300 mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
-
-            <!-- 4 Slots Grid with Sliding Animation Container -->
-            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
-                <!-- Populated dynamically -->
-            </div>
+            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
-        <!-- HUMAN HAND CONTAINER -->
         <div class="flex-1 bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-3 flex flex-col overflow-hidden shadow-2xl min-h-[185px]">
             <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between shrink-0">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-400"></i> Your Hand (<span id="hand-count-num">4</span> Cards)</span>
                 <span class="text-[10px] text-zinc-500">Drag card onto stack above OR tap card then tap slot</span>
             </div>
-            
-            <!-- Horizontal Scrollable Row for Hand Cards -->
-            <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1">
-                <!-- Cards populated dynamically -->
-            </div>
+            <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1"></div>
         </div>
-
     </main>
 
-    <!-- MODAL: TREMORS DISASTER (SLIDING DRAWER) -->
+    <!-- MODALS -->
     <div id="tremors-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l-2 border-rose-600 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <div class="text-4xl text-rose-500 mb-2 animate-bounce"><i class="fa-solid fa-hand-holding-medical"></i></div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight">SEVERE TREMORS DISASTER!</h2>
-            <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> from your hand in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds or lose your ENTIRE hand!</p>
+            <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds!</p>
             <div id="tremors-card-selector" class="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-submit-tremors" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">
-                Discard Selected Cards
-            </button>
+            <button id="btn-submit-tremors" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Discard Selected</button>
         </div>
     </div>
 
-    <!-- MODAL: END TURN DISCARD (SLIDING DRAWER) -->
     <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <h2 class="text-lg font-black text-white uppercase">HAND SIZE LIMIT EXCEEDED</h2>
-            <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6 before ending turn.</p>
+            <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6.</p>
             <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-48 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-confirm-discard" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">
-                Confirm Discard & Pass Turn
-            </button>
+            <button id="btn-confirm-discard" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Confirm Discard</button>
         </div>
     </div>
 
-    <!-- MODAL: RULES & CARD GUIDE (SLIDING DRAWER) -->
     <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-lg w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
-                    <i class="fa-solid fa-book"></i> RULES & CARD GUIDE
-                </h2>
-                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <h2 class="text-lg font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
+                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div class="overflow-y-auto space-y-4 text-xs leading-relaxed text-zinc-300 pr-2 my-3 flex-1">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                    <span class="font-bold text-rose-400">WIN CONDITION:</span> Be the first player to clear all visible/untreated Disorders from your Psyche!
-                </div>
-
-                <div>
-                    <h3 class="font-black text-white uppercase mb-1">Core Gameplay:</h3>
-                    <ul class="list-disc pl-4 space-y-1 text-zinc-400">
-                        <li><strong>Turn Flow:</strong> 2 cards are drawn automatically at the start of your turn (does not cost actions). You have 2 actions per turn to play cards or draw extra cards.</li>
-                        <li><strong>Hand Limit:</strong> At the end of your turn, you must have 6 or fewer cards in hand.</li>
-                        <li><strong>Quick Fix Vulnerabilities:</strong> Playing a Quick Fix (Drug) shields your Disorder, but exposes specific vulnerable side-effect crises that opponents can play directly on top of!</li>
-                        <li><strong>Therapy / Safe Zone:</strong> Playing an Actual Miracle (Therapy) on an untreated Disorder purges the stack and permanently locks that slot into a CURED Safe Zone.</li>
-                        <li><strong>Meltdown (Black):</strong> Play temporarily on any untreated Disorder across any player to trigger its penalty punishment, then discard it.</li>
-                    </ul>
-                </div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-400">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: GAME OVER (SLIDING DRAWER) -->
     <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl relative">
-            <div id="winner-icon" class="text-4xl mb-2 text-rose-500">
-                <i class="fa-solid fa-trophy"></i>
-            </div>
+            <div id="winner-icon" class="text-4xl mb-2 text-rose-500"><i class="fa-solid fa-trophy"></i></div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
-            <p id="winner-reason" class="text-xs text-zinc-400 mb-5">You successfully cleared your Psyche of all dark crises!</p>
-            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">
-                Main Menu
-            </button>
+            <p id="winner-reason" class="text-xs text-zinc-400 mb-5">Successfully cleared Psyche!</p>
+            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
         </div>
     </div>
 
-    <!-- FIREBASE & AUDIO SCRIPT -->
+    <!-- FIREBASE REALTIME DATABASE INITIALIZATION -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBUSK6ehu4PSCmAJ34q-FayFXmym1V3tlY",
@@ -508,7 +427,7 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const db = firebase.database();
 
         class SoundEngine {
             constructor() { this.ctx = null; }
@@ -557,6 +476,7 @@
         const sfx = new SoundEngine();
     </script>
 
+    <!-- CORE GAME & MULTIPLAYER LOGIC -->
     <script>
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
 
@@ -588,8 +508,7 @@
             gameOver: false,
             selectedHandIdx: null,
             activeTab: 0,
-            players: [],
-            unsubscribeFirestore: null
+            players: []
         };
 
         function generateMasterDeck() {
@@ -636,7 +555,6 @@
 
         function startSingleplayer() {
             saveProfile();
-            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.add('hidden');
             gameState.mode = 'single';
             
@@ -652,28 +570,33 @@
 
         async function openHostModal() {
             saveProfile();
-            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-            gameState.roomCode = code;
-            document.getElementById('created-room-code').textContent = code;
-            
-            const initialRoomData = {
-                host: localProfile.username,
-                maxPlayers: 4,
-                players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }],
-                status: 'waiting',
-                state: null
-            };
+            try {
+                const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                gameState.roomCode = code;
+                document.getElementById('created-room-code').textContent = code;
+                
+                const initialRoomData = {
+                    host: localProfile.username,
+                    maxPlayers: 4,
+                    players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }],
+                    status: 'waiting',
+                    state: null
+                };
 
-            await db.collection('rooms').doc(code).set(initialRoomData);
-            updateHostPlayerList(initialRoomData.players);
-            openModal('host-modal');
+                await db.ref('rooms/' + code).set(initialRoomData);
+                updateHostPlayerList(initialRoomData.players);
+                openModal('host-modal');
 
-            gameState.unsubscribeFirestore = db.collection('rooms').doc(code).onSnapshot(doc => {
-                if(doc.exists) {
-                    const data = doc.data();
-                    updateHostPlayerList(data.players);
-                }
-            });
+                db.ref('rooms/' + code).on('value', snapshot => {
+                    const data = snapshot.val();
+                    if(data && data.players) {
+                        updateHostPlayerList(data.players);
+                    }
+                });
+            } catch (error) {
+                console.error("Error hosting game:", error);
+                alert("Failed to host room: " + error.message);
+            }
         }
 
         function updateHostPlayerList(players) {
@@ -703,14 +626,15 @@
                 return;
             }
 
-            const roomRef = db.collection('rooms').doc(code);
-            const doc = await roomRef.get();
-            if(!doc.exists) {
+            const roomRef = db.ref('rooms/' + code);
+            const snapshot = await roomRef.once('value');
+            
+            if(!snapshot.exists()) {
                 alert('Room code not found!');
                 return;
             }
 
-            const roomData = doc.data();
+            const roomData = snapshot.val();
             const newPlayerId = roomData.players.length;
             const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor'];
             const assignedGradient = gradients[newPlayerId % gradients.length];
@@ -728,27 +652,23 @@
             gameState.mode = 'join';
             gameState.roomCode = code;
 
-            gameState.unsubscribeFirestore = roomRef.onSnapshot(snapshot => {
-                if(snapshot.exists) {
-                    const cloudData = snapshot.data();
-                    if(cloudData.state) {
-                        Object.assign(gameState, cloudData.state);
-                        renderAll();
-                    }
+            roomRef.on('value', snap => {
+                const cloudData = snap.val();
+                if(cloudData && cloudData.state) {
+                    Object.assign(gameState, cloudData.state);
+                    renderAll();
                 }
             });
         }
 
         async function launchCloudMultiplayer() {
             closeModal('host-modal');
-            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.add('hidden');
             gameState.mode = 'host';
 
-            const maxP = parseInt(document.getElementById('select-max-players').value);
-            const docRef = db.collection('rooms').doc(gameState.roomCode);
-            const doc = await docRef.get();
-            const existingPlayers = doc.exists ? doc.data().players : [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }];
+            const roomRef = db.ref('rooms/' + gameState.roomCode);
+            const snapshot = await roomRef.once('value');
+            const existingPlayers = snapshot.exists() ? snapshot.val().players : [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }];
 
             gameState.players = existingPlayers.map(p => ({
                 id: p.id,
@@ -767,7 +687,7 @@
 
         async function syncCloudState() {
             if(gameState.mode !== 'host') return;
-            await db.collection('rooms').doc(gameState.roomCode).update({
+            await db.ref('rooms/' + gameState.roomCode).update({
                 status: 'started',
                 state: {
                     deck: gameState.deck,
@@ -782,7 +702,6 @@
 
         function returnToMainMenu() {
             closeModal('game-over-modal');
-            if(gameState.unsubscribeFirestore) gameState.unsubscribeFirestore();
             document.getElementById('screen-main-menu').classList.remove('hidden');
         }
 
