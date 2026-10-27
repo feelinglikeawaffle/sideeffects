@@ -32,13 +32,16 @@
             background-size: 100% 100%, 24px 24px;
         }
 
-        /* CAH Card Base Aesthetic */
+        /* CAH Card Base Aesthetic with Fluid Cubic-Bezier Springs */
         .card-base {
             width: 105px;
             height: 148px;
-            border-radius: 8px;
+            border-radius: 10px;
             position: relative;
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.25s ease;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        box-shadow 0.35s ease, 
+                        border-color 0.25s ease,
+                        opacity 0.25s ease;
             cursor: grab;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
             border: 2px solid #27272a;
@@ -50,6 +53,8 @@
             background: #ffffff;
             color: #000000;
             flex-shrink: 0;
+            backface-visibility: hidden;
+            will-change: transform, left, top;
         }
 
         .card-base:active {
@@ -58,32 +63,41 @@
 
         .card-base.dragging {
             z-index: 1000 !important;
-            box-shadow: 0 16px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.6);
-            transform: scale(1.08) !important;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(225, 29, 72, 0.7);
+            transform: scale(1.12) rotate(2deg) !important;
         }
 
         .card-base.selected-card {
             border-color: #f43f5e !important;
-            box-shadow: 0 0 14px rgba(244, 63, 94, 0.8), 0 0 4px rgba(255, 255, 255, 0.8) !important;
-            transform: translateY(-10px) !important;
+            box-shadow: 0 0 16px rgba(244, 63, 94, 0.8), 0 0 6px rgba(255, 255, 255, 0.9) !important;
+            transform: translateY(-14px) scale(1.05) !important;
         }
 
-        /* Stacked Card Overlap within Slots */
+        /* Stacked Card Overlap within Slots with Hover Expansion */
         .stacked-card {
             position: absolute !important;
             left: 0;
             right: 0;
             margin: auto;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        box-shadow 0.3s ease;
+        }
+
+        /* Hover expansion to preview underlying cards seamlessly */
+        .slot-target:hover .stacked-card {
+            transform: translateY(calc(var(--stack-index) * 12px));
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
         }
 
         /* Hand Hover Card Lift Animation */
         .hand-card-item {
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
         .hand-card-item:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-16px) scale(1.06) rotate(-1deg);
             z-index: 50;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.2);
         }
 
         /* Black Card (Episode / Disasters) */
@@ -148,8 +162,8 @@
         /* Drop Target Glows */
         .slot-target {
             border: 2px dashed #3f3f46;
-            border-radius: 10px;
-            transition: all 0.25s ease;
+            border-radius: 12px;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             background: rgba(24, 24, 27, 0.4);
             position: relative;
         }
@@ -157,52 +171,67 @@
         .slot-target.valid-drop-target {
             border-color: #f43f5e;
             background: rgba(244, 63, 94, 0.12);
-            box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
             animation: pulseSlot 1.5s infinite ease-in-out;
         }
 
         @keyframes pulseSlot {
-            0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); }
-            50% { border-color: #fb7185; box-shadow: 0 0 18px rgba(244, 63, 94, 0.7); }
+            0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); transform: scale(1); }
+            50% { border-color: #fb7185; box-shadow: 0 0 22px rgba(244, 63, 94, 0.8); transform: scale(1.02); }
         }
 
         .slot-target.drag-over {
             border-color: #fb7185;
             background: rgba(244, 63, 94, 0.3);
-            transform: scale(1.04);
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.8);
+            transform: scale(1.06);
+            box-shadow: 0 0 24px rgba(244, 63, 94, 0.9);
         }
 
         /* Locked Safe Slot (Therapy) */
         .slot-locked-safe {
             border: 2px solid #059669 !important;
             background: rgba(5, 150, 105, 0.15) !important;
-            box-shadow: 0 0 12px rgba(5, 150, 105, 0.3) !important;
-            animation: lockPulse 0.5s ease-out;
+            box-shadow: 0 0 16px rgba(5, 150, 105, 0.4) !important;
+            animation: lockPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes lockPulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); }
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Animated Floating Clone for AI Play */
-        .animated-card-clone {
+        /* Animated Flying Card Element */
+        .flying-card {
             position: fixed;
             z-index: 9999;
             pointer-events: none;
-            transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center center;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.9);
         }
 
-        /* Tab Switch Slide & Fade Effect */
-        .tab-slide-enter {
-            animation: slideInTab 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        /* Tab Switcher Indicator Bar Animation */
+        .tab-indicator {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            border-radius: 10px;
+            background: #e11d48;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 0;
+            box-shadow: 0 0 12px rgba(225, 29, 72, 0.5);
         }
 
-        @keyframes slideInTab {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Impact Effect when cards land */
+        .impact-bounce {
+            animation: impactAnim 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes impactAnim {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.12) translateY(-4px); }
+            100% { transform: scale(1) translateY(0); }
         }
 
         /* Custom Scrollbar */
@@ -259,7 +288,7 @@
                 </div>
 
                 <!-- Discard Pile -->
-                <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
+                <div id="trash-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
                     <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
@@ -271,18 +300,19 @@
             </div>
         </div>
 
-        <!-- PLAYER PSYCHE TABS SWITCHER -->
-        <div class="grid grid-cols-4 gap-2 shrink-0">
-            <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
+        <!-- PLAYER PSYCHE TABS SWITCHER WITH SLIDE INDICATOR -->
+        <div class="relative grid grid-cols-4 gap-2 shrink-0 bg-zinc-950/80 p-1 rounded-2xl border border-zinc-800/80">
+            <div id="tab-indicator" class="tab-indicator" style="width: 24%; left: 0.5%;"></div>
+            <button id="tab-btn-0" onclick="switchPlayerTab(0)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-white">
                 <i class="fa-solid fa-user text-xs"></i> You
             </button>
-            <button id="tab-btn-1" onclick="switchPlayerTab(1)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
+            <button id="tab-btn-1" onclick="switchPlayerTab(1)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 1 <span id="bot1-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
-            <button id="tab-btn-2" onclick="switchPlayerTab(2)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
+            <button id="tab-btn-2" onclick="switchPlayerTab(2)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 2 <span id="bot2-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
-            <button id="tab-btn-3" onclick="switchPlayerTab(3)" class="py-2.5 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-2 shadow-lg">
+            <button id="tab-btn-3" onclick="switchPlayerTab(3)" class="relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400">
                 <i class="fa-solid fa-robot text-xs"></i> Bot 3 <span id="bot3-count" class="text-[10px] opacity-75 font-normal">(4)</span>
             </button>
         </div>
@@ -294,7 +324,7 @@
             </div>
 
             <!-- 4 Slots Grid -->
-            <div id="active-psyche-container" class="tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
+            <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl">
                 <!-- Populated dynamically -->
             </div>
         </div>
@@ -368,7 +398,7 @@
                     <span class="font-bold text-white">5. Drugs (Blue):</span> Played directly on matching Disorders to shield them and expose side-effect vulnerabilities.
                 </div>
                 <div>
-                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then cleaned up into the trash pile!
+                    <span class="font-bold text-white">6. Meltdown (Black):</span> Played temporarily on any opponent's UNTREATED Disorder to trigger its punishment, then smoothly slides into the trash pile!
                 </div>
             </div>
         </div>
@@ -774,7 +804,37 @@
             return false;
         }
 
-        function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
+        /* DYNAMIC GLIDE FLY ANIMATION ENGINE */
+        function animateCardFlight(sourceEl, targetEl, cardData, onComplete) {
+            const srcRect = sourceEl ? sourceEl.getBoundingClientRect() : { left: window.innerWidth/2 - 52, top: window.innerHeight - 150, width: 105, height: 148 };
+            const tgtRect = targetEl ? targetEl.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 105, height: 148 };
+
+            const flyingCard = renderCardDOM(cardData);
+            flyingCard.classList.add('flying-card');
+            flyingCard.style.left = `${srcRect.left}px`;
+            flyingCard.style.top = `${srcRect.top}px`;
+            flyingCard.style.transform = 'scale(1) rotate(0deg)';
+
+            document.body.appendChild(flyingCard);
+
+            requestAnimationFrame(() => {
+                flyingCard.style.left = `${tgtRect.left + (tgtRect.width - 105) / 2}px`;
+                flyingCard.style.top = `${tgtRect.top + (tgtRect.height - 148) / 2}px`;
+                flyingCard.style.transform = 'scale(1.05) rotate(-2deg)';
+            });
+
+            setTimeout(() => {
+                if (targetEl) {
+                    targetEl.classList.add('impact-bounce');
+                    setTimeout(() => targetEl.classList.remove('impact-bounce'), 350);
+                }
+                flyingCard.remove();
+                if (onComplete) onComplete();
+            }, 550);
+        }
+
+        /* MELTDOWN CARD SLIDE-IN & SLIDE-OUT TO TRASH */
+        function animateMeltdownSequence(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
             const player = gameState.players[playerIdx];
             const card = player.hand[cardHandIdx];
             const targetPlayer = gameState.players[targetPlayerIdx];
@@ -783,43 +843,70 @@
             player.hand.splice(cardHandIdx, 1);
             gameState.selectedHandIdx = null;
 
-            if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
-                stack.push(card);
-                sfx.playCard();
-                logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
-                consumeAction();
-                renderAll();
-            } 
-            else if (card.type === CARD_TYPES.THERAPY) {
-                while (stack.length > 0) {
-                    gameState.discardPile.push(stack.pop());
-                }
-                gameState.discardPile.push(card);
-                targetPlayer.slotLocked[stackIdx] = true;
-                sfx.playCure();
-                logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
-                consumeAction();
-                renderAll();
-            } 
-            else if (card.type === CARD_TYPES.EPISODE) {
-                sfx.playDisaster();
-                const topDisorder = getStackTopCard(stack);
-                
-                // Temporarily place Meltdown card onto the stack to cover the card below it
+            sfx.playDisaster();
+            const topDisorder = getStackTopCard(stack);
+
+            const sourceHandCard = document.querySelector(`[data-hand-idx="${cardHandIdx}"]`);
+            const targetSlot = document.getElementById(`stack-${targetPlayerIdx}-${stackIdx}`);
+            const trashEl = document.getElementById('trash-deck');
+
+            animateCardFlight(sourceHandCard, targetSlot, card, () => {
+                // Cover card below dynamically
                 stack.push(card);
                 renderAll();
-                
                 logAction(`${player.name} triggered a Meltdown on ${targetPlayer.name}'s "${topDisorder.title}"!`);
 
                 setTimeout(() => {
-                    // Remove the Meltdown card from the stack after animation & trigger penalty
-                    const removedCard = stack.pop();
-                    gameState.discardPile.push(removedCard);
-                    triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
+                    // Fly from target slot to Trash Deck
+                    const currentSlotCard = targetSlot ? targetSlot.lastElementChild : null;
+                    animateCardFlight(currentSlotCard, trashEl, card, () => {
+                        const removedCard = stack.pop();
+                        gameState.discardPile.push(removedCard);
+                        triggerEpisodePunishment(targetPlayerIdx, topDisorder.disorderId, playerIdx);
+                        consumeAction();
+                        renderAll();
+                    });
+                }, 800);
+            });
+        }
+
+        function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
+            const player = gameState.players[playerIdx];
+            const card = player.hand[cardHandIdx];
+            const targetPlayer = gameState.players[targetPlayerIdx];
+            const stack = targetPlayer.psyche[stackIdx];
+
+            if (card.type === CARD_TYPES.EPISODE) {
+                animateMeltdownSequence(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx);
+                return;
+            }
+
+            const sourceHandCard = document.querySelector(`[data-hand-idx="${cardHandIdx}"]`);
+            const targetSlot = document.getElementById(`stack-${targetPlayerIdx}-${stackIdx}`);
+
+            animateCardFlight(sourceHandCard, targetSlot, card, () => {
+                player.hand.splice(cardHandIdx, 1);
+                gameState.selectedHandIdx = null;
+
+                if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
+                    stack.push(card);
+                    sfx.playCard();
+                    logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}'s stack.`);
                     consumeAction();
                     renderAll();
-                }, 750);
-            }
+                } 
+                else if (card.type === CARD_TYPES.THERAPY) {
+                    while (stack.length > 0) {
+                        gameState.discardPile.push(stack.pop());
+                    }
+                    gameState.discardPile.push(card);
+                    targetPlayer.slotLocked[stackIdx] = true;
+                    sfx.playCure();
+                    logAction(`${player.name} used Therapy! Purged stack & PERMANENTLY LOCKED slot safe!`);
+                    consumeAction();
+                    renderAll();
+                }
+            });
         }
 
         function triggerEpisodePunishment(targetIdx, disorderId, attackerIdx) {
@@ -985,10 +1072,9 @@
                 if (card.type === CARD_TYPES.THERAPY) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
-                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
-                                executePlayCard(botIdx, i, botIdx, s);
-                                continueBotSequence(botIdx);
-                            });
+                            switchPlayerTab(botIdx);
+                            executePlayCard(botIdx, i, botIdx, s);
+                            setTimeout(() => continueBotSequence(botIdx), 800);
                             return;
                         }
                     }
@@ -997,10 +1083,9 @@
                 if (card.type === CARD_TYPES.DRUG) {
                     for (let s = 0; s < 4; s++) {
                         if (canPlayCardOnStack(card, botIdx, s)) {
-                            animateBotCardPlay(botIdx, i, botIdx, s, () => {
-                                executePlayCard(botIdx, i, botIdx, s);
-                                continueBotSequence(botIdx);
-                            });
+                            switchPlayerTab(botIdx);
+                            executePlayCard(botIdx, i, botIdx, s);
+                            setTimeout(() => continueBotSequence(botIdx), 800);
                             return;
                         }
                     }
@@ -1011,10 +1096,9 @@
                         if (opp !== botIdx) {
                             for (let s = 0; s < 4; s++) {
                                 if (canPlayCardOnStack(card, opp, s)) {
-                                    animateBotCardPlay(botIdx, i, opp, s, () => {
-                                        executePlayCard(botIdx, i, opp, s);
-                                        continueBotSequence(botIdx);
-                                    });
+                                    switchPlayerTab(opp);
+                                    executePlayCard(botIdx, i, opp, s);
+                                    setTimeout(() => continueBotSequence(botIdx), 1600);
                                     return;
                                 }
                             }
@@ -1027,10 +1111,9 @@
                         if (opp !== botIdx) {
                             for (let s = 0; s < 4; s++) {
                                 if (canPlayCardOnStack(card, opp, s)) {
-                                    animateBotCardPlay(botIdx, i, opp, s, () => {
-                                        executePlayCard(botIdx, i, opp, s);
-                                        continueBotSequence(botIdx);
-                                    });
+                                    switchPlayerTab(opp);
+                                    executePlayCard(botIdx, i, opp, s);
+                                    setTimeout(() => continueBotSequence(botIdx), 800);
                                     return;
                                 }
                             }
@@ -1056,37 +1139,6 @@
             }
         }
 
-        function animateBotCardPlay(botIdx, cardHandIdx, targetPlayerIdx, targetStackIdx, onComplete) {
-            gameState.activeTab = targetPlayerIdx;
-            renderAll();
-
-            const targetEl = document.getElementById(`stack-${targetPlayerIdx}-${targetStackIdx}`);
-            if (!targetEl) {
-                onComplete();
-                return;
-            }
-
-            const targetRect = targetEl.getBoundingClientRect();
-            const clone = document.createElement('div');
-            clone.className = 'card-base card-black animated-card-clone flex flex-col items-center justify-center font-bold text-xs text-white p-2 shadow-2xl';
-            clone.style.left = `50%`;
-            clone.style.top = `20%`;
-            clone.innerHTML = `<i class="fa-solid fa-play text-rose-500 mb-1"></i> PLAYING`;
-
-            document.body.appendChild(clone);
-
-            requestAnimationFrame(() => {
-                clone.style.left = `${targetRect.left + targetRect.width / 2 - 50}px`;
-                clone.style.top = `${targetRect.top + targetRect.height / 2 - 70}px`;
-                clone.style.transform = 'scale(1.05)';
-            });
-
-            setTimeout(() => {
-                clone.remove();
-                onComplete();
-            }, 450);
-        }
-
         function checkWinConditions() {
             gameState.players.forEach(p => {
                 let untreatedCount = 0;
@@ -1110,8 +1162,26 @@
             modal.classList.remove('hidden');
         }
 
+        /* TAB SWITCHER WITH SMOOTH SLIDE INDICATOR */
         function switchPlayerTab(tabIdx) {
             gameState.activeTab = tabIdx;
+            
+            const indicator = document.getElementById('tab-indicator');
+            if (indicator) {
+                indicator.style.left = `${(tabIdx * 25) + 0.5}%`;
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`tab-btn-${i}`);
+                if (btn) {
+                    if (i === tabIdx) {
+                        btn.className = "relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-white font-bold scale-105";
+                    } else {
+                        btn.className = "relative z-10 py-2.5 px-3 text-xs font-black uppercase rounded-xl transition-all flex items-center justify-center gap-2 text-zinc-400 hover:text-white";
+                    }
+                }
+            }
+
             renderAll();
         }
 
@@ -1126,26 +1196,11 @@
             document.getElementById('bot2-count').textContent = `(${gameState.players[2].hand.length})`;
             document.getElementById('bot3-count').textContent = `(${gameState.players[3].hand.length})`;
 
-            for (let i = 0; i < 4; i++) {
-                const btn = document.getElementById(`tab-btn-${i}`);
-                if (btn) {
-                    if (gameState.activeTab === i) {
-                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-rose-600 text-white border-rose-500 shadow-lg scale-105 transition-all flex items-center justify-center gap-2";
-                    } else {
-                        btn.className = "py-2.5 px-3 text-xs font-black uppercase rounded-xl border bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2 shadow-md";
-                    }
-                }
-            }
-
             const activePlayerObj = gameState.players[gameState.activeTab];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
 
             const container = document.getElementById('active-psyche-container');
             container.innerHTML = '';
-            
-            container.classList.remove('tab-slide-enter');
-            void container.offsetWidth;
-            container.classList.add('tab-slide-enter');
 
             for (let sIdx = 0; sIdx < 4; sIdx++) {
                 const stack = activePlayerObj.psyche[sIdx];
@@ -1171,8 +1226,9 @@
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
                         cardDOM.classList.add('stacked-card');
-                        // Cascade stacked cards cleanly overlapping the card below it
-                        cardDOM.style.top = `${cIdx * 10}px`;
+                        // Cascade vertical offsets with hover expansion variable
+                        cardDOM.style.top = `${cIdx * 8}px`;
+                        cardDOM.style.setProperty('--stack-index', cIdx);
                         cardDOM.style.zIndex = cIdx + 1;
                         slot.appendChild(cardDOM);
                     });
