@@ -34,8 +34,8 @@
 
         /* CAH Card Base Aesthetic */
         .card-base {
-            width: 85px;
-            height: 120px;
+            width: 90px;
+            height: 125px;
             border-radius: 6px;
             position: absolute;
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
@@ -45,7 +45,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 5px;
+            padding: 6px;
             box-sizing: border-box;
             background: #ffffff;
             color: #000000;
@@ -94,7 +94,7 @@
         .card-disorder-header {
             background-color: #e11d48;
             color: #ffffff;
-            font-size: 7px;
+            font-size: 7.5px;
             font-weight: 900;
             padding: 1px 3px;
             border-radius: 2px;
@@ -105,7 +105,7 @@
         .card-drug-header {
             background-color: #2563eb;
             color: #ffffff;
-            font-size: 7px;
+            font-size: 7.5px;
             font-weight: 900;
             padding: 1px 3px;
             border-radius: 2px;
@@ -116,7 +116,7 @@
         .card-therapy-header {
             background-color: #059669;
             color: #ffffff;
-            font-size: 7px;
+            font-size: 7.5px;
             font-weight: 900;
             padding: 1px 3px;
             border-radius: 2px;
@@ -127,7 +127,7 @@
         .card-episode-header {
             background-color: #dc2626;
             color: #ffffff;
-            font-size: 7px;
+            font-size: 7.5px;
             font-weight: 900;
             padding: 1px 3px;
             border-radius: 2px;
@@ -185,106 +185,18 @@
             border-radius: 2px;
         }
 
-        /* Responsive card layout fixes: preserve the dark rose aesthetic, but never
-           let the card hand or psyche slots overlap or clip their contents. */
-        #table-container { min-height: 0; min-width: 0; }
-        @media (min-width: 768px) {
-            #table-container.desktop-table {
-                min-height: 0 !important;
-                overflow: hidden !important;
-                grid-template-rows: repeat(12, minmax(0, 1fr));
-            }
-        }
-        .card-base {
-            width: 88px;
-            height: 124px;
-            padding: 6px;
-            flex: 0 0 auto;
-            overflow: hidden;
-        }
-        .slot-target {
-            position: relative !important;
-            width: 88px;
-            height: 124px;
-            flex: 0 0 auto;
-            overflow: visible;
-        }
-        .slot-target > .card-base {
-            position: absolute;
-            inset-inline: 0;
-            width: 100%;
-            height: 124px;
-            padding: 5px;
-            cursor: default;
-        }
-        #player-hand {
-            min-width: 0;
-            min-height: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
-            justify-content: flex-start !important;
-            align-items: center !important;
-            gap: 8px;
-            padding: 8px;
-            scrollbar-width: thin;
-        }
-        #player-hand > .card-base {
-            position: relative !important;
-            inset: auto !important;
-            transform: none !important;
-            width: 100px;
-            height: 140px;
-            flex: 0 0 100px;
-        }
-        .card-base .card-disorder-header,
-        .card-base .card-drug-header,
-        .card-base .card-therapy-header,
-        .card-base .card-episode-header {
-            font-size: 7px;
-            line-height: 1.2;
-            max-width: calc(100% - 10px);
-        }
-        .card-base .font-black.text-\\[9\\.5px\\] {
-            font-size: 11px;
-            line-height: 1.15;
-            overflow-wrap: anywhere;
-        }
-        .card-base .text-\\[7px\\] {
-            font-size: 8px;
-            line-height: 1.2;
-            overflow-wrap: anywhere;
-        }
-        .card-base .text-\\[6px\\] {
-            font-size: 7px;
-            line-height: 1.2;
-            white-space: normal;
-            overflow-wrap: anywhere;
-        }
-        @media (min-width: 768px) {
-            .card-base { width: 105px; height: 145px; padding: 7px; }
-            .slot-target { width: 105px; height: 145px; }
-            .slot-target > .card-base { height: 145px; padding: 6px; }
-            #player-hand { height: 154px !important; }
-            #player-hand > .card-base { width: 105px; height: 145px; flex-basis: 105px; }
-        }
+        /* Mobile specific fixes to completely prevent clipping */
         @media (max-width: 767px) {
-            html, body { height: 100%; min-height: 100%; }
-            body { height: 100dvh !important; overflow: hidden !important; }
-            #table-container { overflow-y: auto !important; overflow-x: hidden !important; gap: 10px !important; padding: 10px !important; }
-            #player-hand { height: 230px !important; min-height: 230px !important; flex: 0 0 230px !important; gap: 10px !important; align-items: stretch !important; padding: 8px !important; }
-            #player-hand > .card-base { width: 150px !important; height: 210px !important; flex: 0 0 150px !important; padding: 10px !important; }
-            #player-hand .card-disorder-header, #player-hand .card-drug-header, #player-hand .card-therapy-header, #player-hand .card-episode-header { font-size: 10px !important; }
-            #player-hand .font-black.text-\[9\.5px\] { font-size: 15px !important; line-height: 1.15 !important; }
-            #player-hand .text-\[7px\] { font-size: 11px !important; line-height: 1.25 !important; }
-            #player-hand .text-\[6px\] { font-size: 9px !important; line-height: 1.2 !important; }
-            #psyche-container-0, #psyche-container-1, #psyche-container-2, #psyche-container-3 { gap: 8px !important; }
-            #table-container .slot-target { width: min(42vw, 170px) !important; height: 190px !important; }
-            #table-container .slot-target > .card-base { width: 100% !important; height: 190px !important; padding: 9px !important; }
-            #table-container .slot-target .card-disorder-header, #table-container .slot-target .card-drug-header, #table-container .slot-target .card-therapy-header, #table-container .slot-target .card-episode-header { font-size: 9px !important; }
-            #table-container .slot-target .font-black.text-\[9\.5px\] { font-size: 12px !important; }
-            #table-container .slot-target .text-\[7px\] { font-size: 9px !important; }
-            #table-container .slot-target .text-\[6px\] { font-size: 8px !important; }
-            #table-container .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            html, body { height: 100%; overflow: hidden; }
+            #table-container { overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
+            .mobile-card-in-hand {
+                position: relative !important;
+                inset: auto !important;
+                transform: none !important;
+                width: 100px !important;
+                height: 140px !important;
+                flex: 0 0 100px !important;
+            }
         }
     </style>
 </head>
@@ -315,9 +227,9 @@
         </div>
     </header>
 
-    <!-- TABLETOP AREA (AUTO-SWITCHES DESKTOP / MOBILE GRID) -->
-    <main id="table-container" class="flex-1 relative overflow-hidden p-1.5 gap-1">
-        <!-- Dynamically populated based on screen layout mode -->
+    <!-- TABLETOP AREA (AUTO-SWITCHES DESKTOP / MOBILE LAYOUTS) -->
+    <main id="table-container" class="flex-1 relative overflow-hidden p-2 gap-2 flex flex-col">
+        <!-- Dynamically populated -->
     </main>
 
     <!-- MODAL: TREMORS DISASTER -->
@@ -445,13 +357,11 @@
 
     <!-- CORE GAME SCRIPT -->
     <script>
-        // --- MASTER CARD & DATA DEFINITIONS ---
-
         const CARD_TYPES = {
-            DISORDER: 'disorder', // Red
-            DRUG: 'drug',         // Blue
-            THERAPY: 'therapy',   // Green
-            EPISODE: 'episode'    // Black Wild
+            DISORDER: 'disorder',
+            DRUG: 'drug',
+            THERAPY: 'therapy',
+            EPISODE: 'episode'
         };
 
         const DISORDERS = {
@@ -587,7 +497,6 @@
             return deck;
         }
 
-        // --- GAME STATE ---
         const gameState = {
             deck: [],
             discardPile: [],
@@ -596,7 +505,7 @@
             gameOver: false,
             selectedHandIdx: null,
             isMobile: window.innerWidth < 768,
-            mobileTab: 0, // 0 = You, 1 = Bot 1, 2 = Bot 2, 3 = Bot 3
+            mobileTab: 0,
             players: [
                 { id: 0, name: 'You', isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
@@ -613,12 +522,10 @@
             }
         });
 
-        // --- DOM ELEMENTS ---
         const elTableContainer = document.getElementById('table-container');
         const elTurnIndicator = document.getElementById('turn-indicator');
         const elActionsLeft = document.getElementById('actions-left-indicator');
 
-        // --- GAME INITIALIZATION ---
         function initGame() {
             gameState.deck = generateMasterDeck();
             gameState.discardPile = [];
@@ -1117,7 +1024,6 @@
             modal.classList.remove('hidden');
         }
 
-        // --- RENDER ALL (AUTO DETECTS DESKTOP vs MOBILE SPECIFIC CLEAN LAYOUTS) ---
         function renderAll() {
             elTurnIndicator.textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer].name}'s Turn`;
             elActionsLeft.textContent = `${gameState.actionsLeft} Actions`;
@@ -1131,7 +1037,6 @@
             }
         }
 
-        // --- CLEAN DESKTOP LAYOUT ---
         function renderDesktopLayout() {
             elTableContainer.className = "flex-1 relative grid grid-cols-12 grid-rows-12 p-2 gap-2 overflow-hidden";
             elTableContainer.innerHTML = `
@@ -1195,14 +1100,13 @@
                     <div class="flex items-center gap-2 bg-zinc-900/90 px-3 py-0.5 rounded-full border border-zinc-800 mb-1">
                         <span class="text-xs font-bold text-zinc-200"><i class="fa-solid fa-user text-rose-400 mr-1"></i> Your Psyche</span>
                     </div>
-                    <div id="player-hand" class="relative w-full max-w-4xl h-36 flex justify-start items-center"></div>
+                    <div id="player-hand" class="relative w-full max-w-4xl h-36 flex justify-start items-center overflow-x-auto"></div>
                 </div>
             `;
 
             populateTableElements();
         }
 
-        // --- CLEAN MOBILE SPECIFIC LAYOUT ---
         function renderMobileLayout() {
             elTableContainer.className = "flex-1 relative flex flex-col p-2 gap-2 overflow-y-auto";
             
@@ -1235,24 +1139,22 @@
                     <button onclick="switchMobileTab(3)" class="py-1.5 text-[10px] font-black uppercase rounded-lg border ${activeTargetPlayer === 3 ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900 text-zinc-400 border-zinc-800'}">Bot 3 (${gameState.players[3].hand.length})</button>
                 </div>
 
-                <!-- HUMAN HAND (SCROLLABLE CARDS CONTAINER) -->
-                <div class="flex-1 bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-2.5 flex flex-col overflow-hidden min-h-[160px]">
-                    <div class="text-[11px] font-bold text-zinc-300 mb-1 flex items-center justify-between">
-                        <span><i class="fa-solid fa-hand text-rose-400 mr-1"></i> Your Hand (${gameState.players[0].hand.length})</span>
-                        <span class="text-[9px] text-zinc-500">Select a card, then tap a stack below</span>
-                    </div>
-                    <div id="player-hand" class="flex-1 flex gap-2 overflow-x-auto items-center py-1 px-1"></div>
-                </div>
-
-
                 <!-- ACTIVE VIEWED PLAYER PSYCHE SLOTS -->
                 <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-3 flex flex-col items-center justify-center shrink-0">
                     <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-brain text-rose-500"></i> ${targetP.name}'s Psyche Stacks
                     </div>
-                    <div id="psyche-container-${activeTargetPlayer}" class="grid grid-cols-2 sm:grid-cols-4 gap-3 justify-center items-center w-full"></div>
+                    <div id="psyche-container-${activeTargetPlayer}" class="grid grid-cols-2 gap-3 justify-center items-center w-full"></div>
                 </div>
 
+                <!-- HUMAN HAND (STICKY SCROLLABLE ROW AT BOTTOM) -->
+                <div class="bg-zinc-950/95 border border-zinc-800 rounded-xl p-2.5 flex flex-col shrink-0 mb-2">
+                    <div class="text-[11px] font-bold text-zinc-300 mb-1.5 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hand text-rose-400 mr-1"></i> Your Hand (${gameState.players[0].hand.length})</span>
+                        <span class="text-[9px] text-zinc-500">Tap card to select, then tap slot to play</span>
+                    </div>
+                    <div id="player-hand" class="flex gap-2 overflow-x-auto items-center py-2 px-1 min-h-[155px]"></div>
+                </div>
             `;
 
             populateTableElements();
@@ -1264,7 +1166,6 @@
         }
 
         function populateTableElements() {
-            // Populate Psyche Stacks for each player with CLEAN non-overlapping spread offsets
             for (let pIdx = 0; pIdx < 4; pIdx++) {
                 const container = document.getElementById(`psyche-container-${pIdx}`);
                 if (!container) continue;
@@ -1293,7 +1194,6 @@
                     } else if (stack.length === 0) {
                         slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-600 uppercase tracking-widest">Empty</span>`;
                     } else {
-                        // Clean 10px vertical offset prevents card text clipping while keeping stacks compact & readable
                         stack.forEach((c, cIdx) => {
                             const cardDOM = renderCardDOM(c);
                             cardDOM.style.top = `${Math.min(cIdx * 8, 24)}px`;
@@ -1302,7 +1202,6 @@
                         });
                     }
 
-                    // Drag & Drop
                     slot.ondragover = (e) => {
                         e.preventDefault();
                         if (!isLocked) slot.classList.add('drag-over');
@@ -1323,7 +1222,6 @@
                         }
                     };
 
-                    // Tap / Click Play Handler
                     slot.onclick = () => {
                         if (gameState.selectedHandIdx !== null && !isLocked) {
                             const card = gameState.players[0].hand[gameState.selectedHandIdx];
@@ -1339,7 +1237,6 @@
                 }
             }
 
-            // Populate Human Hand
             const handContainer = document.getElementById('player-hand');
             if (handContainer) {
                 handContainer.innerHTML = '';
@@ -1352,13 +1249,14 @@
                         cardDOM.classList.add('selected-card');
                     }
 
-                    // Keep cards in a real horizontal row on both desktop and mobile.
-                    // This avoids the old fanned layout clipping card edges and text.
-                    cardDOM.style.position = 'relative';
-                    cardDOM.style.top = '0';
-                    cardDOM.style.left = '0';
-                    cardDOM.style.transform = 'none';
-                    cardDOM.style.zIndex = '1';
+                    if (gameState.isMobile) {
+                        cardDOM.classList.add('mobile-card-in-hand');
+                    } else {
+                        const total = gameState.players[0].hand.length;
+                        const offset = (idx - (total - 1) / 2) * 26;
+                        cardDOM.style.transform = `translateX(${offset}px)`;
+                        cardDOM.style.zIndex = idx + 10;
+                    }
 
                     cardDOM.ondragstart = (e) => {
                         e.dataTransfer.setData('text/plain', idx);
@@ -1370,7 +1268,8 @@
                         clearTargetHighlights();
                     };
 
-                    cardDOM.onclick = () => {
+                    cardDOM.onclick = (e) => {
+                        e.stopPropagation();
                         if (gameState.selectedHandIdx === idx) {
                             gameState.selectedHandIdx = null;
                             clearTargetHighlights();
@@ -1456,7 +1355,6 @@
             if (logEl) logEl.textContent = msg;
         }
 
-        // --- EVENT LISTENERS ---
         document.getElementById('btn-rules').onclick = () => {
             document.getElementById('rules-modal').classList.remove('hidden');
         };
