@@ -18,77 +18,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        /* Theme Variables */
-        :root {
-            --bg-primary: #050505;
-            --bg-secondary: #09090b;
-            --accent-primary: #e11d48;
-            --accent-glow: rgba(225, 29, 72, 0.6);
-            --card-border: #3f3f46;
-            --btn-bg: #e11d48;
-            --btn-hover: #f43f5e;
-        }
-
-        body.theme-cyberpunk {
-            --bg-primary: #020617;
-            --bg-secondary: #0f172a;
-            --accent-primary: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.7);
-            --card-border: #38bdf8;
-            --btn-bg: #0284c7;
-            --btn-hover: #38bdf8;
-        }
-
-        body.theme-neon {
-            --bg-primary: #12021a;
-            --bg-secondary: #240a38;
-            --accent-primary: #e879f9;
-            --accent-glow: rgba(232, 121, 249, 0.8);
-            --card-border: #c084fc;
-            --btn-bg: #9333ea;
-            --btn-hover: #a855f7;
-        }
-
-        body.theme-emerald {
-            --bg-primary: #022c22;
-            --bg-secondary: #064e3b;
-            --accent-primary: #34d399;
-            --accent-glow: rgba(52, 211, 153, 0.7);
-            --card-border: #34d399;
-            --btn-bg: #059669;
-            --btn-hover: #10b981;
-        }
-
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
+            background: #050505;
             color: #f4f4f5;
             user-select: none;
             overflow: hidden;
             touch-action: manipulation;
-            transition: background 0.4s ease;
         }
 
         .table-bg {
-            background-color: var(--bg-primary);
-            background-image: 
-                radial-gradient(circle at 50% 50%, var(--bg-secondary) 0%, var(--bg-primary) 75%, #000000 100%),
-                radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
-            background-size: 100% 100%, 24px 24px;
+            background-color: #050505;
+            background-image: radial-gradient(circle at 50% 50%, #0d0d0f 0%, #050505 85%);
         }
 
-        .slide-in-up {
-            animation: slideInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* Subtle, Clean Entrance Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes slideInUp {
-            0% { opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(8px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .side-drawer {
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .modal-active .side-drawer {
@@ -96,11 +52,11 @@
         }
 
         .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.3s ease;
         }
 
         .modal-overlay.active {
@@ -108,42 +64,20 @@
             pointer-events: auto;
         }
 
-        .title-glow {
-            text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
-            animation: pulseGlow 2.5s infinite ease-in-out;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { text-shadow: 0 0 20px var(--accent-glow); }
-            50% { text-shadow: 0 0 35px var(--accent-glow); }
-        }
-
-        .theme-btn-primary { background-color: var(--btn-bg) !important; }
-        .theme-btn-primary:hover { background-color: var(--btn-hover) !important; }
-        .theme-text-accent { color: var(--accent-primary) !important; }
-        .theme-border-accent { border-color: var(--accent-primary) !important; }
-
-        .gradient-neon { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-cyber { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-emerald { background: linear-gradient(135deg, #34d399, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-toxic { background: linear-gradient(135deg, #a3e635, #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-blood { background: linear-gradient(135deg, #dc2626, #9f1239); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-vapor { background: linear-gradient(135deg, #c084fc, #e879f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
+        /* Card Styles */
         .card-base {
             width: 108px;
             height: 152px;
-            border-radius: 9px;
+            border-radius: 10px;
             position: relative;
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: grab;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+            border: 1px solid #27272a;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 8px;
+            padding: 9px;
             box-sizing: border-box;
             flex-shrink: 0;
         }
@@ -152,14 +86,14 @@
 
         .card-base.dragging {
             z-index: 1000 !important;
-            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.95), 0 0 20px var(--accent-glow);
-            transform: scale(1.08) !important;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.4);
+            transform: scale(1.05) !important;
         }
 
         .card-base.selected-card {
-            border-color: var(--accent-primary) !important;
-            box-shadow: 0 0 16px var(--accent-glow), 0 0 6px rgba(255, 255, 255, 0.9) !important;
-            transform: translateY(-10px) !important;
+            border-color: #e11d48 !important;
+            box-shadow: 0 0 16px rgba(225, 29, 72, 0.5) !important;
+            transform: translateY(-8px) !important;
         }
 
         .stacked-card {
@@ -167,217 +101,156 @@
             left: 0;
             right: 0;
             margin: auto;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.25s ease;
         }
 
-        .hand-card-item { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease; }
+        .hand-card-item { transition: transform 0.2s ease; }
         .hand-card-item:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-6px);
             z-index: 50;
         }
 
-        .card-white { background: #ffffff !important; color: #09090b !important; border-color: #d4d4d8 !important; }
-        .card-black { background: #09090b !important; color: #ffffff !important; border-color: var(--card-border) !important; }
+        .card-white { background: #ffffff !important; color: #09090b !important; border-color: #e4e4e7 !important; }
+        .card-black { background: #0d0d0f !important; color: #ffffff !important; border-color: #27272a !important; }
 
-        .card-disorder-header { background-color: var(--accent-primary); color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .slot-target {
-            border: 2px dashed var(--card-border);
+            border: 2px dashed #27272a;
             border-radius: 12px;
-            transition: all 0.25s ease;
-            background: rgba(24, 24, 27, 0.5);
+            transition: all 0.2s ease;
+            background: rgba(13, 13, 15, 0.6);
             position: relative;
         }
 
         .slot-target.drag-over {
-            border-color: var(--accent-primary);
-            background: rgba(244, 63, 94, 0.35);
-            transform: scale(1.04);
-            box-shadow: 0 0 22px var(--accent-glow);
+            border-color: #e11d48;
+            background: rgba(225, 29, 72, 0.1);
+            transform: scale(1.02);
         }
 
         .slot-locked-safe {
-            border: 2px solid #059669 !important;
-            background: rgba(5, 150, 105, 0.18) !important;
-            box-shadow: 0 0 14px rgba(5, 150, 105, 0.4) !important;
+            border: 1px solid #059669 !important;
+            background: rgba(5, 150, 105, 0.12) !important;
         }
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
 
     <!-- MAIN MENU SCREEN -->
-    <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-xl">
-        <div class="slide-in-up max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-24 -left-24 w-60 h-60 bg-rose-600/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="flex items-center gap-2 mb-2">
-                <span class="theme-btn-primary text-white font-black text-[10px] px-2.5 py-0.5 rounded-full tracking-wider uppercase">18+ ADULT PARTY</span>
+    <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-md">
+        <div class="fade-in-up max-w-lg w-full flex flex-col items-center text-center p-8 bg-zinc-900/80 border border-zinc-800/80 rounded-3xl shadow-2xl relative">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="bg-rose-600/20 text-rose-400 border border-rose-500/30 font-extrabold text-[10px] px-3 py-1 rounded-full tracking-wider uppercase">18+ ADULT PARTY GAME</span>
             </div>
             
-            <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 title-glow flex items-center gap-3">
-                <i class="fa-solid fa-skull theme-text-accent"></i> UNFILTERED
+            <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white mb-2 flex items-center gap-3">
+                <i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED
             </h1>
-            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-5">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
+            <p class="text-xs sm:text-sm text-zinc-400 max-w-sm mb-6">A dark, psychological party game. Clear your mind or sabotage your friends.</p>
 
-            <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-4 text-left shadow-inner">
+            <!-- PROFILE SETTINGS -->
+            <div class="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 text-left">
                 <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card theme-text-accent"></i> Player Profile</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-user text-rose-500"></i> Player Profile</span>
                     <span id="account-stats" class="text-[10px] text-zinc-500">Wins: 0 | Games: 0</span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Username</label>
-                        <input id="input-username" type="text" maxlength="12" value="PsychPlayer" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-500 transition">
-                    </div>
-                    <div>
-                        <label class="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Name Color Style</label>
-                        <select id="select-gradient" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-500 transition">
-                            <option value="gradient-neon">Neon Sunset</option>
-                            <option value="gradient-cyber">Cyberpunk Blue</option>
-                            <option value="gradient-emerald">Emerald Cure</option>
-                            <option value="gradient-toxic">Toxic Slime</option>
-                            <option value="gradient-blood">Blood Moon</option>
-                            <option value="gradient-gold">Hyper Gold</option>
-                            <option value="gradient-vapor">Vaporwave Purple</option>
-                        </select>
-                    </div>
-                </div>
+                <input id="input-username" type="text" maxlength="12" value="PsychPlayer" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-600 transition">
             </div>
 
             <!-- MODE SELECT BUTTONS -->
-            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                <button onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
-                    <i class="fa-solid fa-robot text-lg theme-text-accent group-hover:rotate-12 transition"></i>
+            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-robot text-base text-rose-500"></i>
                     Singleplayer
-                    <span class="text-[9px] font-normal text-zinc-400">Play vs AI Bots</span>
                 </button>
 
-                <button onclick="openHostModal()" class="py-3.5 px-4 theme-btn-primary text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
-                    <i class="fa-solid fa-gamepad text-lg group-hover:scale-110 transition"></i>
+                <button onclick="openHostModal()" class="py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1 shadow-lg shadow-rose-950/50">
+                    <i class="fa-solid fa-gamepad text-base"></i>
                     Host Game
-                    <span class="text-[9px] font-normal text-zinc-100">Create Room Code</span>
                 </button>
 
-                <button onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
-                    <i class="fa-solid fa-right-to-bracket text-lg text-amber-500 group-hover:translate-x-1 transition"></i>
+                <button onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-right-to-bracket text-base text-rose-500"></i>
                     Join Game
-                    <span class="text-[9px] font-normal text-zinc-400">Enter Room Code</span>
                 </button>
             </div>
-
-            <button onclick="openThemeModal()" class="w-full py-2.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 rounded-xl font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-palette theme-text-accent"></i> Customize Theme & Vibe
-            </button>
-        </div>
-    </div>
-
-    <!-- THEME CUSTOMIZATION MODAL -->
-    <div id="theme-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-md w-full p-6 rounded-3xl text-zinc-100 shadow-2xl relative">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
-                <h2 class="text-base font-black theme-text-accent flex items-center gap-2">
-                    <i class="fa-solid fa-palette"></i> THEME CUSTOMIZER
-                </h2>
-                <button onclick="closeModal('theme-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button onclick="setTheme('default')" class="p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
-                    <span class="text-rose-500 font-black">Midnight Dark (Default)</span>
-                    <span class="text-[10px] text-zinc-500">Classic obsidian & rose</span>
-                </button>
-                <button onclick="setTheme('cyberpunk')" class="p-3 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
-                    <span class="text-sky-400 font-black">Cyberpunk Cyan</span>
-                    <span class="text-[10px] text-slate-500">Electric blue & dark navy</span>
-                </button>
-                <button onclick="setTheme('neon')" class="p-3 bg-purple-950/40 hover:bg-purple-950/70 border border-purple-900/50 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
-                    <span class="text-fuchsia-400 font-black">Vapor Neon</span>
-                    <span class="text-[10px] text-purple-400/70">Vibrant magenta & purple</span>
-                </button>
-                <button onclick="setTheme('emerald')" class="p-3 bg-emerald-950/40 hover:bg-emerald-950/70 border border-emerald-900/50 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
-                    <span class="text-emerald-400 font-black">Emerald Vault</span>
-                    <span class="text-[10px] text-emerald-400/70">Rich green & gold accents</span>
-                </button>
-            </div>
-            <button onclick="closeModal('theme-modal')" class="w-full py-2.5 theme-btn-primary font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Apply Theme</button>
         </div>
     </div>
 
     <!-- HOST ROOM MODAL -->
     <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl">
             <div>
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
-                    <h2 class="text-lg font-black theme-text-accent flex items-center gap-2">
+                    <h2 class="text-base font-black text-rose-500 flex items-center gap-2">
                         <i class="fa-solid fa-crown"></i> HOST LOBBY
                     </h2>
-                    <button onclick="closeModal('host-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+                    <button onclick="closeModal('host-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="space-y-4 text-left">
                     <div>
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (3 - 8)</label>
-                        <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-500">
+                        <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
                             <option value="3">3 Players</option>
                             <option value="4" selected>4 Players</option>
                             <option value="5">5 Players</option>
                             <option value="6">6 Players</option>
-                            <option value="7">7 Players</option>
-                            <option value="8">8 Players</option>
                         </select>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800">
                         <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Your Lobby Code</span>
                         <div class="flex items-center justify-between">
-                            <span id="created-room-code" class="text-2xl font-black tracking-widest theme-text-accent">------</span>
+                            <span id="created-room-code" class="text-2xl font-black tracking-widest text-rose-500">------</span>
                             <button onclick="copyRoomCode()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold rounded-lg transition border border-zinc-700">
                                 <i class="fa-solid fa-copy mr-1"></i> Copy
                             </button>
                         </div>
                     </div>
                     <div>
-                        <span class="text-xs font-bold text-zinc-400 block mb-2">Waiting Players:</span>
+                        <span class="text-xs font-bold text-zinc-400 block mb-2">Connected Players:</span>
                         <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
-            <button onclick="hostStartMatch()" class="w-full py-3 theme-btn-primary font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Start Match</button>
+            <button onclick="hostStartMatch()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Start Match</button>
         </div>
     </div>
 
     <!-- JOIN WAITING LOBBY MODAL -->
     <div id="join-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl">
             <div>
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
-                    <h2 class="text-lg font-black text-amber-500 flex items-center gap-2">
+                    <h2 class="text-base font-black text-rose-500 flex items-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i> JOIN LOBBY
                     </h2>
-                    <button onclick="closeModal('join-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+                    <button onclick="closeModal('join-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="space-y-4 text-left">
                     <div>
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
-                        <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
+                        <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-rose-600">
                     </div>
                 </div>
             </div>
-            <button onclick="submitJoinCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 font-black text-zinc-950 text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Join Waiting Room</button>
+            <button onclick="submitJoinCode()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Join Waiting Room</button>
         </div>
     </div>
 
     <!-- WAITING FOR HOST SCREEN -->
     <div id="screen-waiting-room" class="fixed inset-0 z-40 bg-zinc-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
-        <div class="slide-in-up max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
-            <div class="text-4xl text-amber-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
-            <h2 class="text-2xl font-black text-white mb-2">WAITING FOR HOST</h2>
-            <p class="text-xs text-zinc-400 mb-6">You have joined the lobby! Waiting for the host to start the match...</p>
+        <div class="fade-in-up max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
+            <div class="text-3xl text-rose-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
+            <h2 class="text-xl font-black text-white mb-1">WAITING FOR HOST</h2>
+            <p class="text-xs text-zinc-400 mb-6">Joined lobby. Waiting for the host to start the game...</p>
             <div id="waiting-player-list" class="space-y-2 text-left mb-6 max-h-40 overflow-y-auto bg-zinc-950 p-3 rounded-xl border border-zinc-800"></div>
             <button onclick="returnToMainMenu()" class="py-2.5 px-6 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 rounded-xl transition border border-zinc-700">Leave Lobby</button>
         </div>
@@ -387,53 +260,52 @@
     <header class="h-12 bg-zinc-950 border-b border-zinc-800 px-4 flex items-center justify-between z-30 shrink-0">
         <div class="flex items-center gap-2">
             <button onclick="returnToMainMenu()" class="text-zinc-400 hover:text-white text-sm pr-2 border-r border-zinc-800 transition" title="Main Menu"><i class="fa-solid fa-house"></i></button>
-            <span class="theme-btn-primary text-white font-black text-[10px] px-2 py-0.5 rounded tracking-wider uppercase">18+ ADULT</span>
-            <h1 class="text-base font-black tracking-tighter text-zinc-100 flex items-center gap-1.5"><i class="fa-solid fa-skull theme-text-accent"></i> UNFILTERED</h1>
+            <span class="bg-rose-600/20 text-rose-400 font-bold text-[10px] px-2 py-0.5 rounded uppercase">18+ ADULT</span>
+            <h1 class="text-sm font-black tracking-tight text-zinc-100 flex items-center gap-1.5"><i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED</h1>
         </div>
-        <div id="game-status-bar" class="text-xs font-semibold text-zinc-300 bg-zinc-900 border border-zinc-800 px-4 py-1 rounded-full flex items-center gap-3 shadow-inner">
-            <span id="turn-indicator" class="theme-text-accent font-bold transition-all">Your Turn</span>
-            <span class="text-zinc-600">|</span>
-            <span id="actions-left-indicator" class="text-amber-400 transition-all">2 Actions Left</span>
+        <div id="game-status-bar" class="text-xs font-semibold text-zinc-300 bg-zinc-900/90 border border-zinc-800 px-4 py-1 rounded-full flex items-center gap-3">
+            <span id="turn-indicator" class="text-rose-500 font-bold">Your Turn</span>
+            <span class="text-zinc-700">|</span>
+            <span id="actions-left-indicator" class="text-amber-400">2 Actions Left</span>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="endTurn()" class="px-3 py-1 text-xs font-black theme-btn-primary text-white rounded-md shadow transition flex items-center gap-1">
+            <button onclick="endTurn()" class="px-3 py-1 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-md transition flex items-center gap-1">
                 <i class="fa-solid fa-forward-step"></i> End Turn
             </button>
-            <button onclick="openModal('theme-modal')" class="px-2.5 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-palette"></i></button>
             <button onclick="openModal('rules-modal')" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-book mr-1"></i> Guide</button>
         </div>
     </header>
 
     <!-- TABLETOP CONTAINER -->
-    <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-6xl mx-auto w-full">
-        <div class="flex items-center justify-between bg-zinc-900/90 p-3 rounded-2xl border border-zinc-800/80 shadow-xl shrink-0 backdrop-blur-md">
+    <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-5xl mx-auto w-full">
+        <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800/80 shrink-0">
             <div class="flex items-center gap-4">
-                <div id="draw-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 hover:border-zinc-700 hover:scale-105 transition-all cursor-pointer shadow-md">
-                    <i class="fa-solid fa-fire-flame-curved theme-text-accent text-sm animate-pulse"></i>
-                    <span class="text-xs font-bold text-white uppercase tracking-wider">Draw Deck (<span id="deck-count" class="theme-text-accent">0</span>)</span>
+                <div id="draw-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 hover:border-rose-600/50 transition cursor-pointer">
+                    <i class="fa-solid fa-fire-flame-curved text-rose-500 text-sm"></i>
+                    <span class="text-xs font-bold text-white uppercase tracking-wider">Draw Deck (<span id="deck-count" class="text-rose-500">0</span>)</span>
                 </div>
-                <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 shadow-md">
+                <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800">
                     <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
                     <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
             </div>
-            <div id="center-log" class="text-xs font-semibold theme-text-accent px-4 py-1.5 bg-zinc-950/90 rounded-xl border border-zinc-800/80 max-w-md truncate shadow-inner">
-                <span id="log-text">Your Turn! 2 cards drawn automatically. Take up to 2 actions.</span>
+            <div id="center-log" class="text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950 rounded-xl border border-zinc-800 max-w-md truncate">
+                <span id="log-text">Your Turn! Take up to 2 actions.</span>
             </div>
         </div>
 
         <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1"></div>
 
-        <div class="bg-zinc-950/70 border border-zinc-800/80 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 backdrop-blur-md shadow-2xl relative min-h-[190px]">
-            <div id="active-tab-title" class="text-xs font-bold text-zinc-300 mb-3 flex items-center gap-2 uppercase tracking-wider">
-                <i class="fa-solid fa-brain theme-text-accent"></i> <span id="tab-player-name">Your</span> Psyche Stacks
+        <div class="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 min-h-[190px]">
+            <div id="active-tab-title" class="text-xs font-bold text-zinc-400 mb-3 flex items-center gap-2 uppercase tracking-wider">
+                <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
             <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
-        <div class="flex-1 bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-3 flex flex-col overflow-hidden shadow-2xl min-h-[185px]">
-            <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between shrink-0">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand theme-text-accent"></i> Your Hand (<span id="hand-count-num">4</span> Cards)</span>
+        <div class="flex-1 bg-zinc-950/90 border border-zinc-800 rounded-2xl p-3 flex flex-col overflow-hidden min-h-[185px]">
+            <div class="text-xs font-bold text-zinc-400 mb-2 flex items-center justify-between shrink-0">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-500"></i> Your Hand (<span id="hand-count-num">4</span> Cards)</span>
                 <span class="text-[10px] text-zinc-500">Drag card onto stack above OR tap card then tap slot</span>
             </div>
             <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1"></div>
@@ -442,24 +314,24 @@
 
     <!-- RULES MODAL -->
     <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 shadow-2xl rounded-3xl relative flex flex-col justify-between max-h-[80vh]">
+        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-md w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
-                <h2 class="text-lg font-black theme-text-accent flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
-                <button onclick="closeModal('rules-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+                <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
+                <button onclick="closeModal('rules-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-2 my-2">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold theme-text-accent">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
+            <div class="space-y-3 text-xs leading-relaxed text-zinc-300 my-2">
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
             </div>
         </div>
     </div>
 
     <!-- GAME OVER MODAL -->
     <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl rounded-3xl relative">
-            <div id="winner-icon" class="text-4xl mb-2 theme-text-accent"><i class="fa-solid fa-trophy"></i></div>
+        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 rounded-3xl relative">
+            <div id="winner-icon" class="text-4xl mb-2 text-rose-500"><i class="fa-solid fa-trophy"></i></div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
             <p id="winner-reason" class="text-xs text-zinc-400 mb-5">Successfully cleared Psyche!</p>
-            <button onclick="returnToMainMenu()" class="w-full py-3 theme-btn-primary font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
+            <button onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
         </div>
     </div>
 
@@ -477,14 +349,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function setTheme(themeName) {
-            document.body.className = document.body.className.replace(/theme-\S+/g, '');
-            if (themeName !== 'default') document.body.classList.add(`theme-${themeName}`);
-            localStorage.setItem('unfiltered_theme', themeName);
-        }
-        const savedTheme = localStorage.getItem('unfiltered_theme');
-        if (savedTheme) setTheme(savedTheme);
-
         class SoundEngine {
             constructor() { this.ctx = null; }
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -493,7 +357,7 @@
                 const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
                 osc.type = 'sine'; osc.frequency.setValueAtTime(320, this.ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(140, this.ctx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + 0.08);
@@ -503,7 +367,7 @@
                 const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(300, this.ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(600, this.ctx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + 0.2);
@@ -513,7 +377,7 @@
                 const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
                 osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, this.ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + 0.25);
@@ -523,7 +387,7 @@
                 const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
                 osc.type = 'triangle'; osc.frequency.setValueAtTime(420, this.ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(620, this.ctx.currentTime + 0.06);
-                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06);
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 osc.start(); osc.stop(this.ctx.currentTime + 0.06);
@@ -545,7 +409,6 @@
 
         const localProfile = {
             username: localStorage.getItem('unfiltered_username') || 'PsychPlayer',
-            gradient: localStorage.getItem('unfiltered_gradient') || 'gradient-neon',
             wins: parseInt(localStorage.getItem('unfiltered_wins') || '0'),
             games: parseInt(localStorage.getItem('unfiltered_games') || '0')
         };
@@ -582,9 +445,7 @@
 
         function saveProfile() {
             localProfile.username = document.getElementById('input-username').value.trim() || 'PsychPlayer';
-            localProfile.gradient = document.getElementById('select-gradient').value;
             localStorage.setItem('unfiltered_username', localProfile.username);
-            localStorage.setItem('unfiltered_gradient', localProfile.gradient);
         }
 
         function startSingleplayer() {
@@ -594,10 +455,10 @@
             document.getElementById('screen-waiting-room').classList.add('hidden');
             gameState.mode = 'single';
             gameState.players = [
-                { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 1, name: 'Bot 1', gradient: 'gradient-cyber', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 2, name: 'Bot 2', gradient: 'gradient-emerald', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
-                { id: 3, name: 'Bot 3', gradient: 'gradient-toxic', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
+                { id: 0, name: localProfile.username, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 1, name: 'Bot 1', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 2, name: 'Bot 2', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
+                { id: 3, name: 'Bot 3', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
             ];
             initGame();
         }
@@ -610,7 +471,7 @@
                 document.getElementById('created-room-code').textContent = code;
                 const initialRoomData = {
                     host: localProfile.username, maxPlayers: parseInt(document.getElementById('select-max-players').value),
-                    players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }], status: 'waiting', state: null
+                    players: [{ id: 0, name: localProfile.username }], status: 'waiting', state: null
                 };
                 await db.ref('rooms/' + code).set(initialRoomData);
                 updateHostPlayerList(initialRoomData.players);
@@ -637,8 +498,8 @@
         function updateHostPlayerList(players) {
             document.getElementById('host-player-list').innerHTML = players.map((p, idx) => `
                 <div class="px-3 py-2 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between text-xs font-bold">
-                    <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'theme-text-accent'} mr-1.5"></i> ${p.name}</span>
-                    <span class="text-[9px] bg-zinc-900 theme-text-accent px-2 py-0.5 rounded uppercase">Ready</span>
+                    <span><i class="fa-solid fa-user ${idx===0?'text-rose-500':'text-zinc-500'} mr-1.5"></i> ${p.name}</span>
+                    <span class="text-[9px] text-rose-400 uppercase">Ready</span>
                 </div>
             `).join('');
         }
@@ -656,8 +517,7 @@
             if(roomData.status !== 'waiting') { alert('Game already started!'); return; }
 
             const newPlayerId = roomData.players.length;
-            const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor'];
-            roomData.players.push({ id: newPlayerId, name: localProfile.username, gradient: gradients[(newPlayerId - 1) % gradients.length] });
+            roomData.players.push({ id: newPlayerId, name: localProfile.username });
             await roomRef.update({ players: roomData.players });
 
             closeModal('join-modal');
@@ -684,7 +544,7 @@
         function updateWaitingPlayerList(players) {
             document.getElementById('waiting-player-list').innerHTML = players.map((p, idx) => `
                 <div class="px-2.5 py-1.5 bg-zinc-900 rounded-lg text-xs font-bold flex items-center justify-between">
-                    <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'theme-text-accent'} mr-1"></i> ${p.name}</span>
+                    <span><i class="fa-solid fa-user ${idx===0?'text-rose-500':'text-zinc-500'} mr-1"></i> ${p.name}</span>
                     <span class="text-[9px] text-zinc-500">${idx===0?'Host':'Joined'}</span>
                 </div>
             `).join('');
@@ -696,7 +556,7 @@
             const snapshot = await roomRef.once('value');
             const roomData = snapshot.val();
             gameState.players = roomData.players.map(p => ({
-                id: p.id, name: p.name, gradient: p.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
+                id: p.id, name: p.name, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
             }));
             initGame();
             await roomRef.update({
@@ -706,7 +566,7 @@
         }
 
         function returnToMainMenu() {
-            closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('theme-modal'); closeModal('rules-modal');
+            closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('rules-modal');
             if(gameState.roomListener) gameState.roomListener.off();
             document.getElementById('screen-waiting-room').classList.add('hidden');
             document.getElementById('screen-main-menu').classList.remove('hidden');
@@ -900,8 +760,8 @@
                 const isSelected = gameState.activeTab === idx;
                 const btn = document.createElement('button');
                 btn.onclick = () => switchPlayerTab(idx);
-                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shadow-md shrink-0 ${isSelected ? 'theme-btn-primary text-white theme-border-accent scale-105' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
-                btn.innerHTML = `<span class="${p.gradient} font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
+                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shrink-0 ${isSelected ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
+                btn.innerHTML = `<span class="font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
                 tabBar.appendChild(btn);
             });
 
@@ -918,7 +778,7 @@
                 if (isLocked) {
                     slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[9px] font-black uppercase">CURED</span></div>`;
                 } else if (stack.length === 0) {
-                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty</span>`;
+                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-600 uppercase">Empty</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
@@ -976,9 +836,9 @@
                 <div class="flex items-center justify-between w-full"><span class="${headerClass}">${card.type.toUpperCase()}</span></div>
                 <div class="my-auto text-left">
                     <div class="font-black text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
-                    <div class="text-[7.5px] ${typeClass==='card-black'?'text-zinc-300':'text-zinc-700'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="text-[7.5px] ${typeClass==='card-black'?'text-zinc-400':'text-zinc-600'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6.5px] uppercase tracking-wider pt-1 border-t ${typeClass==='card-black'?'border-zinc-700 text-zinc-200 font-semibold':'border-zinc-300 text-zinc-800 font-bold'} leading-tight">
+                <div class="text-[6.5px] uppercase tracking-wider pt-1 border-t ${typeClass==='card-black'?'border-zinc-800 text-zinc-300 font-semibold':'border-zinc-200 text-zinc-800 font-bold'} leading-tight">
                     ${subText}
                 </div>
             `;
@@ -988,7 +848,6 @@
         function logAction(msg) { document.getElementById('log-text').textContent = msg; }
         function openModal(id) { const el = document.getElementById(id); el.classList.remove('hidden'); setTimeout(() => el.classList.add('active', 'modal-active'), 10); }
         function closeModal(id) { const el = document.getElementById(id); el.classList.remove('active', 'modal-active'); setTimeout(() => el.classList.add('hidden'), 350); }
-        function openThemeModal() { openModal('theme-modal'); }
     </script>
 </body>
 </html>
