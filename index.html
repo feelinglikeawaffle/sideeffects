@@ -123,18 +123,6 @@
             position: relative;
         }
 
-        .slot-target.valid-drop-target {
-            border-color: #f43f5e;
-            background: rgba(244, 63, 94, 0.15);
-            box-shadow: 0 0 14px rgba(244, 63, 94, 0.5);
-            animation: pulseSlot 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulseSlot {
-            0%, 100% { border-color: #f43f5e; box-shadow: 0 0 10px rgba(244, 63, 94, 0.3); }
-            50% { border-color: #fb7185; box-shadow: 0 0 20px rgba(244, 63, 94, 0.8); }
-        }
-
         .slot-target.drag-over {
             border-color: #fb7185;
             background: rgba(244, 63, 94, 0.35);
@@ -230,7 +218,7 @@
         </div>
     </div>
 
-    <!-- HOST ROOM MODAL (WAITING LOBBY DRAWER) -->
+    <!-- HOST ROOM MODAL -->
     <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
             <div>
@@ -307,7 +295,7 @@
         </div>
     </div>
 
-    <!-- WAITING FOR HOST SCREEN (WHILE JOINED PLAYERS WAIT) -->
+    <!-- WAITING FOR HOST SCREEN -->
     <div id="screen-waiting-room" class="fixed inset-0 z-40 bg-zinc-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
             <div class="text-4xl text-amber-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
@@ -337,11 +325,11 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button id="btn-rules" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition">
-                <i class="fa-solid fa-book mr-1"></i> Rules & Guide
+            <button onclick="endTurn()" class="px-3 py-1 text-xs font-black bg-rose-600 hover:bg-rose-500 text-white rounded-md shadow transition flex items-center gap-1">
+                <i class="fa-solid fa-forward-step"></i> End Turn
             </button>
-            <button id="btn-restart" class="px-3 py-1 text-xs font-bold bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 rounded-md transition">
-                <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+            <button id="btn-rules" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition">
+                <i class="fa-solid fa-book mr-1"></i> Guide
             </button>
         </div>
     </header>
@@ -383,16 +371,6 @@
     </main>
 
     <!-- MODALS -->
-    <div id="tremors-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l-2 border-rose-600 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
-            <div class="text-4xl text-rose-500 mb-2 animate-bounce"><i class="fa-solid fa-hand-holding-medical"></i></div>
-            <h2 class="text-xl font-black text-white uppercase tracking-tight">SEVERE TREMORS DISASTER!</h2>
-            <p class="text-xs text-zinc-300 mt-1 mb-4">Quick! Discard <span class="text-rose-400 font-bold">3 cards</span> in <span id="tremors-timer" class="text-xl font-black text-rose-500">3</span> seconds!</p>
-            <div id="tremors-card-selector" class="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-submit-tremors" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Discard Selected</button>
-        </div>
-    </div>
-
     <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
             <h2 class="text-lg font-black text-white uppercase">HAND SIZE LIMIT EXCEEDED</h2>
@@ -485,7 +463,7 @@
         const sfx = new SoundEngine();
     </script>
 
-    <!-- CORE GAME & WAITING LOBBY SCRIPT -->
+    <!-- CORE GAME & BOT LOGIC -->
     <script>
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
 
@@ -746,9 +724,9 @@
             gameState.discardPile = [];
             gameState.activePlayer = 0;
             gameState.actionsLeft = 2;
-            gameState.gameOver = false;
             gameState.selectedHandIdx = null;
             gameState.activeTab = 0;
+            gameState.gameOver = false;
 
             gameState.players.forEach(p => {
                 p.hand = [];
@@ -797,9 +775,39 @@
             }
 
             drawCardsForPlayer(playerIdx, 2);
-            logAction(`${player.name}'s turn! 2 cards drawn automatically. 2 actions remaining.`);
+            logAction(`${player.name}'s turn! 2 actions remaining.`);
             renderAll();
-            if(gameState.mode === 'host') syncCloudState();
+
+            if (player.isBot && gameState.mode === 'single') {
+                setTimeout(() => executeBotTurn(), 1200);
+            } else if (gameState.mode === 'host') {
+                syncCloudState();
+            }
+        }
+
+        function executeBotTurn() {
+            if (gameState.gameOver) return;
+            const bot = gameState.players[gameState.activePlayer];
+            if (!bot.isBot) return;
+
+            let actionTaken = false;
+            for (let i = bot.hand.length - 1; i >= 0; i--) {
+                const card = bot.hand[i];
+                for (let sIdx = 0; sIdx < 4; sIdx++) {
+                    if (canPlayCardOnStack(card, bot.id, sIdx)) {
+                        executePlayCard(bot.id, i, bot.id, sIdx);
+                        actionTaken = true;
+                        break;
+                    }
+                }
+                if (actionTaken) break;
+            }
+
+            if (gameState.actionsLeft > 0 && !gameState.gameOver) {
+                setTimeout(() => executeBotTurn(), 900);
+            } else {
+                setTimeout(() => nextTurn(), 1200);
+            }
         }
 
         function drawCardsForPlayer(playerIdx, count) {
@@ -824,24 +832,19 @@
             sfx.playDraw();
             logAction(`Drew 1 card using an action. (${gameState.actionsLeft} actions left)`);
             renderAll();
-            checkTurnEnd();
-        }
 
-        function consumeAction() {
-            gameState.actionsLeft--;
-            checkTurnEnd();
-        }
-
-        function checkTurnEnd() {
             if (gameState.actionsLeft <= 0) {
-                const player = gameState.players[gameState.activePlayer];
-                if (player.hand.length > 6) {
-                    openModal('discard-modal');
-                } else {
-                    setTimeout(() => nextTurn(), 1000);
-                }
+                setTimeout(() => endTurn(), 600);
+            }
+        }
+
+        function endTurn() {
+            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+            const player = gameState.players[0];
+            if (player.hand.length > 6) {
+                openModal('discard-modal');
             } else {
-                renderAll();
+                nextTurn();
             }
         }
 
@@ -890,14 +893,12 @@
                 stack.push(card);
                 sfx.playCard();
                 logAction(`${player.name} played "${card.title}".`);
-                consumeAction();
             } else if (card.type === CARD_TYPES.THERAPY) {
                 while (stack.length > 0) gameState.discardPile.push(stack.pop());
                 gameState.discardPile.push(card);
                 targetPlayer.slotLocked[stackIdx] = true;
                 sfx.playCure();
-                logAction(`${player.name} used Therapy! Locked slot safe!`);
-                consumeAction();
+                logAction(`${player.name} used Therapy! Slot locked safe!`);
             } else if (card.type === CARD_TYPES.EPISODE) {
                 sfx.playDisaster();
                 const topDisorder = getStackTopCard(stack);
@@ -907,9 +908,16 @@
                     stack.pop();
                     gameState.discardPile.push(card);
                     logAction(`${player.name} triggered Meltdown on ${topDisorder.title}!`);
-                    consumeAction();
-                }, 900);
+                }, 800);
             }
+
+            if (!player.isBot) {
+                gameState.actionsLeft--;
+                if (gameState.actionsLeft <= 0) {
+                    setTimeout(() => endTurn(), 600);
+                }
+            }
+
             renderAll();
             if(gameState.mode === 'host') syncCloudState();
         }
@@ -991,7 +999,7 @@
                 if (isLocked) {
                     slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[9px] font-black uppercase">CURED</span></div>`;
                 } else if (stack.length === 0) {
-                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty</span>`;
+                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty Slot</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
@@ -1002,8 +1010,24 @@
                     });
                 }
 
+                // Drag and Drop Event Handlers
+                slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('drag-over'); };
+                slot.ondragleave = () => slot.classList.remove('drag-over');
+                slot.ondrop = (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                    if (!isNaN(handIdx) && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
+                        const card = gameState.players[0].hand[handIdx];
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
+                            executePlayCard(0, handIdx, gameState.activeTab, sIdx);
+                        }
+                    }
+                };
+
+                // Tap-to-play fallback for mobile/click
                 slot.onclick = () => {
-                    if (gameState.selectedHandIdx !== null && !isLocked) {
+                    if (gameState.selectedHandIdx !== null && !isLocked && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
                         const card = gameState.players[0].hand[gameState.selectedHandIdx];
                         if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
                             executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
@@ -1020,7 +1044,16 @@
                 gameState.players[0]?.hand.forEach((card, idx) => {
                     const cardDOM = renderCardDOM(card);
                     cardDOM.classList.add('hand-card-item');
+                    cardDOM.draggable = true;
+
                     if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
+
+                    cardDOM.ondragstart = (e) => {
+                        e.dataTransfer.setData('text/plain', idx);
+                        cardDOM.classList.add('dragging');
+                    };
+                    cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
+
                     cardDOM.onclick = (e) => {
                         e.stopPropagation();
                         gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
@@ -1068,7 +1101,6 @@
 
         document.getElementById('btn-rules').onclick = () => openModal('rules-modal');
         document.getElementById('close-rules').onclick = () => closeModal('rules-modal');
-        document.getElementById('btn-restart').onclick = initGame;
     </script>
 </body>
 </html>
