@@ -32,7 +32,6 @@
             background-image: radial-gradient(circle at 50% 50%, #0d0d0f 0%, #050505 85%);
         }
 
-        /* Subtle, Clean Entrance Animation */
         .fade-in-up {
             animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -64,7 +63,6 @@
             pointer-events: auto;
         }
 
-        /* Card Styles */
         .card-base {
             width: 108px;
             height: 152px;
@@ -156,7 +154,6 @@
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 max-w-sm mb-6">A dark, psychological party game. Clear your mind or sabotage your friends.</p>
 
-            <!-- PROFILE SETTINGS -->
             <div class="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 text-left">
                 <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-user text-rose-500"></i> Player Profile</span>
@@ -165,7 +162,6 @@
                 <input id="input-username" type="text" maxlength="12" value="PsychPlayer" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-600 transition">
             </div>
 
-            <!-- MODE SELECT BUTTONS -->
             <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
                     <i class="fa-solid fa-robot text-base text-rose-500"></i>
@@ -253,6 +249,18 @@
             <p class="text-xs text-zinc-400 mb-6">Joined lobby. Waiting for the host to start the game...</p>
             <div id="waiting-player-list" class="space-y-2 text-left mb-6 max-h-40 overflow-y-auto bg-zinc-950 p-3 rounded-xl border border-zinc-800"></div>
             <button onclick="returnToMainMenu()" class="py-2.5 px-6 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 rounded-xl transition border border-zinc-700">Leave Lobby</button>
+        </div>
+    </div>
+
+    <!-- DISCARD OVER 6 CARDS MODAL -->
+    <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
+        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
+                <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-hand"></i> HAND SIZE EXCEEDED (>6)</h2>
+            </div>
+            <p class="text-xs text-zinc-300 mb-3">You have more than 6 cards in your hand. Select cards to discard until your hand size is 6 or fewer.</p>
+            <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-60 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
+            <button onclick="confirmDiscardCards()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Confirm Discard</button>
         </div>
     </div>
 
@@ -416,7 +424,8 @@
         const gameState = {
             mode: 'single', roomCode: '', deck: [], discardPile: [],
             activePlayer: 0, actionsLeft: 2, gameOver: false,
-            selectedHandIdx: null, activeTab: 0, players: [], roomListener: null
+            selectedHandIdx: null, activeTab: 0, players: [], roomListener: null,
+            selectedDiscardIndices: new Set()
         };
 
         function generateMasterDeck() {
@@ -435,7 +444,7 @@
                 }
             });
             for (let i = 0; i < 12; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
-            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Play temporarily!' });
+            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers instant penalty!' });
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -566,7 +575,7 @@
         }
 
         function returnToMainMenu() {
-            closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('rules-modal');
+            closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('rules-modal'); closeModal('discard-modal');
             if(gameState.roomListener) gameState.roomListener.off();
             document.getElementById('screen-waiting-room').classList.add('hidden');
             document.getElementById('screen-main-menu').classList.remove('hidden');
@@ -611,7 +620,7 @@
             if (gameState.gameOver) return;
             const bot = gameState.players[gameState.activePlayer];
             if (!bot.isBot || gameState.actionsLeft <= 0) {
-                setTimeout(() => nextTurn(), 1000);
+                setTimeout(() => endTurn(), 1000);
                 return;
             }
 
@@ -633,10 +642,10 @@
                 gameState.actionsLeft--;
             }
 
-            if (gameState.actionsLeft > 0 && !gameState.gameOver) {
+            if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
                 setTimeout(() => executeBotFullTurn(), 900);
             } else {
-                setTimeout(() => nextTurn(), 1200);
+                setTimeout(() => endTurn(), 1200);
             }
         }
 
@@ -660,6 +669,58 @@
 
         function endTurn() {
             if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+            const player = gameState.players[0];
+            if (player.hand.length > 6) {
+                gameState.selectedDiscardIndices.clear();
+                renderDiscardSelector();
+                openModal('discard-modal');
+            } else {
+                nextTurn();
+            }
+        }
+
+        function renderDiscardSelector() {
+            const container = document.getElementById('discard-card-selector');
+            container.innerHTML = '';
+            gameState.players[0].hand.forEach((card, idx) => {
+                const cardDOM = renderCardDOM(card);
+                cardDOM.style.cursor = 'pointer';
+                if (gameState.selectedDiscardIndices.has(idx)) {
+                    cardDOM.style.border = '3px solid #e11d48';
+                    cardDOM.style.transform = 'scale(0.95)';
+                }
+                cardDOM.onclick = () => {
+                    if (gameState.selectedDiscardIndices.has(idx)) {
+                        gameState.selectedDiscardIndices.delete(idx);
+                    } else {
+                        gameState.selectedDiscardIndices.add(idx);
+                    }
+                    renderDiscardSelector();
+                };
+                container.appendChild(cardDOM);
+            });
+        }
+
+        function confirmDiscardCards() {
+            const player = gameState.players[0];
+            const remainingCount = player.hand.length - gameState.selectedDiscardIndices.size;
+            if (remainingCount > 6) {
+                alert(`You must discard at least ${player.hand.length - 6} card(s) to get down to 6.`);
+                return;
+            }
+            const newHand = [];
+            const discarded = [];
+            player.hand.forEach((card, idx) => {
+                if (gameState.selectedDiscardIndices.has(idx)) {
+                    discarded.push(card);
+                } else {
+                    newHand.push(card);
+                }
+            });
+            player.hand = newHand;
+            gameState.discardPile.push(...discarded);
+            gameState.selectedDiscardIndices.clear();
+            closeModal('discard-modal');
             nextTurn();
         }
 
@@ -703,8 +764,9 @@
                 gameState.discardPile.push(card); targetPlayer.slotLocked[stackIdx] = true;
                 sfx.playCure(); logAction(`${player.name} cured slot!`);
             } else if (card.type === CARD_TYPES.EPISODE) {
-                sfx.playDisaster(); const top = getStackTopCard(stack); stack.push(card); renderAll();
-                setTimeout(() => { stack.pop(); gameState.discardPile.push(card); logAction(`${player.name} triggered Meltdown!`); }, 800);
+                sfx.playDisaster();
+                gameState.discardPile.push(card);
+                logAction(`${player.name} triggered Meltdown instantly on ${targetPlayer.name}!`);
             }
 
             if (!player.isBot) {
