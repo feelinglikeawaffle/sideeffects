@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDKs (Realtime Database Compatible) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
@@ -32,7 +32,6 @@
             background-image: radial-gradient(circle at 50% 50%, #0d0d0f 0%, #050505 85%);
         }
 
-        /* Smooth, Slower Easing Transitions */
         .screen-container {
             position: fixed;
             inset: 0;
@@ -90,7 +89,7 @@
             height: 152px;
             border-radius: 10px;
             position: relative;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
             cursor: grab;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
             border: 1px solid #27272a;
@@ -108,6 +107,7 @@
             z-index: 1000 !important;
             box-shadow: 0 16px 32px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.4);
             transform: scale(1.05) !important;
+            opacity: 0.8;
         }
 
         .card-base.selected-card {
@@ -148,8 +148,8 @@
 
         .slot-target.drag-over {
             border-color: #e11d48;
-            background: rgba(225, 29, 72, 0.1);
-            transform: scale(1.02);
+            background: rgba(225, 29, 72, 0.15);
+            transform: scale(1.03);
         }
 
         .slot-locked-safe {
@@ -157,7 +157,6 @@
             background: rgba(5, 150, 105, 0.12) !important;
         }
 
-        /* MOBILE RESPONSIVE TWEAKS */
         @media (max-width: 768px) {
             .card-base {
                 width: 86px;
@@ -664,7 +663,6 @@
             gameState.activePlayer = playerIdx; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
             const player = gameState.players[playerIdx];
 
-            // Automatically focus view tab on the currently active player so you can watch them play!
             gameState.activeTab = playerIdx;
 
             if (player.skipNextTurn) {
@@ -677,7 +675,7 @@
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
-                setTimeout(() => executeBotTurn(playerIdx), 900);
+                setTimeout(() => executeBotTurn(playerIdx), 1000);
             } else if (gameState.mode === 'host') { syncCloudState(); }
         }
 
@@ -685,6 +683,7 @@
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
             const bot = gameState.players[botIdx];
 
+            // HARD GUARD: Strict maximum of 2 actions per turn
             if (gameState.actionsLeft <= 0 || bot.hand.length === 0) {
                 setTimeout(() => nextTurn(), 900);
                 return;
@@ -703,15 +702,17 @@
                 if (played) break;
             }
 
-            if (gameState.actionsLeft > 0 && !played) {
+            if (!played && gameState.actionsLeft > 0) {
                 drawCardsForPlayer(bot.id, 1);
                 gameState.actionsLeft--;
+                logAction(`${bot.name} drew a card. (${gameState.actionsLeft} action left)`);
+                renderAll();
             }
 
             if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
-                setTimeout(() => executeBotTurn(botIdx), 900);
+                setTimeout(() => executeBotTurn(botIdx), 1000);
             } else {
-                setTimeout(() => nextTurn(), 900);
+                setTimeout(() => nextTurn(), 1000);
             }
         }
 
@@ -836,9 +837,11 @@
                 logAction(`${player.name} triggered Meltdown instantly on ${targetPlayer.name}!`);
             }
 
-            if (!player.isBot) {
-                gameState.actionsLeft--;
-                if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
+            // Always decrement actions on card play
+            gameState.actionsLeft--;
+
+            if (!player.isBot && gameState.actionsLeft <= 0) {
+                setTimeout(() => endTurn(), 500);
             }
             renderAll();
             if (gameState.mode === 'host') syncCloudState();
@@ -916,6 +919,7 @@
                     });
                 }
 
+                // Drag & Drop Target Handlers
                 slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('drag-over'); };
                 slot.ondragleave = () => slot.classList.remove('drag-over');
                 slot.ondrop = (e) => {
@@ -940,11 +944,23 @@
             if (handContainer) {
                 handContainer.innerHTML = '';
                 gameState.players[0]?.hand.forEach((card, idx) => {
-                    const cardDOM = renderCardDOM(card); cardDOM.classList.add('hand-card-item'); cardDOM.draggable = true;
+                    const cardDOM = renderCardDOM(card); 
+                    cardDOM.classList.add('hand-card-item'); 
+                    cardDOM.draggable = true;
                     if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
-                    cardDOM.ondragstart = (e) => { e.dataTransfer.setData('text/plain', idx); cardDOM.classList.add('dragging'); };
+
+                    // Native Drag & Drop Handlers for Hand Cards
+                    cardDOM.ondragstart = (e) => { 
+                        e.dataTransfer.setData('text/plain', idx); 
+                        cardDOM.classList.add('dragging'); 
+                    };
                     cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
-                    cardDOM.onclick = (e) => { e.stopPropagation(); gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; renderAll(); };
+
+                    cardDOM.onclick = (e) => { 
+                        e.stopPropagation(); 
+                        gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; 
+                        renderAll(); 
+                    };
                     handContainer.appendChild(cardDOM);
                 });
             }
