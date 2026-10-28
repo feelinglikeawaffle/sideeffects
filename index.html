@@ -176,6 +176,40 @@
             }
         }
 
+        /* Polished motion: restrained, fast feedback while preserving the dark/rose identity. */
+        :root { color-scheme: dark; }
+        button, input, select, .slot-target, #draw-deck, .card-base { -webkit-tap-highlight-color: transparent; }
+        button { transition: transform .22s cubic-bezier(.2,.8,.2,1), background-color .22s ease, border-color .22s ease, box-shadow .22s ease, opacity .22s ease; }
+        button:hover { transform: translateY(-1px); }
+        button:active { transform: translateY(1px) scale(.985); }
+        .screen-container > div { animation: panel-arrive .65s cubic-bezier(.2,.8,.2,1) both; }
+        .card-base { animation: card-arrive .34s cubic-bezier(.2,.8,.2,1) both; transform-origin: center bottom; }
+        .hand-card-item { cursor: pointer; }
+        .hand-card-item:hover { transform: translateY(-9px) rotate(-1deg); box-shadow: 0 18px 30px rgba(0,0,0,.55), 0 0 0 1px rgba(225,29,72,.22); }
+        .slot-target { min-width: 0; }
+        .slot-target.drag-over { box-shadow: 0 0 22px rgba(225,29,72,.16); }
+        .modal-overlay { transition: opacity .32s ease, backdrop-filter .32s ease; }
+        .side-drawer { transition: transform .42s cubic-bezier(.2,.8,.2,1); }
+        #tab-bar-container button { position: relative; overflow: hidden; }
+        #tab-bar-container button::after { content:""; position:absolute; left:12%; right:12%; bottom:0; height:2px; background:#fb7185; transform:scaleX(0); transition:transform .25s ease; }
+        #tab-bar-container button:hover::after { transform:scaleX(1); }
+        @keyframes panel-arrive { from { opacity:0; transform:translateY(12px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes card-arrive { from { opacity:0; transform:translateY(10px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @media (max-width: 768px) {
+            #table-container { padding: 8px; gap: 8px; }
+            #player-hand { min-height: 150px; padding: 8px 4px 12px; gap: 9px; }
+            #player-hand .card-base { width: 98px; height: 138px; padding: 7px; }
+            #active-psyche-container .card-base, #active-psyche-container .stacked-card { width: 78px; height: 110px; padding: 5px; }
+            #active-psyche-container .card-disorder-header, #active-psyche-container .card-drug-header,
+            #active-psyche-container .card-therapy-header, #active-psyche-container .card-episode-header { font-size: 6px; }
+            #active-psyche-container { column-gap: 8px !important; row-gap: 8px !important; }
+            #tab-bar-container { scrollbar-width: none; }
+            #tab-bar-container::-webkit-scrollbar { display:none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
+
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
@@ -676,8 +710,8 @@
                 renderAll();
                 setTimeout(() => nextTurn(), 1400); return;
             }
-            drawCardsForPlayer(playerIdx, 2);
-            logAction(`${player.name}'s turn! 2 actions available.`);
+            drawCardsForPlayer(playerIdx, 1);
+            logAction(`${player.name}'s turn! Draw 1, then make 2 tactical actions.`);
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
@@ -688,37 +722,38 @@
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
             const bot = gameState.players[botIdx];
-
             if (gameState.actionsLeft <= 0 || bot.hand.length === 0) {
-                setTimeout(() => nextTurn(), 900);
+                setTimeout(() => nextTurn(), 650);
                 return;
             }
-
-            let played = false;
-            for (let i = bot.hand.length - 1; i >= 0; i--) {
-                const card = bot.hand[i];
-                for (let sIdx = 0; sIdx < 4; sIdx++) {
-                    if (canPlayCardOnStack(card, bot.id, sIdx)) {
-                        executePlayCard(bot.id, i, bot.id, sIdx);
-                        played = true;
-                        break;
+            // Bots evaluate legal moves across the whole table instead of only their own stacks.
+            let best = null;
+            bot.hand.forEach((card, handIdx) => {
+                gameState.players.forEach((target, targetIdx) => {
+                    for (let sIdx = 0; sIdx < 4; sIdx++) {
+                        if (!canPlayCardOnStack(card, targetIdx, sIdx)) continue;
+                        const stack = target.psyche[sIdx];
+                        let score = Math.random() * 1.5;
+                        if (card.type === CARD_TYPES.THERAPY) score += 12 + stack.length;
+                        if (card.type === CARD_TYPES.DRUG) score += 8;
+                        if (card.type === CARD_TYPES.EPISODE) score += 10 + (DISORDERS[getStackTopCard(stack)?.disorderId]?.sideEffects?.length || 0);
+                        if (card.type === CARD_TYPES.DISORDER) score += targetIdx === botIdx ? -2 : 5;
+                        if (targetIdx !== botIdx) score += 3;
+                        if ((card.type === CARD_TYPES.THERAPY || card.type === CARD_TYPES.DRUG) && targetIdx !== botIdx) score -= 30;
+                        if (!best || score > best.score) best = { handIdx, targetIdx, sIdx, score };
                     }
-                }
-                if (played) break;
-            }
-
-            if (!played && gameState.actionsLeft > 0) {
+                });
+            });
+            if (best) {
+                executePlayCard(bot.id, best.handIdx, best.targetIdx, best.sIdx);
+            } else if (gameState.actionsLeft > 0) {
                 drawCardsForPlayer(bot.id, 1);
                 gameState.actionsLeft--;
-                logAction(`${bot.name} drew a card. (${gameState.actionsLeft} action left)`);
+                logAction(`${bot.name} searched the deck for an answer.`);
                 renderAll();
             }
-
-            if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
-                setTimeout(() => executeBotTurn(botIdx), 1000);
-            } else {
-                setTimeout(() => nextTurn(), 1000);
-            }
+            if (gameState.actionsLeft > 0 && !gameState.gameOver) setTimeout(() => executeBotTurn(botIdx), 750);
+            else setTimeout(() => nextTurn(), 750);
         }
 
         function drawCardsForPlayer(playerIdx, count) {
