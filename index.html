@@ -32,13 +32,35 @@
             background-image: radial-gradient(circle at 50% 50%, #0d0d0f 0%, #050505 85%);
         }
 
-        .fade-in-up {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* Slide Transition Animations */
+        .screen-container {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
         }
 
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .slide-in-right {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .slide-hidden-right {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
         .side-drawer {
@@ -163,8 +185,8 @@
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
 
     <!-- MAIN MENU SCREEN -->
-    <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-md">
-        <div class="fade-in-up max-w-lg w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/80 border border-zinc-800/80 rounded-3xl shadow-2xl relative">
+    <div id="screen-main-menu" class="screen-container slide-in-right p-4 bg-zinc-950/95 backdrop-blur-md">
+        <div class="max-w-lg w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/80 border border-zinc-800/80 rounded-3xl shadow-2xl relative">
             <div class="flex items-center gap-2 mb-3">
                 <span class="bg-rose-600/20 text-rose-400 border border-rose-500/30 font-extrabold text-[10px] px-3 py-1 rounded-full tracking-wider uppercase">18+ ADULT PARTY GAME</span>
             </div>
@@ -198,6 +220,17 @@
                     Join Game
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- WAITING ROOM SCREEN -->
+    <div id="screen-waiting-room" class="screen-container slide-hidden-right p-6 text-center">
+        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
+            <div class="text-3xl text-rose-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
+            <h2 class="text-xl font-black text-white mb-1">WAITING FOR HOST</h2>
+            <p class="text-xs text-zinc-400 mb-6">Joined lobby. Waiting for the host to start the game...</p>
+            <div id="waiting-player-list" class="space-y-2 text-left mb-6 max-h-40 overflow-y-auto bg-zinc-950 p-3 rounded-xl border border-zinc-800"></div>
+            <button onclick="returnToMainMenu()" class="py-2.5 px-6 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 rounded-xl transition border border-zinc-700">Leave Lobby</button>
         </div>
     </div>
 
@@ -261,20 +294,9 @@
         </div>
     </div>
 
-    <!-- WAITING FOR HOST SCREEN -->
-    <div id="screen-waiting-room" class="fixed inset-0 z-40 bg-zinc-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
-        <div class="fade-in-up max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
-            <div class="text-3xl text-rose-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
-            <h2 class="text-xl font-black text-white mb-1">WAITING FOR HOST</h2>
-            <p class="text-xs text-zinc-400 mb-6">Joined lobby. Waiting for the host to start the game...</p>
-            <div id="waiting-player-list" class="space-y-2 text-left mb-6 max-h-40 overflow-y-auto bg-zinc-950 p-3 rounded-xl border border-zinc-800"></div>
-            <button onclick="returnToMainMenu()" class="py-2.5 px-6 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 rounded-xl transition border border-zinc-700">Leave Lobby</button>
-        </div>
-    </div>
-
     <!-- DISCARD OVER 6 CARDS MODAL -->
     <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
+        <div class="bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
                 <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-hand"></i> HAND SIZE EXCEEDED (>6)</h2>
             </div>
@@ -342,7 +364,7 @@
 
     <!-- RULES MODAL -->
     <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-md w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
+        <div class="bg-zinc-900 border border-zinc-800 max-w-md w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
                 <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
                 <button onclick="closeModal('rules-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
@@ -355,7 +377,7 @@
 
     <!-- GAME OVER MODAL -->
     <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
-        <div class="fade-in-up bg-zinc-900 border border-zinc-800 max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 rounded-3xl relative">
+        <div class="bg-zinc-900 border border-zinc-800 max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 rounded-3xl relative">
             <div id="winner-icon" class="text-4xl mb-2 text-rose-500"><i class="fa-solid fa-trophy"></i></div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
             <p id="winner-reason" class="text-xs text-zinc-400 mb-5">Successfully cleared Psyche!</p>
@@ -477,11 +499,24 @@
             localStorage.setItem('unfiltered_username', localProfile.username);
         }
 
+        function slideToGame() {
+            const menu = document.getElementById('screen-main-menu');
+            menu.classList.remove('slide-in-right');
+            menu.classList.add('slide-out-left');
+        }
+
+        function slideToMenu() {
+            const menu = document.getElementById('screen-main-menu');
+            menu.classList.remove('slide-out-left');
+            menu.classList.add('slide-in-right');
+            document.getElementById('screen-waiting-room').classList.remove('slide-in-right');
+            document.getElementById('screen-waiting-room').classList.add('slide-hidden-right');
+        }
+
         function startSingleplayer() {
             saveProfile();
             if(gameState.roomListener) gameState.roomListener.off();
-            document.getElementById('screen-main-menu').classList.add('hidden');
-            document.getElementById('screen-waiting-room').classList.add('hidden');
+            slideToGame();
             gameState.mode = 'single';
             gameState.players = [
                 { id: 0, name: localProfile.username, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
@@ -515,8 +550,7 @@
                         if(data.status === 'started' && gameState.mode === 'host') {
                             closeModal('host-modal');
                             Object.assign(gameState, data.state);
-                            document.getElementById('screen-main-menu').classList.add('hidden');
-                            document.getElementById('screen-waiting-room').classList.add('hidden');
+                            slideToGame();
                             renderAll();
                         }
                     }
@@ -550,8 +584,14 @@
             await roomRef.update({ players: roomData.players });
 
             closeModal('join-modal');
-            document.getElementById('screen-main-menu').classList.add('hidden');
-            document.getElementById('screen-waiting-room').classList.remove('hidden');
+            const menu = document.getElementById('screen-main-menu');
+            menu.classList.remove('slide-in-right');
+            menu.classList.add('slide-out-left');
+
+            const waitingScreen = document.getElementById('screen-waiting-room');
+            waitingScreen.classList.remove('slide-hidden-right');
+            waitingScreen.classList.add('slide-in-right');
+
             gameState.mode = 'join'; gameState.roomCode = code;
             updateWaitingPlayerList(roomData.players);
 
@@ -562,7 +602,8 @@
                 if(cloudData) {
                     if(cloudData.players) updateWaitingPlayerList(cloudData.players);
                     if(cloudData.status === 'started' && cloudData.state) {
-                        document.getElementById('screen-waiting-room').classList.add('hidden');
+                        waitingScreen.classList.remove('slide-in-right');
+                        waitingScreen.classList.add('slide-hidden-right');
                         Object.assign(gameState, cloudData.state);
                         renderAll();
                     }
@@ -597,8 +638,7 @@
         function returnToMainMenu() {
             closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('rules-modal'); closeModal('discard-modal');
             if(gameState.roomListener) gameState.roomListener.off();
-            document.getElementById('screen-waiting-room').classList.add('hidden');
-            document.getElementById('screen-main-menu').classList.remove('hidden');
+            slideToMenu();
         }
 
         function initGame() {
@@ -632,15 +672,16 @@
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
-                setTimeout(() => executeBotFullTurn(), 900);
+                setTimeout(() => executeBotTurn(playerIdx), 800);
             } else if (gameState.mode === 'host') { syncCloudState(); }
         }
 
-        function executeBotFullTurn() {
-            if (gameState.gameOver) return;
-            const bot = gameState.players[gameState.activePlayer];
-            if (!bot.isBot || gameState.actionsLeft <= 0) {
-                setTimeout(() => endTurn(), 1000);
+        function executeBotTurn(botIdx) {
+            if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
+            const bot = gameState.players[botIdx];
+
+            if (gameState.actionsLeft <= 0 || bot.hand.length === 0) {
+                setTimeout(() => nextTurn(), 800);
                 return;
             }
 
@@ -663,9 +704,9 @@
             }
 
             if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
-                setTimeout(() => executeBotFullTurn(), 900);
+                setTimeout(() => executeBotTurn(botIdx), 700);
             } else {
-                setTimeout(() => endTurn(), 1200);
+                setTimeout(() => nextTurn(), 800);
             }
         }
 
@@ -747,7 +788,8 @@
         function nextTurn() {
             checkWinConditions();
             if (gameState.gameOver) return;
-            startTurn((gameState.activePlayer + 1) % gameState.players.length);
+            const nextPlayerIdx = (gameState.activePlayer + 1) % gameState.players.length;
+            startTurn(nextPlayerIdx);
         }
 
         function getStackTopCard(stack) { return stack.length > 0 ? stack[stack.length - 1] : null; }
