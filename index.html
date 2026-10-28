@@ -537,15 +537,7 @@
                 gameState.roomListener.on('value', snapshot => {
                     const data = snapshot.val();
                     if(data) {
-                        if(data.players) updateHostPlayerList(data.players);
-                        // Fix: only switch view to game if status changed and we are in waiting/host mode without resetting active listeners mid-game
-                        if(data.status === 'started' && data.state && gameState.mode === 'join') {
-                            const waitingScreen = document.getElementById('screen-waiting-room');
-                            waitingScreen.classList.remove('slide-in-right');
-                            waitingScreen.classList.add('slide-hidden-right');
-                            Object.assign(gameState, data.state);
-                            renderAll();
-                        }
+                        if(data.players && data.status === 'waiting') updateHostPlayerList(data.players);
                     }
                 });
             } catch (error) { alert("Failed to host room: " + error.message); }
@@ -593,13 +585,24 @@
             gameState.roomListener.on('value', snap => {
                 const cloudData = snap.val();
                 if(cloudData) {
-                    if(cloudData.players) updateWaitingPlayerList(cloudData.players);
+                    if(cloudData.players && cloudData.status === 'waiting') updateWaitingPlayerList(cloudData.players);
+                    
+                    // Triggered when host starts the match
                     if(cloudData.status === 'started' && cloudData.state) {
                         waitingScreen.classList.remove('slide-in-right');
                         waitingScreen.classList.add('slide-hidden-right');
                         Object.assign(gameState, cloudData.state);
                         slideToGame();
                         renderAll();
+
+                        // Listen for ongoing real-time game state syncs from host
+                        roomRef.child('state').on('value', stateSnap => {
+                            const updatedState = stateSnap.val();
+                            if(updatedState && gameState.mode === 'join') {
+                                Object.assign(gameState, updatedState);
+                                renderAll();
+                            }
+                        });
                     }
                 }
             });
@@ -629,13 +632,22 @@
                 activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
             }
 
-            gameState.players = activePlayersList.map(p => ({
-                id: p.id, name: p.name, isBot: !!p.isBot || p.id !== 0, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
+            // Shuffle players into random order as requested!
+            shuffleArray(activePlayersList);
+
+            gameState.players = activePlayersList.map((p, newIdx) => ({
+                id: newIdx, 
+                name: p.name, 
+                isBot: !!p.isBot || p.name.startsWith('Bot'), 
+                hand: [], 
+                psyche: [[], [], [], []], 
+                slotLocked: [false, false, false, false], 
+                skipNextTurn: false
             }));
             
             initGame();
             
-            // Push initial game start package to Firebase
+            // Push randomized game state package to Firebase
             await roomRef.update({
                 status: 'started',
                 state: { 
@@ -648,7 +660,14 @@
                 }
             });
 
-            // Slide host screen cleanly into tabletop view
+            // Listen for state changes from other players if necessary
+            roomRef.child('state').on('value', stateSnap => {
+                const updatedState = stateSnap.val();
+                if(updatedState && gameState.mode === 'host') {
+                    // Host can manage incoming client updates if any
+                }
+            });
+
             slideToGame();
             renderAll();
         }
@@ -902,8 +921,13 @@
 
         async function syncCloudState() {
             if (gameState.mode !== 'host') return;
-            await db.ref('rooms/' + gameState.roomCode).update({
-                state: { deck: gameState.deck, discardPile: gameState.discardPile, activePlayer: gameState.activePlayer, actionsLeft: gameState.actionsLeft, gameOver: gameState.gameOver, players: gameState.players }
+            await db.ref('rooms/' + gameState.roomCode + '/state').set({
+                deck: gameState.deck, 
+                discardPile: gameState.discardPile, 
+                activePlayer: gameState.activePlayer, 
+                actionsLeft: gameState.actionsLeft, 
+                gameOver: gameState.gameOver, 
+                players: gameState.players 
             });
         }
 
