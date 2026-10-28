@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNFILTERED: Adult Party Card Game</title>
+    <title>UNFILTERED</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -44,32 +44,12 @@
             background: #050505;
         }
 
-        .slide-out-left {
-            transform: translateX(-100%);
-            opacity: 0;
-            pointer-events: none;
-        }
+        .slide-out-left { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+        .slide-in-right { transform: translateX(0); opacity: 1; pointer-events: auto; }
+        .slide-hidden-right { transform: translateX(100%); opacity: 0; pointer-events: none; }
 
-        .slide-in-right {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .slide-hidden-right {
-            transform: translateX(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .side-drawer {
-            transform: translateX(100%);
-            transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .modal-active .side-drawer {
-            transform: translateX(0);
-        }
+        .side-drawer { transform: translateX(100%); transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1); }
+        .modal-active .side-drawer { transform: translateX(0); }
 
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.85);
@@ -78,27 +58,26 @@
             pointer-events: none;
             transition: opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1);
         }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
+        /* REBUILT CARD LAYOUT: Ultra legible, clear vulnerability & treatment tags */
         .card-base {
-            width: 108px;
-            height: 152px;
-            border-radius: 10px;
+            width: 114px;
+            height: 162px;
+            border-radius: 12px;
             position: relative;
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
             cursor: grab;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
-            border: 1px solid #27272a;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+            border: 2px solid #27272a;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 9px;
+            padding: 8px;
             box-sizing: border-box;
             flex-shrink: 0;
+            background: #0d0d0f;
+            color: #fff;
         }
 
         .card-base:active { cursor: grabbing; }
@@ -107,12 +86,12 @@
             z-index: 1000 !important;
             box-shadow: 0 16px 32px rgba(0, 0, 0, 0.9), 0 0 15px rgba(225, 29, 72, 0.4);
             transform: scale(1.05) !important;
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         .card-base.selected-card {
             border-color: #e11d48 !important;
-            box-shadow: 0 0 16px rgba(225, 29, 72, 0.5) !important;
+            box-shadow: 0 0 16px rgba(225, 29, 72, 0.6) !important;
             transform: translateY(-8px) !important;
         }
 
@@ -121,28 +100,41 @@
             left: 0;
             right: 0;
             margin: auto;
-            transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.35s ease;
         }
 
-        .hand-card-item { transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
+        .hand-card-item { transition: transform 0.25s ease; }
         .hand-card-item:hover {
             transform: translateY(-6px);
             z-index: 50;
         }
 
-        .card-white { background: #ffffff !important; color: #09090b !important; border-color: #e4e4e7 !important; }
-        .card-black { background: #0d0d0f !important; color: #ffffff !important; border-color: #27272a !important; }
+        /* Distinct color coding for instant game clarity */
+        .card-disorder { background: #18080c; border-color: #e11d48; }
+        .card-drug { background: #081026; border-color: #2563eb; }
+        .card-therapy { background: #041f14; border-color: #059669; }
+        .card-episode { background: #1f0404; border-color: #dc2626; }
+        .card-action { background: #1c1404; border-color: #d97706; }
 
-        .card-disorder-header { background-color: #e11d48; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-action-header { background-color: #d97706; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-badge {
+            font-size: 7.5px;
+            font-weight: 900;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        .badge-disorder { background-color: #e11d48; color: #fff; }
+        .badge-drug { background-color: #2563eb; color: #fff; }
+        .badge-therapy { background-color: #059669; color: #fff; }
+        .badge-episode { background-color: #dc2626; color: #fff; }
+        .badge-action { background-color: #d97706; color: #fff; }
 
         .slot-target {
             border: 2px dashed #27272a;
             border-radius: 12px;
-            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.25s ease;
             background: rgba(13, 13, 15, 0.6);
             position: relative;
         }
@@ -154,27 +146,14 @@
         }
 
         .slot-locked-safe {
-            border: 1px solid #059669 !important;
-            background: rgba(5, 150, 105, 0.12) !important;
+            border: 2px solid #059669 !important;
+            background: rgba(5, 150, 105, 0.15) !important;
         }
 
         @media (max-width: 768px) {
-            .card-base {
-                width: 86px;
-                height: 122px;
-                padding: 6px;
-            }
-            .card-disorder-header, .card-drug-header, .card-therapy-header, .card-episode-header, .card-action-header {
-                font-size: 7px;
-                padding: 1px 4px;
-            }
-            #active-psyche-container {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-            }
-            header h1 {
-                font-size: 12px !important;
-            }
+            .card-base { width: 88px; height: 126px; padding: 6px; }
+            .tag-badge { font-size: 6.5px; padding: 1px 3px; }
+            #active-psyche-container { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -352,14 +331,14 @@
 
         <div class="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center shrink-0 min-h-[170px] sm:min-h-[190px]">
             <div id="active-tab-title" class="text-xs font-bold text-zinc-400 mb-2.5 sm:mb-3 flex items-center gap-2 uppercase tracking-wider">
-                <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
+                <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks <span id="spectating-badge" class="hidden bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[9px] px-2 py-0.5 rounded ml-2 font-black uppercase animate-pulse">Spectating POV</span>
             </div>
             <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
-        <div class="flex-1 bg-zinc-950/90 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 flex flex-col overflow-hidden min-h-[160px] sm:min-h-[185px]">
+        <div id="bottom-hand-section" class="flex-1 bg-zinc-950/90 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 flex flex-col overflow-hidden min-h-[160px] sm:min-h-[185px]">
             <div class="text-[11px] sm:text-xs font-bold text-zinc-400 mb-2 flex items-center justify-between shrink-0">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-500"></i> Your Hand (<span id="hand-count-num">4</span>)</span>
+                <span id="hand-title-label" class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-500"></i> Your Hand (<span id="hand-count-num">4</span>)</span>
                 <span class="text-[9px] sm:text-[10px] text-zinc-500">Drag or Tap card then slot</span>
             </div>
             <div id="player-hand" class="flex-1 flex gap-2.5 sm:gap-3 overflow-x-auto items-center py-1 sm:py-2 px-1"></div>
@@ -374,10 +353,9 @@
                 <button onclick="closeModal('rules-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-3 text-xs leading-relaxed text-zinc-300 my-2">
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">SPECTATE MODE:</span> When other players or bots take their turn, your view automatically switches to their POV so you can watch their actions live!</div>
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">MELTDOWN EFFECT:</span> Placing an Episode card on an active crisis triggers its crisis penalty effect and then discards!</div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">DEFLECT & ACTION CARDS:</span> Use DEFLECT cards to counter incoming sabotage attacks or INTERVENTION to clear active crisis stacks!</div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">FREE DISCARD:</span> Click the Discard button anytime on your turn to discard cards without using your 2 actions.</div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">BALANCED DECK:</span> Miracles (Therapy) are now rare and high-value. Crisis and drug cards are tightly balanced.</div>
             </div>
         </div>
     </div>
@@ -477,10 +455,10 @@
             selectedDiscardIndices: new Set()
         };
 
+        // BALANCED DECK GENERATOR: Miracles (Therapy) made rare, crisp ratios for crisis/drugs
         function generateMasterDeck() {
             const deck = []; let cardId = 0;
             
-            // Balanced Distribution for maximum tactical choice
             Object.values(DISORDERS).forEach(disorder => {
                 const count = disorder.id === 'EATING_TRASH' ? 3 : 4;
                 for (let i = 0; i < count; i++) {
@@ -490,16 +468,15 @@
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
                     for (let i = 0; i < 4; i++) {
-                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}.` });
+                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Treats ${disorder.name}.` });
                     }
                 }
             });
-            for (let i = 0; i < 10; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
-            for (let i = 0; i < 16; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers crisis effect!' });
+            // RARE MIRACLES (THERAPY): Reduced count for high tactical value
+            for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Complete mental reset.', desc: 'Locks slot permanently!' });
             
-            // NEW INTERACTIVE ACTION CARDS
-            for (let i = 0; i < 8; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'DEFLECT', title: 'Deflect', flavor: 'Reverse Uno move.', desc: 'Counters incoming attacks!' });
-            for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'INTERVENTION', title: 'Intervention', flavor: 'Group therapy.', desc: 'Clears active slot disorders!' });
+            for (let i = 0; i < 14; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers crisis penalty.', desc: 'Triggers crisis effect!' });
+            for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'INTERVENTION', title: 'Intervention', flavor: 'Group support.', desc: 'Clears active slot crisis!' });
             for (let i = 0; i < 4; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'RELAPSE', title: 'Relapse', flavor: 'Back to step 1.', desc: 'Unlocks target Therapy slot!' });
 
             for (let i = deck.length - 1; i > 0; i--) {
@@ -679,7 +656,7 @@
             gameState.activePlayer = playerIdx; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
             const player = gameState.players[playerIdx];
 
-            // Always camera focus active player
+            // SPECTATE MODE: Automatically switch view (tab) to the active player's POV
             gameState.activeTab = playerIdx;
 
             if (player.skipNextTurn) {
@@ -692,7 +669,7 @@
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
-                setTimeout(() => executeBotTurn(playerIdx), 1000);
+                setTimeout(() => executeBotTurn(playerIdx), 1200);
             } else if (gameState.mode === 'host') { syncCloudState(); }
         }
 
@@ -729,7 +706,7 @@
             }
 
             if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
-                setTimeout(() => executeBotTurn(botIdx), 1000);
+                setTimeout(() => executeBotTurn(botIdx), 1200);
             } else {
                 setTimeout(() => nextTurn(), 1000);
             }
@@ -849,28 +826,12 @@
             const targetPlayer = gameState.players[targetPlayerIdx];
             const stack = targetPlayer.psyche[stackIdx];
 
-            // INTERACTIVE DEFLECT REACTION CHECK
-            if (targetPlayerIdx !== playerIdx) {
-                const deflectIdx = targetPlayer.hand.findIndex(c => c.type === CARD_TYPES.ACTION && c.actionType === 'DEFLECT');
-                if (deflectIdx !== -1) {
-                    const deflectCard = targetPlayer.hand.splice(deflectIdx, 1)[0];
-                    gameState.discardPile.push(deflectCard);
-                    logAction(`DEFLECTED! ${targetPlayer.name} countered ${player.name}'s ${card.title}!`);
-                    sfx.playCure();
-                    player.hand.splice(cardHandIdx, 1);
-                    gameState.discardPile.push(card);
-                    gameState.actionsLeft--;
-                    renderAll();
-                    return;
-                }
-            }
-
             player.hand.splice(cardHandIdx, 1); gameState.selectedHandIdx = null;
 
             if (card.type === CARD_TYPES.ACTION) {
                 if (card.actionType === 'INTERVENTION') {
                     while (stack.length > 0) gameState.discardPile.push(stack.pop());
-                    sfx.playCure(); logAction(`${player.name} used INTERVENTION to clear ${targetPlayer.name}'s stack!`);
+                    sfx.playCure(); logAction(`${player.name} used INTERVENTION to clear ${targetPlayer.name}'s crisis!`);
                 } else if (card.actionType === 'RELAPSE') {
                     targetPlayer.slotLocked[stackIdx] = false;
                     sfx.playDisaster(); logAction(`${player.name} forced a RELAPSE on ${targetPlayer.name}'s cured slot!`);
@@ -906,7 +867,7 @@
 
             gameState.actionsLeft--;
 
-            if (!player.isBot && gameState.actionsLeft <= 0) {
+            if (!player.isBot && gameState.actionsLeft <= 0 && gameState.activePlayer === 0) {
                 setTimeout(() => endTurn(), 500);
             }
             renderAll();
@@ -953,18 +914,25 @@
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Act`;
 
+            // Spectating status badge
+            const isSpectating = gameState.activeTab !== 0;
+            const specBadge = document.getElementById('spectating-badge');
+            if (isSpectating) specBadge.classList.remove('hidden');
+            else specBadge.classList.add('hidden');
+
             const tabBar = document.getElementById('tab-bar-container'); tabBar.innerHTML = '';
             gameState.players.forEach((p, idx) => {
                 const isSelected = gameState.activeTab === idx;
+                const isCurrentTurn = gameState.activePlayer === idx;
                 const btn = document.createElement('button');
                 btn.onclick = () => switchPlayerTab(idx);
                 btn.className = `py-1.5 sm:py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shrink-0 ${isSelected ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
-                btn.innerHTML = `<span class="font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
+                btn.innerHTML = `<span class="font-extrabold">${p.name}</span> ${isCurrentTurn ? '<i class="fa-solid fa-eye text-amber-400 ml-0.5" title="Active Turn POV"></i>' : ''} <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
                 tabBar.appendChild(btn);
             });
 
             const activePlayerObj = gameState.players[gameState.activeTab] || gameState.players[0];
-            document.getElementById('tab-player-name').textContent = activePlayerObj.name;
+            document.getElementById('tab-player-name').textContent = isSpectating ? `${activePlayerObj.name}'s` : 'Your';
 
             const container = document.getElementById('active-psyche-container'); container.innerHTML = '';
             for (let sIdx = 0; sIdx < 4; sIdx++) {
@@ -1004,51 +972,81 @@
                 container.appendChild(slot);
             }
 
+            // Hand viewing: if spectating another player, show their hand count/status clearly
             const handContainer = document.getElementById('player-hand');
-            document.getElementById('hand-count-num').textContent = gameState.players[0]?.hand.length || 0;
+            const handTitleLabel = document.getElementById('hand-title-label');
+            const handOwner = gameState.players[gameState.activeTab] || gameState.players[0];
+            
+            document.getElementById('hand-count-num').textContent = handOwner.hand.length;
+            if (isSpectating) {
+                handTitleLabel.innerHTML = `<i class="fa-solid fa-eye text-amber-400"></i> Spectating ${handOwner.name}'s Hand (${handOwner.hand.length} cards)`;
+            } else {
+                handTitleLabel.innerHTML = `<i class="fa-solid fa-hand text-rose-500"></i> Your Hand (${handOwner.hand.length} cards)`;
+            }
+
             if (handContainer) {
                 handContainer.innerHTML = '';
-                gameState.players[0]?.hand.forEach((card, idx) => {
+                handOwner.hand.forEach((card, idx) => {
                     const cardDOM = renderCardDOM(card); 
                     cardDOM.classList.add('hand-card-item'); 
-                    cardDOM.draggable = true;
-                    if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
+                    if (!isSpectating) {
+                        cardDOM.draggable = true;
+                        if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
 
-                    cardDOM.ondragstart = (e) => { 
-                        e.dataTransfer.setData('text/plain', idx); 
-                        cardDOM.classList.add('dragging'); 
-                    };
-                    cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
+                        cardDOM.ondragstart = (e) => { 
+                            e.dataTransfer.setData('text/plain', idx); 
+                            cardDOM.classList.add('dragging'); 
+                        };
+                        cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
 
-                    cardDOM.onclick = (e) => { 
-                        e.stopPropagation(); 
-                        gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; 
-                        renderAll(); 
-                    };
+                        cardDOM.onclick = (e) => { 
+                            e.stopPropagation(); 
+                            gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; 
+                            renderAll(); 
+                        };
+                    }
                     handContainer.appendChild(cardDOM);
                 });
             }
             document.getElementById('draw-deck').onclick = handleHumanDrawAction;
         }
 
+        // REDESIGNED CARD LAYOUT FOR MAXIMAL CLARITY ON WHAT CARDS CURE, TREAT, OR ARE SUSCEPTIBLE TO
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
-            let typeClass = card.type === CARD_TYPES.EPISODE ? 'card-black' : 'card-white';
-            let headerClass = card.type === CARD_TYPES.DRUG ? 'card-drug-header' : card.type === CARD_TYPES.THERAPY ? 'card-therapy-header' : card.type === CARD_TYPES.EPISODE ? 'card-episode-header' : card.type === CARD_TYPES.ACTION ? 'card-action-header' : 'card-disorder-header';
+            let typeClass = 'card-disorder';
+            let badgeClass = 'badge-disorder';
+            let badgeText = 'CRISIS';
+
+            if (card.type === CARD_TYPES.DRUG) { typeClass = 'card-drug'; badgeClass = 'badge-drug'; badgeText = 'DRUG / TREATMENT'; }
+            else if (card.type === CARD_TYPES.THERAPY) { typeClass = 'card-therapy'; badgeClass = 'badge-therapy'; badgeText = 'MIRACLE'; }
+            else if (card.type === CARD_TYPES.EPISODE) { typeClass = 'card-episode'; badgeClass = 'badge-episode'; badgeText = 'MELTDOWN'; }
+            else if (card.type === CARD_TYPES.ACTION) { typeClass = 'card-action'; badgeClass = 'badge-action'; badgeText = 'ACTION'; }
+
             cardEl.className = `card-base ${typeClass} shadow-xl`;
-            let subText = card.desc || card.punishmentText || '';
-            if (card.type === CARD_TYPES.DRUG) {
-                const sideEffectNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : '';
-                subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-extrabold">Vulnerable: ${sideEffectNames}</span>`;
+
+            let metaDetails = '';
+            if (card.type === CARD_TYPES.DISORDER) {
+                metaDetails = `<span class="text-rose-400 font-bold">Punishment:</span> ${card.punishmentText}`;
+            } else if (card.type === CARD_TYPES.DRUG) {
+                const vulnerabilityNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : 'None';
+                metaDetails = `<span class="text-blue-300 font-bold">Treats:</span> ${card.treatsName}<br/><span class="text-amber-400 font-bold">Vulnerable to:</span> ${vulnerabilityNames}`;
+            } else if (card.type === CARD_TYPES.THERAPY) {
+                metaDetails = `<span class="text-emerald-400 font-bold">Effect:</span> Permanently locks & cures slot!`;
+            } else if (card.type === CARD_TYPES.EPISODE) {
+                metaDetails = `<span class="text-red-400 font-bold">Effect:</span> Triggers active crisis penalty.`;
+            } else if (card.type === CARD_TYPES.ACTION) {
+                metaDetails = `<span class="text-amber-300 font-bold">Effect:</span> ${card.desc}`;
             }
+
             cardEl.innerHTML = `
-                <div class="flex items-center justify-between w-full"><span class="${headerClass}">${card.type.toUpperCase()}</span></div>
+                <div class="flex items-center justify-between w-full"><span class="tag-badge ${badgeClass}">${badgeText}</span></div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[10px] sm:text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
-                    <div class="text-[7px] sm:text-[7.5px] ${typeClass==='card-black'?'text-zinc-400':'text-zinc-600'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="font-black text-[10.5px] sm:text-[11px] leading-tight text-white">${card.title}</div>
+                    <div class="text-[7.5px] sm:text-[8px] text-zinc-400 mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6px] sm:text-[6.5px] uppercase tracking-wider pt-1 border-t ${typeClass==='card-black'?'border-zinc-800 text-zinc-300 font-semibold':'border-zinc-200 text-zinc-800 font-bold'} leading-tight">
-                    ${subText}
+                <div class="text-[6.5px] sm:text-[7px] uppercase tracking-wider pt-1 border-t border-zinc-800 text-zinc-300 leading-tight">
+                    ${metaDetails}
                 </div>
             `;
             return cardEl;
