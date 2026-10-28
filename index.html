@@ -36,7 +36,7 @@
             position: fixed;
             inset: 0;
             z-index: 40;
-            transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+            transition: transform 0.75s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -64,7 +64,7 @@
 
         .side-drawer {
             transform: translateX(100%);
-            transition: transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .modal-active .side-drawer {
@@ -76,7 +76,7 @@
             backdrop-filter: blur(6px);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.55s ease;
+            transition: opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .modal-overlay.active {
@@ -89,7 +89,7 @@
             height: 152px;
             border-radius: 10px;
             position: relative;
-            transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
             cursor: grab;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
             border: 1px solid #27272a;
@@ -121,10 +121,10 @@
             left: 0;
             right: 0;
             margin: auto;
-            transition: all 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .hand-card-item { transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease; }
+        .hand-card-item { transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
         .hand-card-item:hover {
             transform: translateY(-6px);
             z-index: 50;
@@ -137,11 +137,12 @@
         .card-drug-header { background-color: #2563eb; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-therapy-header { background-color: #059669; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-episode-header { background-color: #dc2626; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-action-header { background-color: #d97706; color: #ffffff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .slot-target {
             border: 2px dashed #27272a;
             border-radius: 12px;
-            transition: all 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
             background: rgba(13, 13, 15, 0.6);
             position: relative;
         }
@@ -163,7 +164,7 @@
                 height: 122px;
                 padding: 6px;
             }
-            .card-disorder-header, .card-drug-header, .card-therapy-header, .card-episode-header {
+            .card-disorder-header, .card-drug-header, .card-therapy-header, .card-episode-header, .card-action-header {
                 font-size: 7px;
                 padding: 1px 4px;
             }
@@ -174,40 +175,6 @@
             header h1 {
                 font-size: 12px !important;
             }
-        }
-
-        /* Polished motion: restrained, fast feedback while preserving the dark/rose identity. */
-        :root { color-scheme: dark; }
-        button, input, select, .slot-target, #draw-deck, .card-base { -webkit-tap-highlight-color: transparent; }
-        button { transition: transform .32s cubic-bezier(.22,1,.36,1), background-color .38s ease, border-color .38s ease, box-shadow .38s ease, opacity .32s ease; }
-        button:hover { transform: translateY(-1px); }
-        button:active { transform: translateY(1px) scale(.985); }
-        .screen-container > div { animation: panel-arrive .9s cubic-bezier(.22,1,.36,1) both; }
-        .card-base { animation: card-arrive .62s cubic-bezier(.22,1,.36,1) both; transform-origin: center bottom; }
-        .hand-card-item { cursor: pointer; }
-        .hand-card-item:hover { transform: translateY(-7px) rotate(-.5deg); box-shadow: 0 16px 26px rgba(0,0,0,.45), 0 0 0 1px rgba(225,29,72,.18); }
-        .slot-target { min-width: 0; }
-        .slot-target.drag-over { box-shadow: 0 0 22px rgba(225,29,72,.16); }
-        .modal-overlay { transition: opacity .48s ease, backdrop-filter .48s ease; }
-        .side-drawer { transition: transform .62s cubic-bezier(.22,1,.36,1); }
-        #tab-bar-container button { position: relative; overflow: hidden; }
-        #tab-bar-container button::after { content:""; position:absolute; left:12%; right:12%; bottom:0; height:2px; background:#fb7185; transform:scaleX(0); transition:transform .38s ease; }
-        #tab-bar-container button:hover::after { transform:scaleX(1); }
-        @keyframes panel-arrive { from { opacity:0; transform:translateY(16px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
-        @keyframes card-arrive { from { opacity:0; transform:translateY(16px) scale(.965); } to { opacity:1; transform:translateY(0) scale(1); } }
-        @media (max-width: 768px) {
-            #table-container { padding: 8px; gap: 8px; }
-            #player-hand { min-height: 150px; padding: 8px 4px 12px; gap: 9px; }
-            #player-hand .card-base { width: 98px; height: 138px; padding: 7px; }
-            #active-psyche-container .card-base, #active-psyche-container .stacked-card { width: 78px; height: 110px; padding: 5px; }
-            #active-psyche-container .card-disorder-header, #active-psyche-container .card-drug-header,
-            #active-psyche-container .card-therapy-header, #active-psyche-container .card-episode-header { font-size: 6px; }
-            #active-psyche-container { column-gap: 8px !important; row-gap: 8px !important; }
-            #tab-bar-container { scrollbar-width: none; }
-            #tab-bar-container::-webkit-scrollbar { display:none; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -409,6 +376,7 @@
             <div class="space-y-3 text-xs leading-relaxed text-zinc-300 my-2">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">MELTDOWN EFFECT:</span> Placing an Episode card on an active crisis triggers its crisis penalty effect and then discards!</div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">DEFLECT & ACTION CARDS:</span> Use DEFLECT cards to counter incoming sabotage attacks or INTERVENTION to clear active crisis stacks!</div>
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">FREE DISCARD:</span> Click the Discard button anytime on your turn to discard cards without using your 2 actions.</div>
             </div>
         </div>
@@ -484,7 +452,7 @@
         }
         const sfx = new SoundEngine();
 
-        const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
+        const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode', ACTION: 'action' };
         const DISORDERS = {
             EXISTENTIAL_DREAD: { id: 'EXISTENTIAL_DREAD', name: 'Existential Dread', flavor: 'Staring at ceiling at 4 AM.', drugName: 'Cough Syrup', sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'], punishmentText: 'Attacker steals 1 card.' },
             CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Loan sharks waiting.', drugName: 'Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 2 cards.' },
@@ -511,21 +479,29 @@
 
         function generateMasterDeck() {
             const deck = []; let cardId = 0;
+            
+            // Balanced Distribution for maximum tactical choice
             Object.values(DISORDERS).forEach(disorder => {
-                const count = disorder.id === 'EATING_TRASH' ? 4 : 5;
+                const count = disorder.id === 'EATING_TRASH' ? 3 : 4;
                 for (let i = 0; i < count; i++) {
                     deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DISORDER, disorderId: disorder.id, title: disorder.name, flavor: disorder.flavor, punishmentText: disorder.punishmentText, noTherapy: !!disorder.noTherapy, therapyOnly: !!disorder.therapyOnly });
                 }
             });
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
-                    for (let i = 0; i < 6; i++) {
+                    for (let i = 0; i < 4; i++) {
                         deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}.` });
                     }
                 }
             });
-            for (let i = 0; i < 12; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
-            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers crisis effect!' });
+            for (let i = 0; i < 10; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
+            for (let i = 0; i < 16; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers crisis effect!' });
+            
+            // NEW INTERACTIVE ACTION CARDS
+            for (let i = 0; i < 8; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'DEFLECT', title: 'Deflect', flavor: 'Reverse Uno move.', desc: 'Counters incoming attacks!' });
+            for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'INTERVENTION', title: 'Intervention', flavor: 'Group therapy.', desc: 'Clears active slot disorders!' });
+            for (let i = 0; i < 4; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'RELAPSE', title: 'Relapse', flavor: 'Back to step 1.', desc: 'Unlocks target Therapy slot!' });
+
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -703,57 +679,60 @@
             gameState.activePlayer = playerIdx; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
             const player = gameState.players[playerIdx];
 
+            // Always camera focus active player
             gameState.activeTab = playerIdx;
 
             if (player.skipNextTurn) {
                 player.skipNextTurn = false; logAction(`${player.name}'s turn was skipped!`);
                 renderAll();
-                setTimeout(() => nextTurn(), 1900); return;
+                setTimeout(() => nextTurn(), 1400); return;
             }
-            drawCardsForPlayer(playerIdx, 1);
-            logAction(`${player.name}'s turn! Draw 1, then make 2 tactical actions.`);
+            drawCardsForPlayer(playerIdx, 2);
+            logAction(`${player.name}'s turn! 2 actions available.`);
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
-                setTimeout(() => executeBotTurn(playerIdx), 1900);
+                setTimeout(() => executeBotTurn(playerIdx), 1000);
             } else if (gameState.mode === 'host') { syncCloudState(); }
         }
 
         function executeBotTurn(botIdx) {
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
             const bot = gameState.players[botIdx];
+
             if (gameState.actionsLeft <= 0 || bot.hand.length === 0) {
-                setTimeout(() => nextTurn(), 1250);
+                setTimeout(() => nextTurn(), 900);
                 return;
             }
-            // Bots evaluate legal moves across the whole table instead of only their own stacks.
-            let best = null;
-            bot.hand.forEach((card, handIdx) => {
-                gameState.players.forEach((target, targetIdx) => {
+
+            let played = false;
+            for (let i = bot.hand.length - 1; i >= 0; i--) {
+                const card = bot.hand[i];
+                for (let targetIdx = 0; targetIdx < gameState.players.length; targetIdx++) {
                     for (let sIdx = 0; sIdx < 4; sIdx++) {
-                        if (!canPlayCardOnStack(card, targetIdx, sIdx)) continue;
-                        const stack = target.psyche[sIdx];
-                        let score = Math.random() * 1.5;
-                        if (card.type === CARD_TYPES.THERAPY) score += 12 + stack.length;
-                        if (card.type === CARD_TYPES.DRUG) score += 8;
-                        if (card.type === CARD_TYPES.EPISODE) score += 10 + (DISORDERS[getStackTopCard(stack)?.disorderId]?.sideEffects?.length || 0);
-                        if (card.type === CARD_TYPES.DISORDER) score += targetIdx === botIdx ? -2 : 5;
-                        if (targetIdx !== botIdx) score += 3;
-                        if ((card.type === CARD_TYPES.THERAPY || card.type === CARD_TYPES.DRUG) && targetIdx !== botIdx) score -= 30;
-                        if (!best || score > best.score) best = { handIdx, targetIdx, sIdx, score };
+                        if (canPlayCardOnStack(card, targetIdx, sIdx)) {
+                            executePlayCard(bot.id, i, targetIdx, sIdx);
+                            played = true;
+                            break;
+                        }
                     }
-                });
-            });
-            if (best) {
-                executePlayCard(bot.id, best.handIdx, best.targetIdx, best.sIdx);
-            } else if (gameState.actionsLeft > 0) {
+                    if (played) break;
+                }
+                if (played) break;
+            }
+
+            if (!played && gameState.actionsLeft > 0) {
                 drawCardsForPlayer(bot.id, 1);
                 gameState.actionsLeft--;
-                logAction(`${bot.name} searched the deck for an answer.`);
+                logAction(`${bot.name} drew a card. (${gameState.actionsLeft} action left)`);
                 renderAll();
             }
-            if (gameState.actionsLeft > 0 && !gameState.gameOver) setTimeout(() => executeBotTurn(botIdx), 1650);
-            else setTimeout(() => nextTurn(), 1350);
+
+            if (gameState.actionsLeft > 0 && !gameState.gameOver && bot.hand.length > 0) {
+                setTimeout(() => executeBotTurn(botIdx), 1000);
+            } else {
+                setTimeout(() => nextTurn(), 1000);
+            }
         }
 
         function drawCardsForPlayer(playerIdx, count) {
@@ -771,7 +750,7 @@
             drawCardsForPlayer(0, 1); gameState.actionsLeft--; sfx.playDraw();
             logAction(`Drew 1 card. (${gameState.actionsLeft} actions left)`);
             renderAll();
-            if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 800);
+            if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
         }
 
         function openFreeDiscardModal() {
@@ -843,9 +822,16 @@
 
         function canPlayCardOnStack(card, targetPlayerIdx, stackIdx) {
             const targetPlayer = gameState.players[targetPlayerIdx];
-            if (targetPlayer.slotLocked[stackIdx]) return false;
             const stack = targetPlayer.psyche[stackIdx];
             const topCard = getStackTopCard(stack);
+
+            if (card.type === CARD_TYPES.ACTION) {
+                if (card.actionType === 'INTERVENTION') return isStackUntreated(stack);
+                if (card.actionType === 'RELAPSE') return targetPlayer.slotLocked[stackIdx];
+                return false;
+            }
+
+            if (targetPlayer.slotLocked[stackIdx]) return false;
 
             if (card.type === CARD_TYPES.DISORDER) {
                 if (targetPlayerIdx === gameState.activePlayer) return stack.length === 0;
@@ -863,9 +849,34 @@
             const targetPlayer = gameState.players[targetPlayerIdx];
             const stack = targetPlayer.psyche[stackIdx];
 
+            // INTERACTIVE DEFLECT REACTION CHECK
+            if (targetPlayerIdx !== playerIdx) {
+                const deflectIdx = targetPlayer.hand.findIndex(c => c.type === CARD_TYPES.ACTION && c.actionType === 'DEFLECT');
+                if (deflectIdx !== -1) {
+                    const deflectCard = targetPlayer.hand.splice(deflectIdx, 1)[0];
+                    gameState.discardPile.push(deflectCard);
+                    logAction(`DEFLECTED! ${targetPlayer.name} countered ${player.name}'s ${card.title}!`);
+                    sfx.playCure();
+                    player.hand.splice(cardHandIdx, 1);
+                    gameState.discardPile.push(card);
+                    gameState.actionsLeft--;
+                    renderAll();
+                    return;
+                }
+            }
+
             player.hand.splice(cardHandIdx, 1); gameState.selectedHandIdx = null;
 
-            if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
+            if (card.type === CARD_TYPES.ACTION) {
+                if (card.actionType === 'INTERVENTION') {
+                    while (stack.length > 0) gameState.discardPile.push(stack.pop());
+                    sfx.playCure(); logAction(`${player.name} used INTERVENTION to clear ${targetPlayer.name}'s stack!`);
+                } else if (card.actionType === 'RELAPSE') {
+                    targetPlayer.slotLocked[stackIdx] = false;
+                    sfx.playDisaster(); logAction(`${player.name} forced a RELAPSE on ${targetPlayer.name}'s cured slot!`);
+                }
+                gameState.discardPile.push(card);
+            } else if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
                 stack.push(card); sfx.playCard(); logAction(`${player.name} played "${card.title}" on ${targetPlayer.name}.`);
             } else if (card.type === CARD_TYPES.THERAPY) {
                 while (stack.length > 0) gameState.discardPile.push(stack.pop());
@@ -876,7 +887,6 @@
                 const topCard = getStackTopCard(stack);
                 const disorderInfo = topCard ? DISORDERS[topCard.disorderId] : null;
                 
-                // Trigger Crisis Punishment Effect
                 if (disorderInfo) {
                     logAction(`MELTDOWN! ${targetPlayer.name}'s crisis triggered: ${disorderInfo.punishmentText}`);
                     if (disorderInfo.id === 'SOBBING' || disorderInfo.id === 'IMPOTENCE') {
@@ -986,7 +996,7 @@
                     }
                 };
                 slot.onclick = () => {
-                    if (gameState.selectedHandIdx !== null && !isLocked && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
+                    if (gameState.selectedHandIdx !== null && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
                         const card = gameState.players[0].hand[gameState.selectedHandIdx];
                         if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
                     }
@@ -1024,7 +1034,7 @@
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
             let typeClass = card.type === CARD_TYPES.EPISODE ? 'card-black' : 'card-white';
-            let headerClass = card.type === CARD_TYPES.DRUG ? 'card-drug-header' : card.type === CARD_TYPES.THERAPY ? 'card-therapy-header' : card.type === CARD_TYPES.EPISODE ? 'card-episode-header' : 'card-disorder-header';
+            let headerClass = card.type === CARD_TYPES.DRUG ? 'card-drug-header' : card.type === CARD_TYPES.THERAPY ? 'card-therapy-header' : card.type === CARD_TYPES.EPISODE ? 'card-episode-header' : card.type === CARD_TYPES.ACTION ? 'card-action-header' : 'card-disorder-header';
             cardEl.className = `card-base ${typeClass} shadow-xl`;
             let subText = card.desc || card.punishmentText || '';
             if (card.type === CARD_TYPES.DRUG) {
@@ -1046,7 +1056,7 @@
 
         function logAction(msg) { document.getElementById('log-text').textContent = msg; }
         function openModal(id) { const el = document.getElementById(id); el.classList.remove('hidden'); setTimeout(() => el.classList.add('active', 'modal-active'), 10); }
-        function closeModal(id) { const el = document.getElementById(id); el.classList.remove('active', 'modal-active'); setTimeout(() => el.classList.add('hidden'), 560); }
+        function closeModal(id) { const el = document.getElementById(id); el.classList.remove('active', 'modal-active'); setTimeout(() => el.classList.add('hidden'), 450); }
     </script>
 </body>
 </html>
