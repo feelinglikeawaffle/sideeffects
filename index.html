@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNFILTERED</title>
+    <title>UNFILTERED: Adult Party Card Game</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -60,7 +60,7 @@
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* REBUILT CARD LAYOUT: Ultra legible, clear vulnerability & treatment tags */
+        /* VIBE-FITTING CARD LAYOUT WITH ULTRA-CLEAR LABELS */
         .card-base {
             width: 114px;
             height: 162px;
@@ -109,7 +109,6 @@
             z-index: 50;
         }
 
-        /* Distinct color coding for instant game clarity */
         .card-disorder { background: #18080c; border-color: #e11d48; }
         .card-drug { background: #081026; border-color: #2563eb; }
         .card-therapy { background: #041f14; border-color: #059669; }
@@ -213,7 +212,7 @@
         </div>
     </div>
 
-    <!-- HOST ROOM MODAL -->
+    <!-- HOST ROOM MODAL (2-8 PLAYERS) -->
     <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl">
             <div>
@@ -225,12 +224,15 @@
                 </div>
                 <div class="space-y-4 text-left">
                     <div>
-                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (3 - 8)</label>
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (2 - 8)</label>
                         <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
+                            <option value="2">2 Players</option>
                             <option value="3">3 Players</option>
                             <option value="4" selected>4 Players</option>
                             <option value="5">5 Players</option>
                             <option value="6">6 Players</option>
+                            <option value="7">7 Players</option>
+                            <option value="8">8 Players</option>
                         </select>
                     </div>
                     <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800">
@@ -355,7 +357,7 @@
             <div class="space-y-3 text-xs leading-relaxed text-zinc-300 my-2">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">SPECTATE MODE:</span> When other players or bots take their turn, your view automatically switches to their POV so you can watch their actions live!</div>
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">BALANCED DECK:</span> Miracles (Therapy) are now rare and high-value. Crisis and drug cards are tightly balanced.</div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">BALANCED DECK:</span> Miracles (Therapy) are rare and high-value. Crisis and drug cards are tightly balanced.</div>
             </div>
         </div>
     </div>
@@ -617,9 +619,22 @@
             const roomRef = db.ref('rooms/' + gameState.roomCode);
             const snapshot = await roomRef.once('value');
             const roomData = snapshot.val();
-            gameState.players = roomData.players.map(p => ({
-                id: p.id, name: p.name, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
+            
+            // Fix: ensure correct player count from lobby setup (2-8 players)
+            const maxP = roomData.maxPlayers || 4;
+            let activePlayersList = roomData.players;
+            
+            if (activePlayersList.length < maxP) {
+                // Fill remaining slots with automated Bots for seamless multiplayer lobby starting
+                for (let i = activePlayersList.length; i < maxP; i++) {
+                    activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
+                }
+            }
+
+            gameState.players = activePlayersList.map(p => ({
+                id: p.id, name: p.name, isBot: !!p.isBot || p.id !== 0, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
             }));
+            
             initGame();
             await roomRef.update({
                 status: 'started',
@@ -914,7 +929,6 @@
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Act`;
 
-            // Spectating status badge
             const isSpectating = gameState.activeTab !== 0;
             const specBadge = document.getElementById('spectating-badge');
             if (isSpectating) specBadge.classList.remove('hidden');
@@ -972,7 +986,6 @@
                 container.appendChild(slot);
             }
 
-            // Hand viewing: if spectating another player, show their hand count/status clearly
             const handContainer = document.getElementById('player-hand');
             const handTitleLabel = document.getElementById('hand-title-label');
             const handOwner = gameState.players[gameState.activeTab] || gameState.players[0];
@@ -1011,14 +1024,14 @@
             document.getElementById('draw-deck').onclick = handleHumanDrawAction;
         }
 
-        // REDESIGNED CARD LAYOUT FOR MAXIMAL CLARITY ON WHAT CARDS CURE, TREAT, OR ARE SUSCEPTIBLE TO
+        // REDESIGNED VIBE-FITTING CARD LAYOUT (CLEAR TREATS, CURES & VULNERABILITIES)
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
             let typeClass = 'card-disorder';
             let badgeClass = 'badge-disorder';
             let badgeText = 'CRISIS';
 
-            if (card.type === CARD_TYPES.DRUG) { typeClass = 'card-drug'; badgeClass = 'badge-drug'; badgeText = 'DRUG / TREATMENT'; }
+            if (card.type === CARD_TYPES.DRUG) { typeClass = 'card-drug'; badgeClass = 'badge-drug'; badgeText = 'TREATMENT'; }
             else if (card.type === CARD_TYPES.THERAPY) { typeClass = 'card-therapy'; badgeClass = 'badge-therapy'; badgeText = 'MIRACLE'; }
             else if (card.type === CARD_TYPES.EPISODE) { typeClass = 'card-episode'; badgeClass = 'badge-episode'; badgeText = 'MELTDOWN'; }
             else if (card.type === CARD_TYPES.ACTION) { typeClass = 'card-action'; badgeClass = 'badge-action'; badgeText = 'ACTION'; }
@@ -1030,9 +1043,9 @@
                 metaDetails = `<span class="text-rose-400 font-bold">Punishment:</span> ${card.punishmentText}`;
             } else if (card.type === CARD_TYPES.DRUG) {
                 const vulnerabilityNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : 'None';
-                metaDetails = `<span class="text-blue-300 font-bold">Treats:</span> ${card.treatsName}<br/><span class="text-amber-400 font-bold">Vulnerable to:</span> ${vulnerabilityNames}`;
+                metaDetails = `<span class="text-blue-300 font-bold">Treats:</span> ${card.treatsName}<br/><span class="text-amber-400 font-bold">Susceptible to:</span> ${vulnerabilityNames}`;
             } else if (card.type === CARD_TYPES.THERAPY) {
-                metaDetails = `<span class="text-emerald-400 font-bold">Effect:</span> Permanently locks & cures slot!`;
+                metaDetails = `<span class="text-emerald-400 font-bold">Cures:</span> Permanently locks & clears crisis slot!`;
             } else if (card.type === CARD_TYPES.EPISODE) {
                 metaDetails = `<span class="text-red-400 font-bold">Effect:</span> Triggers active crisis penalty.`;
             } else if (card.type === CARD_TYPES.ACTION) {
