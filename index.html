@@ -183,7 +183,6 @@
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
 
-            <!-- ACCOUNT / PROFILE SETTINGS -->
             <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
                 <div class="text-xs font-bold text-zinc-300 mb-3 flex items-center justify-between">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card text-rose-500"></i> Player Profile</span>
@@ -209,7 +208,6 @@
                 </div>
             </div>
 
-            <!-- MODE SELECT BUTTONS -->
             <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button id="btn-mode-single" onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
                     <i class="fa-solid fa-robot text-lg text-rose-500 group-hover:rotate-12 transition"></i>
@@ -232,7 +230,7 @@
         </div>
     </div>
 
-    <!-- HOST ROOM MODAL (DRAWER) -->
+    <!-- HOST ROOM MODAL (WAITING LOBBY DRAWER) -->
     <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
             <div>
@@ -269,19 +267,19 @@
                     </div>
 
                     <div>
-                        <span class="text-xs font-bold text-zinc-400 block mb-2">Connected Players:</span>
+                        <span class="text-xs font-bold text-zinc-400 block mb-2">Waiting Players:</span>
                         <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="launchCloudMultiplayer()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
+            <button onclick="hostStartMatch()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
                 Start Match
             </button>
         </div>
     </div>
 
-    <!-- JOIN ROOM MODAL (DRAWER) -->
+    <!-- JOIN WAITING LOBBY MODAL -->
     <div id="join-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
         <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
             <div>
@@ -299,13 +297,24 @@
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
                         <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
                     </div>
-                    <p class="text-xs text-zinc-500">Enter a code to join an active Firebase cloud room.</p>
+                    <p class="text-xs text-zinc-500">Enter a code to join an active waiting room.</p>
                 </div>
             </div>
 
             <button onclick="submitJoinCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 font-black text-zinc-950 text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-amber-950/40">
-                Join Lobby
+                Join Waiting Room
             </button>
+        </div>
+    </div>
+
+    <!-- WAITING FOR HOST SCREEN (WHILE JOINED PLAYERS WAIT) -->
+    <div id="screen-waiting-room" class="fixed inset-0 z-40 bg-zinc-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
+        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
+            <div class="text-4xl text-amber-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
+            <h2 class="text-2xl font-black text-white mb-2">WAITING FOR HOST</h2>
+            <p class="text-xs text-zinc-400 mb-6">You have joined the lobby! Waiting for the host to start the match...</p>
+            <div id="waiting-player-list" class="space-y-2 text-left mb-6 max-h-40 overflow-y-auto bg-zinc-950 p-3 rounded-xl border border-zinc-800"></div>
+            <button onclick="returnToMainMenu()" class="py-2.5 px-6 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 rounded-xl transition border border-zinc-700">Leave Lobby</button>
         </div>
     </div>
 
@@ -414,7 +423,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE REALTIME DATABASE INITIALIZATION -->
+    <!-- FIREBASE & AUDIO SCRIPT -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBUSK6ehu4PSCmAJ34q-FayFXmym1V3tlY",
@@ -476,7 +485,7 @@
         const sfx = new SoundEngine();
     </script>
 
-    <!-- CORE GAME & MULTIPLAYER LOGIC -->
+    <!-- CORE GAME & WAITING LOBBY SCRIPT -->
     <script>
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
 
@@ -508,41 +517,36 @@
             gameOver: false,
             selectedHandIdx: null,
             activeTab: 0,
-            players: []
+            players: [],
+            roomListener: null
         };
 
         function generateMasterDeck() {
             const deck = [];
             let cardId = 0;
-
             Object.values(DISORDERS).forEach(disorder => {
                 const count = disorder.id === 'EATING_TRASH' ? 4 : 5;
                 for (let i = 0; i < count; i++) {
                     deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DISORDER, disorderId: disorder.id, title: disorder.name, flavor: disorder.flavor, punishmentText: disorder.punishmentText, noTherapy: !!disorder.noTherapy, therapyOnly: !!disorder.therapyOnly });
                 }
             });
-
             Object.values(DISORDERS).forEach(disorder => {
                 if (disorder.drugName) {
                     for (let i = 0; i < 6; i++) {
-                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}. Exposes side-effect vulnerabilities.` });
+                        deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.DRUG, disorderId: disorder.id, title: disorder.drugName, treatsName: disorder.name, sideEffects: disorder.sideEffects, flavor: `Shields ${disorder.name}.` });
                     }
                 }
             });
-
             for (let i = 0; i < 12; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'A sudden moment of clarity that purges a crisis entirely.', desc: 'Purges & permanently locks slot safe! (Except Tremors).' });
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges a crisis entirely.', desc: 'Permanently locks slot safe!' });
             }
-
             for (let i = 0; i < 24; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Publicly calling out an untreated dark crisis!', desc: 'Play temporarily on any opponent\'s untreated Disorder to trigger penalty, then remove!' });
+                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers disorder penalty.', desc: 'Play temporarily on any opponent stack!' });
             }
-
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
             }
-
             return deck;
         }
 
@@ -555,16 +559,16 @@
 
         function startSingleplayer() {
             saveProfile();
+            if(gameState.roomListener) gameState.roomListener.off();
             document.getElementById('screen-main-menu').classList.add('hidden');
+            document.getElementById('screen-waiting-room').classList.add('hidden');
             gameState.mode = 'single';
-            
             gameState.players = [
                 { id: 0, name: localProfile.username, gradient: localProfile.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 1, name: 'Bot 1', gradient: 'gradient-cyber', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 2, name: 'Bot 2', gradient: 'gradient-emerald', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false },
                 { id: 3, name: 'Bot 3', gradient: 'gradient-toxic', isBot: true, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false }
             ];
-
             initGame();
         }
 
@@ -577,7 +581,7 @@
                 
                 const initialRoomData = {
                     host: localProfile.username,
-                    maxPlayers: 4,
+                    maxPlayers: parseInt(document.getElementById('select-max-players').value),
                     players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }],
                     status: 'waiting',
                     state: null
@@ -587,10 +591,19 @@
                 updateHostPlayerList(initialRoomData.players);
                 openModal('host-modal');
 
-                db.ref('rooms/' + code).on('value', snapshot => {
+                if(gameState.roomListener) gameState.roomListener.off();
+                gameState.roomListener = db.ref('rooms/' + code);
+                gameState.roomListener.on('value', snapshot => {
                     const data = snapshot.val();
-                    if(data && data.players) {
-                        updateHostPlayerList(data.players);
+                    if(data) {
+                        if(data.players) updateHostPlayerList(data.players);
+                        if(data.status === 'started' && gameState.mode === 'host') {
+                            closeModal('host-modal');
+                            Object.assign(gameState, data.state);
+                            document.getElementById('screen-main-menu').classList.add('hidden');
+                            document.getElementById('screen-waiting-room').classList.add('hidden');
+                            renderAll();
+                        }
                     }
                 });
             } catch (error) {
@@ -604,7 +617,7 @@
             listEl.innerHTML = players.map((p, idx) => `
                 <div class="px-3 py-2 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between text-xs font-bold">
                     <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'text-rose-500'} mr-1.5"></i> ${p.name}</span>
-                    <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Connected</span>
+                    <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Ready</span>
                 </div>
             `).join('');
         }
@@ -635,9 +648,14 @@
             }
 
             const roomData = snapshot.val();
+            if(roomData.status !== 'waiting') {
+                alert('Game has already started in this room!');
+                return;
+            }
+
             const newPlayerId = roomData.players.length;
             const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor'];
-            const assignedGradient = gradients[newPlayerId % gradients.length];
+            const assignedGradient = gradients[(newPlayerId - 1) % gradients.length];
 
             roomData.players.push({
                 id: newPlayerId,
@@ -649,28 +667,46 @@
 
             closeModal('join-modal');
             document.getElementById('screen-main-menu').classList.add('hidden');
+            document.getElementById('screen-waiting-room').classList.remove('hidden');
             gameState.mode = 'join';
             gameState.roomCode = code;
 
-            roomRef.on('value', snap => {
+            updateWaitingPlayerList(roomData.players);
+
+            if(gameState.roomListener) gameState.roomListener.off();
+            gameState.roomListener = roomRef;
+            gameState.roomListener.on('value', snap => {
                 const cloudData = snap.val();
-                if(cloudData && cloudData.state) {
-                    Object.assign(gameState, cloudData.state);
-                    renderAll();
+                if(cloudData) {
+                    if(cloudData.players) updateWaitingPlayerList(cloudData.players);
+                    if(cloudData.status === 'started' && cloudData.state) {
+                        document.getElementById('screen-waiting-room').classList.add('hidden');
+                        Object.assign(gameState, cloudData.state);
+                        renderAll();
+                    }
                 }
             });
         }
 
-        async function launchCloudMultiplayer() {
+        function updateWaitingPlayerList(players) {
+            const listEl = document.getElementById('waiting-player-list');
+            listEl.innerHTML = players.map((p, idx) => `
+                <div class="px-2.5 py-1.5 bg-zinc-900 rounded-lg text-xs font-bold flex items-center justify-between">
+                    <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'text-rose-500'} mr-1"></i> ${p.name}</span>
+                    <span class="text-[9px] text-zinc-500">${idx===0?'Host':'Joined'}</span>
+                </div>
+            `).join('');
+        }
+
+        async function hostStartMatch() {
             closeModal('host-modal');
-            document.getElementById('screen-main-menu').classList.add('hidden');
             gameState.mode = 'host';
 
             const roomRef = db.ref('rooms/' + gameState.roomCode);
             const snapshot = await roomRef.once('value');
-            const existingPlayers = snapshot.exists() ? snapshot.val().players : [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }];
+            const roomData = snapshot.val();
 
-            gameState.players = existingPlayers.map(p => ({
+            gameState.players = roomData.players.map(p => ({
                 id: p.id,
                 name: p.name,
                 gradient: p.gradient,
@@ -682,12 +718,8 @@
             }));
 
             initGame();
-            syncCloudState();
-        }
 
-        async function syncCloudState() {
-            if(gameState.mode !== 'host') return;
-            await db.ref('rooms/' + gameState.roomCode).update({
+            await roomRef.update({
                 status: 'started',
                 state: {
                     deck: gameState.deck,
@@ -702,6 +734,10 @@
 
         function returnToMainMenu() {
             closeModal('game-over-modal');
+            closeModal('host-modal');
+            closeModal('join-modal');
+            if(gameState.roomListener) gameState.roomListener.off();
+            document.getElementById('screen-waiting-room').classList.add('hidden');
             document.getElementById('screen-main-menu').classList.remove('hidden');
         }
 
@@ -876,6 +912,20 @@
             }
             renderAll();
             if(gameState.mode === 'host') syncCloudState();
+        }
+
+        async function syncCloudState() {
+            if(gameState.mode !== 'host') return;
+            await db.ref('rooms/' + gameState.roomCode).update({
+                state: {
+                    deck: gameState.deck,
+                    discardPile: gameState.discardPile,
+                    activePlayer: gameState.activePlayer,
+                    actionsLeft: gameState.actionsLeft,
+                    gameOver: gameState.gameOver,
+                    players: gameState.players
+                }
+            });
         }
 
         function checkWinConditions() {
