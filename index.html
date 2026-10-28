@@ -457,7 +457,6 @@
             selectedDiscardIndices: new Set()
         };
 
-        // BALANCED DECK GENERATOR: Miracles (Therapy) made rare, crisp ratios for crisis/drugs
         function generateMasterDeck() {
             const deck = []; let cardId = 0;
             
@@ -474,9 +473,7 @@
                     }
                 }
             });
-            // RARE MIRACLES (THERAPY): Reduced count for high tactical value
             for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Complete mental reset.', desc: 'Locks slot permanently!' });
-            
             for (let i = 0; i < 14; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers crisis penalty.', desc: 'Triggers crisis effect!' });
             for (let i = 0; i < 6; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'INTERVENTION', title: 'Intervention', flavor: 'Group support.', desc: 'Clears active slot crisis!' });
             for (let i = 0; i < 4; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.ACTION, actionType: 'RELAPSE', title: 'Relapse', flavor: 'Back to step 1.', desc: 'Unlocks target Therapy slot!' });
@@ -541,10 +538,12 @@
                     const data = snapshot.val();
                     if(data) {
                         if(data.players) updateHostPlayerList(data.players);
-                        if(data.status === 'started' && gameState.mode === 'host') {
-                            closeModal('host-modal');
+                        // Fix: only switch view to game if status changed and we are in waiting/host mode without resetting active listeners mid-game
+                        if(data.status === 'started' && data.state && gameState.mode === 'join') {
+                            const waitingScreen = document.getElementById('screen-waiting-room');
+                            waitingScreen.classList.remove('slide-in-right');
+                            waitingScreen.classList.add('slide-hidden-right');
                             Object.assign(gameState, data.state);
-                            slideToGame();
                             renderAll();
                         }
                     }
@@ -599,6 +598,7 @@
                         waitingScreen.classList.remove('slide-in-right');
                         waitingScreen.classList.add('slide-hidden-right');
                         Object.assign(gameState, cloudData.state);
+                        slideToGame();
                         renderAll();
                     }
                 }
@@ -615,20 +615,18 @@
         }
 
         async function hostStartMatch() {
-            closeModal('host-modal'); gameState.mode = 'host';
+            closeModal('host-modal'); 
+            gameState.mode = 'host';
             const roomRef = db.ref('rooms/' + gameState.roomCode);
             const snapshot = await roomRef.once('value');
             const roomData = snapshot.val();
             
-            // Fix: ensure correct player count from lobby setup (2-8 players)
             const maxP = roomData.maxPlayers || 4;
-            let activePlayersList = roomData.players;
+            let activePlayersList = roomData.players || [{ id: 0, name: localProfile.username }];
             
-            if (activePlayersList.length < maxP) {
-                // Fill remaining slots with automated Bots for seamless multiplayer lobby starting
-                for (let i = activePlayersList.length; i < maxP; i++) {
-                    activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
-                }
+            // Fill empty slots with Bot players if needed up to max limit
+            for (let i = activePlayersList.length; i < maxP; i++) {
+                activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
             }
 
             gameState.players = activePlayersList.map(p => ({
@@ -636,10 +634,23 @@
             }));
             
             initGame();
+            
+            // Push initial game start package to Firebase
             await roomRef.update({
                 status: 'started',
-                state: { deck: gameState.deck, discardPile: gameState.discardPile, activePlayer: gameState.activePlayer, actionsLeft: gameState.actionsLeft, gameOver: gameState.gameOver, players: gameState.players }
+                state: { 
+                    deck: gameState.deck, 
+                    discardPile: gameState.discardPile, 
+                    activePlayer: gameState.activePlayer, 
+                    actionsLeft: gameState.actionsLeft, 
+                    gameOver: gameState.gameOver, 
+                    players: gameState.players 
+                }
             });
+
+            // Slide host screen cleanly into tabletop view
+            slideToGame();
+            renderAll();
         }
 
         function returnToMainMenu() {
@@ -1024,7 +1035,6 @@
             document.getElementById('draw-deck').onclick = handleHumanDrawAction;
         }
 
-        // REDESIGNED VIBE-FITTING CARD LAYOUT (CLEAR TREATS, CURES & VULNERABILITIES)
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
             let typeClass = 'card-disorder';
