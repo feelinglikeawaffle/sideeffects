@@ -18,40 +18,92 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
+        :root {
+            --bg-primary: #050505;
+            --bg-secondary: #09090b;
+            --accent-glow: rgba(225, 29, 72, 0.6);
+            --border-color: #27272a;
+        }
+
+        body.theme-cyberpunk {
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --accent-glow: rgba(56, 189, 248, 0.6);
+            --border-color: #1e293b;
+        }
+
+        body.theme-neon {
+            --bg-primary: #18051a;
+            --bg-secondary: #240a28;
+            --accent-glow: rgba(232, 121, 249, 0.6);
+            --border-color: #3b1142;
+        }
+
+        body.theme-emerald {
+            --bg-primary: #022c22;
+            --bg-secondary: #064e3b;
+            --accent-glow: rgba(52, 211, 153, 0.6);
+            --border-color: #065f46;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: #000000;
+            background: var(--bg-primary);
             color: #f4f4f5;
             user-select: none;
             overflow: hidden;
             touch-action: manipulation;
+            transition: background 0.4s ease;
         }
 
         .table-bg {
-            background-color: #050505;
+            background-color: var(--bg-primary);
             background-image: 
-                radial-gradient(circle at 50% 50%, #171018 0%, #050505 75%, #000000 100%),
+                radial-gradient(circle at 50% 50%, var(--bg-secondary) 0%, var(--bg-primary) 75%, #000000 100%),
                 radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
             background-size: 100% 100%, 24px 24px;
         }
 
-        .main-menu-container {
-            animation: menuEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* Smooth Slide Animations */
+        .slide-in-up {
+            animation: slideInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes menuEntrance {
-            0% { opacity: 0; transform: scale(0.85) translateY(30px); filter: blur(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(8px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        .side-drawer {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .modal-active .side-drawer {
+            transform: translateX(0);
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .title-glow {
-            text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3);
+            text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
             animation: pulseGlow 2.5s infinite ease-in-out;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { text-shadow: 0 0 20px rgba(225, 29, 72, 0.6), 0 0 40px rgba(225, 29, 72, 0.3); }
-            50% { text-shadow: 0 0 35px rgba(244, 63, 94, 0.9), 0 0 60px rgba(225, 29, 72, 0.6); }
+            0%, 100% { text-shadow: 0 0 20px var(--accent-glow); }
+            50% { text-shadow: 0 0 35px var(--accent-glow); }
         }
 
         .gradient-neon { background: linear-gradient(135deg, #f43f5e, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -136,21 +188,8 @@
             box-shadow: 0 0 14px rgba(5, 150, 105, 0.4) !important;
         }
 
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(8px);
-            transition: opacity 0.3s ease;
-        }
-
-        .side-drawer-content {
-            transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .modal-active .side-drawer-content { transform: translateX(0); }
-
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
         ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
     </style>
 </head>
@@ -158,7 +197,7 @@
 
     <!-- MAIN MENU SCREEN -->
     <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-xl">
-        <div class="main-menu-container max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
+        <div class="slide-in-up max-w-xl w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden">
             <div class="absolute -top-24 -left-24 w-60 h-60 bg-rose-600/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -169,10 +208,10 @@
             <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 title-glow flex items-center gap-3">
                 <i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED
             </h1>
-            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-6">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
+            <p class="text-xs sm:text-sm text-zinc-400 max-w-md mb-5">The dark, psychological party card game. Cure your mind or sabotage your friends!</p>
 
-            <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-6 text-left shadow-inner">
-                <div class="text-xs font-bold text-zinc-300 mb-3 flex items-center justify-between">
+            <div class="w-full bg-zinc-950/90 border border-zinc-800 rounded-2xl p-4 mb-4 text-left shadow-inner">
+                <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-id-card text-rose-500"></i> Player Profile</span>
                     <span id="account-stats" class="text-[10px] text-zinc-500">Wins: 0 | Games: 0</span>
                 </div>
@@ -196,41 +235,74 @@
                 </div>
             </div>
 
-            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button id="btn-mode-single" onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
+            <!-- MODE SELECT BUTTONS -->
+            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                <button onclick="startSingleplayer()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
                     <i class="fa-solid fa-robot text-lg text-rose-500 group-hover:rotate-12 transition"></i>
                     Singleplayer
                     <span class="text-[9px] font-normal text-zinc-400">Play vs AI Bots</span>
                 </button>
 
-                <button id="btn-mode-host" onclick="openHostModal()" class="py-3.5 px-4 bg-rose-600 hover:bg-rose-500 border border-rose-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg shadow-rose-900/30 group">
+                <button onclick="openHostModal()" class="py-3.5 px-4 bg-rose-600 hover:bg-rose-500 border border-rose-500 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg shadow-rose-900/30 group">
                     <i class="fa-solid fa-gamepad text-lg group-hover:scale-110 transition"></i>
                     Host Game
                     <span class="text-[9px] font-normal text-rose-100">Create Room Code</span>
                 </button>
 
-                <button id="btn-mode-join" onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
+                <button onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 flex flex-col items-center gap-1 shadow-lg group">
                     <i class="fa-solid fa-right-to-bracket text-lg text-amber-500 group-hover:translate-x-1 transition"></i>
                     Join Game
                     <span class="text-[9px] font-normal text-zinc-400">Enter Room Code</span>
                 </button>
             </div>
+
+            <button onclick="openThemeModal()" class="w-full py-2.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 rounded-xl font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-palette text-rose-500"></i> Customize Theme & Vibe
+            </button>
+        </div>
+    </div>
+
+    <!-- THEME CUSTOMIZATION MODAL -->
+    <div id="theme-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
+        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-md w-full p-6 rounded-3xl text-zinc-100 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                <h2 class="text-base font-black text-rose-500 flex items-center gap-2">
+                    <i class="fa-solid fa-palette"></i> THEME CUSTOMIZER
+                </h2>
+                <button onclick="closeModal('theme-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button onclick="setTheme('default')" class="p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
+                    <span class="text-rose-500 font-black">Midnight Dark</span>
+                    <span class="text-[10px] text-zinc-500">Sleek obsidian black</span>
+                </button>
+                <button onclick="setTheme('cyberpunk')" class="p-3 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
+                    <span class="text-sky-400 font-black">Cyberpunk Blue</span>
+                    <span class="text-[10px] text-slate-500">Neon sci-fi tones</span>
+                </button>
+                <button onclick="setTheme('neon')" class="p-3 bg-purple-950/40 hover:bg-purple-950/70 border border-purple-900/50 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
+                    <span class="text-fuchsia-400 font-black">Vapor Neon</span>
+                    <span class="text-[10px] text-purple-400/70">Vibrant synthwave</span>
+                </button>
+                <button onclick="setTheme('emerald')" class="p-3 bg-emerald-950/40 hover:bg-emerald-950/70 border border-emerald-900/50 rounded-xl text-xs font-bold text-left transition flex flex-col gap-1">
+                    <span class="text-emerald-400 font-black">Emerald Vault</span>
+                    <span class="text-[10px] text-emerald-400/70">Deep clinical green</span>
+                </button>
+            </div>
+            <button onclick="closeModal('theme-modal')" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Apply Theme</button>
         </div>
     </div>
 
     <!-- HOST ROOM MODAL -->
     <div id="host-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
             <div>
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
                     <h2 class="text-lg font-black text-rose-500 flex items-center gap-2">
                         <i class="fa-solid fa-crown"></i> HOST LOBBY
                     </h2>
-                    <button onclick="closeModal('host-modal')" class="text-zinc-400 hover:text-white text-xl p-2">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <button onclick="closeModal('host-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-
                 <div class="space-y-4 text-left">
                     <div>
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (3 - 8)</label>
@@ -243,7 +315,6 @@
                             <option value="8">8 Players</option>
                         </select>
                     </div>
-
                     <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800">
                         <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">Your Lobby Code</span>
                         <div class="flex items-center justify-between">
@@ -253,51 +324,40 @@
                             </button>
                         </div>
                     </div>
-
                     <div>
                         <span class="text-xs font-bold text-zinc-400 block mb-2">Waiting Players:</span>
                         <div id="host-player-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
-
-            <button onclick="hostStartMatch()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">
-                Start Match
-            </button>
+            <button onclick="hostStartMatch()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-rose-900/40">Start Match</button>
         </div>
     </div>
 
     <!-- JOIN WAITING LOBBY MODAL -->
     <div id="join-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl relative">
             <div>
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
                     <h2 class="text-lg font-black text-amber-500 flex items-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i> JOIN LOBBY
                     </h2>
-                    <button onclick="closeModal('join-modal')" class="text-zinc-400 hover:text-white text-xl p-2">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <button onclick="closeModal('join-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-
                 <div class="space-y-4 text-left">
                     <div>
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Enter 6-Digit Room Code</label>
                         <input id="input-join-code" type="text" maxlength="6" placeholder="e.g. 84F2A1" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center text-xl font-black tracking-widest text-white uppercase focus:outline-none focus:border-amber-500">
                     </div>
-                    <p class="text-xs text-zinc-500">Enter a code to join an active waiting room.</p>
                 </div>
             </div>
-
-            <button onclick="submitJoinCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 font-black text-zinc-950 text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-amber-950/40">
-                Join Waiting Room
-            </button>
+            <button onclick="submitJoinCode()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 font-black text-zinc-950 text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-amber-950/40">Join Waiting Room</button>
         </div>
     </div>
 
     <!-- WAITING FOR HOST SCREEN -->
     <div id="screen-waiting-room" class="fixed inset-0 z-40 bg-zinc-950/95 flex flex-col items-center justify-center p-6 text-center hidden">
-        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
+        <div class="slide-in-up max-w-md w-full bg-zinc-900 p-8 rounded-3xl border border-zinc-800 shadow-2xl">
             <div class="text-4xl text-amber-500 mb-3 animate-pulse"><i class="fa-solid fa-hourglass-half"></i></div>
             <h2 class="text-2xl font-black text-white mb-2">WAITING FOR HOST</h2>
             <p class="text-xs text-zinc-400 mb-6">You have joined the lobby! Waiting for the host to start the match...</p>
@@ -309,28 +369,21 @@
     <!-- TOP NAV HEADER -->
     <header class="h-12 bg-zinc-950 border-b border-zinc-800 px-4 flex items-center justify-between z-30 shrink-0">
         <div class="flex items-center gap-2">
-            <button onclick="returnToMainMenu()" class="text-zinc-400 hover:text-white text-sm pr-2 border-r border-zinc-800 transition" title="Main Menu">
-                <i class="fa-solid fa-house"></i>
-            </button>
+            <button onclick="returnToMainMenu()" class="text-zinc-400 hover:text-white text-sm pr-2 border-r border-zinc-800 transition" title="Main Menu"><i class="fa-solid fa-house"></i></button>
             <span class="bg-rose-600 text-white font-black text-[10px] px-2 py-0.5 rounded tracking-wider uppercase">18+ ADULT</span>
-            <h1 class="text-base font-black tracking-tighter text-zinc-100 flex items-center gap-1.5">
-                <i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED
-            </h1>
+            <h1 class="text-base font-black tracking-tighter text-zinc-100 flex items-center gap-1.5"><i class="fa-solid fa-skull text-rose-500"></i> UNFILTERED</h1>
         </div>
-
         <div id="game-status-bar" class="text-xs font-semibold text-zinc-300 bg-zinc-900 border border-zinc-800 px-4 py-1 rounded-full flex items-center gap-3 shadow-inner">
             <span id="turn-indicator" class="text-rose-400 font-bold transition-all">Your Turn</span>
             <span class="text-zinc-600">|</span>
             <span id="actions-left-indicator" class="text-amber-400 transition-all">2 Actions Left</span>
         </div>
-
         <div class="flex items-center gap-2">
             <button onclick="endTurn()" class="px-3 py-1 text-xs font-black bg-rose-600 hover:bg-rose-500 text-white rounded-md shadow transition flex items-center gap-1">
                 <i class="fa-solid fa-forward-step"></i> End Turn
             </button>
-            <button id="btn-rules" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition">
-                <i class="fa-solid fa-book mr-1"></i> Guide
-            </button>
+            <button onclick="openModal('theme-modal')" class="px-2.5 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-palette"></i></button>
+            <button onclick="openModal('rules-modal')" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-book mr-1"></i> Guide</button>
         </div>
     </header>
 
@@ -358,7 +411,7 @@
             <div id="active-tab-title" class="text-xs font-bold text-zinc-300 mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
-            <div id="active-psyche-container" class="tab-slide-container tab-slide-enter grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
+            <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
         <div class="flex-1 bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-3 flex flex-col overflow-hidden shadow-2xl min-h-[185px]">
@@ -370,38 +423,30 @@
         </div>
     </main>
 
-    <!-- MODALS -->
-    <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-center text-center shadow-2xl relative">
-            <h2 class="text-lg font-black text-white uppercase">HAND SIZE LIMIT EXCEEDED</h2>
-            <p class="text-xs text-zinc-400 mt-1 mb-4">You have more than 6 cards. Select cards to discard down to 6.</p>
-            <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-48 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button id="btn-confirm-discard" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Confirm Discard</button>
-        </div>
-    </div>
-
-    <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-lg w-full p-6 text-zinc-200 shadow-2xl relative flex flex-col justify-between">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+    <!-- RULES MODAL -->
+    <div id="rules-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
+        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 shadow-2xl rounded-3xl relative flex flex-col justify-between max-h-[80vh]">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
                 <h2 class="text-lg font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-book"></i> RULES & GUIDE</h2>
-                <button id="close-rules" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('rules-modal')" class="text-zinc-400 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="overflow-y-auto space-y-4 text-xs leading-relaxed text-zinc-300 pr-2 my-3 flex-1">
+            <div class="overflow-y-auto space-y-3 text-xs leading-relaxed text-zinc-300 pr-2 my-2">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-400">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
             </div>
         </div>
     </div>
 
-    <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
-        <div class="side-drawer-content bg-zinc-900 border-l border-zinc-800 h-full max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl relative">
+    <!-- GAME OVER MODAL -->
+    <div id="game-over-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
+        <div class="slide-in-up bg-zinc-900 border border-zinc-800 max-w-sm w-full p-6 flex flex-col justify-center text-center text-zinc-100 shadow-2xl rounded-3xl relative">
             <div id="winner-icon" class="text-4xl mb-2 text-rose-500"><i class="fa-solid fa-trophy"></i></div>
             <h2 id="winner-title" class="text-2xl font-black mb-1">VICTORY!</h2>
             <p id="winner-reason" class="text-xs text-zinc-400 mb-5">Successfully cleared Psyche!</p>
-            <button id="btn-play-again" onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
+            <button onclick="returnToMainMenu()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Main Menu</button>
         </div>
     </div>
 
-    <!-- FIREBASE & AUDIO SCRIPT -->
+    <!-- AUDIO & GAME SCRIPT -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBUSK6ehu4PSCmAJ34q-FayFXmym1V3tlY",
@@ -412,9 +457,16 @@
             appId: "1:679305863949:web:02bea47227aeb0d31cc644",
             measurementId: "G-VPKF51TBEC"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        function setTheme(themeName) {
+            document.body.className = document.body.className.replace(/theme-\S+/g, '');
+            if (themeName !== 'default') document.body.classList.add(`theme-${themeName}`);
+            localStorage.setItem('unfiltered_theme', themeName);
+        }
+        const savedTheme = localStorage.getItem('unfiltered_theme');
+        if (savedTheme) setTheme(savedTheme);
 
         class SoundEngine {
             constructor() { this.ctx = null; }
@@ -461,21 +513,17 @@
             }
         }
         const sfx = new SoundEngine();
-    </script>
 
-    <!-- CORE GAME & BOT LOGIC -->
-    <script>
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
-
         const DISORDERS = {
-            EXISTENTIAL_DREAD: { id: 'EXISTENTIAL_DREAD', name: 'Existential Dread', flavor: 'Staring at the ceiling at 4 AM wondering what it all means.', drugName: 'Chugging Cough Syrup', sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'], punishmentText: 'Reveal hand & attacker steals 1 card.' },
-            CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Knee-cracking loan sharks are waiting outside.', drugName: 'Gas Station Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 3 random cards from target hand.' },
-            SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying uncontrollably in a crowded Applebee\'s.', drugName: 'Drowning Sorrows in Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'EATING_TRASH', 'PARANOIA'], punishmentText: 'Target sits out 1 full round.' },
-            DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Occurred during a high-stakes job interview.', drugName: 'Aggressive Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard ALL attached Drug cards in Psyche!' },
-            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking so violently you can\'t hold a beer.', drugName: 'Sniffing Glue', sideEffects: ['CRIPPLING_DEBT', 'EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: '3-second rapid discard timer!', noTherapy: true },
-            IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'Complete system failure when performance matters most.', drugName: 'Impulse Buying Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Target skips next turn.' },
-            PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Convinced the pigeons outside are FBI drones.', drugName: 'Swiping Aggressively', sideEffects: ['DIARRHEA'], punishmentText: 'Target discards their entire hand.' },
-            EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Digging through a dumpster behind a bakery at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Target discards half their hand.', therapyOnly: true }
+            EXISTENTIAL_DREAD: { id: 'EXISTENTIAL_DREAD', name: 'Existential Dread', flavor: 'Staring at the ceiling at 4 AM.', drugName: 'Chugging Cough Syrup', sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'], punishmentText: 'Attacker steals 1 card.' },
+            CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Loan sharks are waiting outside.', drugName: 'Gas Station Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 3 cards.' },
+            SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying in Applebee\'s.', drugName: 'Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: 'Skip turn.' },
+            DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Job interview disaster.', drugName: 'Aggressive Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard drugs.' },
+            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking violently.', drugName: 'Sniffing Glue', sideEffects: ['CRIPPLING_DEBT'], punishmentText: 'Discard 3 cards.', noTherapy: true },
+            IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'System failure.', drugName: 'Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Skip turn.' },
+            PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Pigeons are FBI.', drugName: 'Swiping', sideEffects: ['DIARRHEA'], punishmentText: 'Discard hand.' },
+            EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Bakery dumpster at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Discard half hand.', therapyOnly: true }
         };
 
         const localProfile = {
@@ -486,22 +534,13 @@
         };
 
         const gameState = {
-            mode: 'single',
-            roomCode: '',
-            deck: [],
-            discardPile: [],
-            activePlayer: 0,
-            actionsLeft: 2,
-            gameOver: false,
-            selectedHandIdx: null,
-            activeTab: 0,
-            players: [],
-            roomListener: null
+            mode: 'single', roomCode: '', deck: [], discardPile: [],
+            activePlayer: 0, actionsLeft: 2, gameOver: false,
+            selectedHandIdx: null, activeTab: 0, players: [], roomListener: null
         };
 
         function generateMasterDeck() {
-            const deck = [];
-            let cardId = 0;
+            const deck = []; let cardId = 0;
             Object.values(DISORDERS).forEach(disorder => {
                 const count = disorder.id === 'EATING_TRASH' ? 4 : 5;
                 for (let i = 0; i < count; i++) {
@@ -515,12 +554,8 @@
                     }
                 }
             });
-            for (let i = 0; i < 12; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges a crisis entirely.', desc: 'Permanently locks slot safe!' });
-            }
-            for (let i = 0; i < 24; i++) {
-                deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers disorder penalty.', desc: 'Play temporarily on any opponent stack!' });
-            }
+            for (let i = 0; i < 12; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
+            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Play temporarily!' });
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -556,15 +591,10 @@
                 const code = Math.random().toString(36).substring(2, 8).toUpperCase();
                 gameState.roomCode = code;
                 document.getElementById('created-room-code').textContent = code;
-                
                 const initialRoomData = {
-                    host: localProfile.username,
-                    maxPlayers: parseInt(document.getElementById('select-max-players').value),
-                    players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }],
-                    status: 'waiting',
-                    state: null
+                    host: localProfile.username, maxPlayers: parseInt(document.getElementById('select-max-players').value),
+                    players: [{ id: 0, name: localProfile.username, gradient: localProfile.gradient }], status: 'waiting', state: null
                 };
-
                 await db.ref('rooms/' + code).set(initialRoomData);
                 updateHostPlayerList(initialRoomData.players);
                 openModal('host-modal');
@@ -584,15 +614,11 @@
                         }
                     }
                 });
-            } catch (error) {
-                console.error("Error hosting game:", error);
-                alert("Failed to host room: " + error.message);
-            }
+            } catch (error) { alert("Failed to host room: " + error.message); }
         }
 
         function updateHostPlayerList(players) {
-            const listEl = document.getElementById('host-player-list');
-            listEl.innerHTML = players.map((p, idx) => `
+            document.getElementById('host-player-list').innerHTML = players.map((p, idx) => `
                 <div class="px-3 py-2 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between text-xs font-bold">
                     <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'text-rose-500'} mr-1.5"></i> ${p.name}</span>
                     <span class="text-[9px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded uppercase">Ready</span>
@@ -600,55 +626,27 @@
             `).join('');
         }
 
-        function copyRoomCode() {
-            navigator.clipboard.writeText(gameState.roomCode);
-            logAction('Room code copied to clipboard!');
-        }
-
-        function openJoinModal() {
-            saveProfile();
-            openModal('join-modal');
-        }
+        function copyRoomCode() { navigator.clipboard.writeText(gameState.roomCode); logAction('Room code copied!'); }
+        function openJoinModal() { saveProfile(); openModal('join-modal'); }
 
         async function submitJoinCode() {
             const code = document.getElementById('input-join-code').value.trim().toUpperCase();
-            if (code.length !== 6) {
-                alert('Please enter a valid 6-character Room Code.');
-                return;
-            }
-
+            if (code.length !== 6) { alert('Enter valid 6-char room code.'); return; }
             const roomRef = db.ref('rooms/' + code);
             const snapshot = await roomRef.once('value');
-            
-            if(!snapshot.exists()) {
-                alert('Room code not found!');
-                return;
-            }
-
+            if(!snapshot.exists()) { alert('Room code not found!'); return; }
             const roomData = snapshot.val();
-            if(roomData.status !== 'waiting') {
-                alert('Game has already started in this room!');
-                return;
-            }
+            if(roomData.status !== 'waiting') { alert('Game already started!'); return; }
 
             const newPlayerId = roomData.players.length;
             const gradients = ['gradient-cyber', 'gradient-emerald', 'gradient-toxic', 'gradient-blood', 'gradient-gold', 'gradient-vapor'];
-            const assignedGradient = gradients[(newPlayerId - 1) % gradients.length];
-
-            roomData.players.push({
-                id: newPlayerId,
-                name: localProfile.username,
-                gradient: assignedGradient
-            });
-
+            roomData.players.push({ id: newPlayerId, name: localProfile.username, gradient: gradients[(newPlayerId - 1) % gradients.length] });
             await roomRef.update({ players: roomData.players });
 
             closeModal('join-modal');
             document.getElementById('screen-main-menu').classList.add('hidden');
             document.getElementById('screen-waiting-room').classList.remove('hidden');
-            gameState.mode = 'join';
-            gameState.roomCode = code;
-
+            gameState.mode = 'join'; gameState.roomCode = code;
             updateWaitingPlayerList(roomData.players);
 
             if(gameState.roomListener) gameState.roomListener.off();
@@ -667,8 +665,7 @@
         }
 
         function updateWaitingPlayerList(players) {
-            const listEl = document.getElementById('waiting-player-list');
-            listEl.innerHTML = players.map((p, idx) => `
+            document.getElementById('waiting-player-list').innerHTML = players.map((p, idx) => `
                 <div class="px-2.5 py-1.5 bg-zinc-900 rounded-lg text-xs font-bold flex items-center justify-between">
                     <span class="${p.gradient}"><i class="fa-solid fa-user ${idx===0?'text-amber-400':'text-rose-500'} mr-1"></i> ${p.name}</span>
                     <span class="text-[9px] text-zinc-500">${idx===0?'Host':'Joined'}</span>
@@ -677,134 +674,90 @@
         }
 
         async function hostStartMatch() {
-            closeModal('host-modal');
-            gameState.mode = 'host';
-
+            closeModal('host-modal'); gameState.mode = 'host';
             const roomRef = db.ref('rooms/' + gameState.roomCode);
             const snapshot = await roomRef.once('value');
             const roomData = snapshot.val();
-
             gameState.players = roomData.players.map(p => ({
-                id: p.id,
-                name: p.name,
-                gradient: p.gradient,
-                isBot: false,
-                hand: [],
-                psyche: [[], [], [], []],
-                slotLocked: [false, false, false, false],
-                skipNextTurn: false
+                id: p.id, name: p.name, gradient: p.gradient, isBot: false, hand: [], psyche: [[], [], [], []], slotLocked: [false, false, false, false], skipNextTurn: false
             }));
-
             initGame();
-
             await roomRef.update({
                 status: 'started',
-                state: {
-                    deck: gameState.deck,
-                    discardPile: gameState.discardPile,
-                    activePlayer: gameState.activePlayer,
-                    actionsLeft: gameState.actionsLeft,
-                    gameOver: gameState.gameOver,
-                    players: gameState.players
-                }
+                state: { deck: gameState.deck, discardPile: gameState.discardPile, activePlayer: gameState.activePlayer, actionsLeft: gameState.actionsLeft, gameOver: gameState.gameOver, players: gameState.players }
             });
         }
 
         function returnToMainMenu() {
-            closeModal('game-over-modal');
-            closeModal('host-modal');
-            closeModal('join-modal');
+            closeModal('game-over-modal'); closeModal('host-modal'); closeModal('join-modal'); closeModal('theme-modal'); closeModal('rules-modal');
             if(gameState.roomListener) gameState.roomListener.off();
             document.getElementById('screen-waiting-room').classList.add('hidden');
             document.getElementById('screen-main-menu').classList.remove('hidden');
         }
 
         function initGame() {
-            gameState.deck = generateMasterDeck();
-            gameState.discardPile = [];
-            gameState.activePlayer = 0;
-            gameState.actionsLeft = 2;
-            gameState.selectedHandIdx = null;
-            gameState.activeTab = 0;
-            gameState.gameOver = false;
-
-            gameState.players.forEach(p => {
-                p.hand = [];
-                p.psyche = [[], [], [], []];
-                p.slotLocked = [false, false, false, false];
-                p.skipNextTurn = false;
-            });
+            gameState.deck = generateMasterDeck(); gameState.discardPile = [];
+            gameState.activePlayer = 0; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
+            gameState.activeTab = 0; gameState.gameOver = false;
+            gameState.players.forEach(p => { p.hand = []; p.psyche = [[], [], [], []]; p.slotLocked = [false, false, false, false]; p.skipNextTurn = false; });
 
             const totalSlots = gameState.players.length * 4;
             const startingDisorders = [];
             for (let i = gameState.deck.length - 1; i >= 0 && startingDisorders.length < totalSlots; i--) {
-                if (gameState.deck[i].type === CARD_TYPES.DISORDER) {
-                    startingDisorders.push(gameState.deck.splice(i, 1)[0]);
-                }
+                if (gameState.deck[i].type === CARD_TYPES.DISORDER) startingDisorders.push(gameState.deck.splice(i, 1)[0]);
             }
-
             let dIdx = 0;
-            gameState.players.forEach(p => {
-                for (let s = 0; s < 4; s++) {
-                    if (dIdx < startingDisorders.length) p.psyche[s].push(startingDisorders[dIdx++]);
-                }
-            });
+            gameState.players.forEach(p => { for (let s = 0; s < 4; s++) if (dIdx < startingDisorders.length) p.psyche[s].push(startingDisorders[dIdx++]); });
+            for (let i = 0; i < 4; i++) gameState.players.forEach(p => { if (gameState.deck.length > 0) p.hand.push(gameState.deck.pop()); });
 
-            for (let i = 0; i < 4; i++) {
-                gameState.players.forEach(p => {
-                    if (gameState.deck.length > 0) p.hand.push(gameState.deck.pop());
-                });
-            }
-
-            startTurn(0);
-            renderAll();
+            startTurn(0); renderAll();
         }
 
         function startTurn(playerIdx) {
             if (gameState.gameOver) return;
-            gameState.activePlayer = playerIdx;
-            gameState.actionsLeft = 2;
-            gameState.selectedHandIdx = null;
-
+            gameState.activePlayer = playerIdx; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
             const player = gameState.players[playerIdx];
             if (player.skipNextTurn) {
-                player.skipNextTurn = false;
-                logAction(`${player.name}'s turn was skipped!`);
-                setTimeout(() => nextTurn(), 1400);
-                return;
+                player.skipNextTurn = false; logAction(`${player.name}'s turn was skipped!`);
+                setTimeout(() => nextTurn(), 1400); return;
             }
-
             drawCardsForPlayer(playerIdx, 2);
-            logAction(`${player.name}'s turn! 2 actions remaining.`);
+            logAction(`${player.name}'s turn! 2 actions available.`);
             renderAll();
 
             if (player.isBot && gameState.mode === 'single') {
-                setTimeout(() => executeBotTurn(), 1200);
-            } else if (gameState.mode === 'host') {
-                syncCloudState();
-            }
+                setTimeout(() => executeBotFullTurn(), 900);
+            } else if (gameState.mode === 'host') { syncCloudState(); }
         }
 
-        function executeBotTurn() {
+        function executeBotFullTurn() {
             if (gameState.gameOver) return;
             const bot = gameState.players[gameState.activePlayer];
-            if (!bot.isBot) return;
+            if (!bot.isBot || gameState.actionsLeft <= 0) {
+                setTimeout(() => nextTurn(), 1000);
+                return;
+            }
 
-            let actionTaken = false;
+            let played = false;
             for (let i = bot.hand.length - 1; i >= 0; i--) {
                 const card = bot.hand[i];
                 for (let sIdx = 0; sIdx < 4; sIdx++) {
                     if (canPlayCardOnStack(card, bot.id, sIdx)) {
                         executePlayCard(bot.id, i, bot.id, sIdx);
-                        actionTaken = true;
+                        played = true;
                         break;
                     }
                 }
-                if (actionTaken) break;
+                if (played) break;
+            }
+
+            if (gameState.actionsLeft > 0 && !played) {
+                drawCardsForPlayer(bot.id, 1);
+                gameState.actionsLeft--;
             }
 
             if (gameState.actionsLeft > 0 && !gameState.gameOver) {
-                setTimeout(() => executeBotTurn(), 900);
+                setTimeout(() => executeBotFullTurn(), 900);
             } else {
                 setTimeout(() => nextTurn(), 1200);
             }
@@ -814,45 +767,29 @@
             const player = gameState.players[playerIdx];
             for (let i = 0; i < count; i++) {
                 if (gameState.deck.length === 0 && gameState.discardPile.length > 0) {
-                    gameState.deck = [...gameState.discardPile];
-                    gameState.discardPile = [];
-                    shuffleArray(gameState.deck);
+                    gameState.deck = [...gameState.discardPile]; gameState.discardPile = []; shuffleArray(gameState.deck);
                 }
-                if (gameState.deck.length > 0) {
-                    player.hand.push(gameState.deck.pop());
-                    sfx.playDraw();
-                }
+                if (gameState.deck.length > 0) { player.hand.push(gameState.deck.pop()); sfx.playDraw(); }
             }
         }
 
         function handleHumanDrawAction() {
             if (gameState.activePlayer !== 0 || gameState.actionsLeft <= 0 || gameState.gameOver) return;
-            drawCardsForPlayer(0, 1);
-            gameState.actionsLeft--;
-            sfx.playDraw();
-            logAction(`Drew 1 card using an action. (${gameState.actionsLeft} actions left)`);
+            drawCardsForPlayer(0, 1); gameState.actionsLeft--; sfx.playDraw();
+            logAction(`Drew 1 card. (${gameState.actionsLeft} actions left)`);
             renderAll();
-
-            if (gameState.actionsLeft <= 0) {
-                setTimeout(() => endTurn(), 600);
-            }
+            if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
         }
 
         function endTurn() {
             if (gameState.activePlayer !== 0 || gameState.gameOver) return;
-            const player = gameState.players[0];
-            if (player.hand.length > 6) {
-                openModal('discard-modal');
-            } else {
-                nextTurn();
-            }
+            nextTurn();
         }
 
         function nextTurn() {
             checkWinConditions();
             if (gameState.gameOver) return;
-            const nextIdx = (gameState.activePlayer + 1) % gameState.players.length;
-            startTurn(nextIdx);
+            startTurn((gameState.activePlayer + 1) % gameState.players.length);
         }
 
         function getStackTopCard(stack) { return stack.length > 0 ? stack[stack.length - 1] : null; }
@@ -868,15 +805,9 @@
                 if (targetPlayerIdx === gameState.activePlayer) return stack.length === 0;
                 return stack.length === 0 || (topCard && topCard.type === CARD_TYPES.DRUG && topCard.sideEffects?.includes(card.disorderId));
             }
-            if (card.type === CARD_TYPES.DRUG) {
-                return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && topCard.disorderId === card.disorderId;
-            }
-            if (card.type === CARD_TYPES.THERAPY) {
-                return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && !topCard.noTherapy;
-            }
-            if (card.type === CARD_TYPES.EPISODE) {
-                return targetPlayerIdx !== gameState.activePlayer && isStackUntreated(stack);
-            }
+            if (card.type === CARD_TYPES.DRUG) return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && topCard.disorderId === card.disorderId;
+            if (card.type === CARD_TYPES.THERAPY) return targetPlayerIdx === gameState.activePlayer && topCard?.type === CARD_TYPES.DISORDER && !topCard.noTherapy;
+            if (card.type === CARD_TYPES.EPISODE) return targetPlayerIdx !== gameState.activePlayer && isStackUntreated(stack);
             return false;
         }
 
@@ -886,61 +817,38 @@
             const targetPlayer = gameState.players[targetPlayerIdx];
             const stack = targetPlayer.psyche[stackIdx];
 
-            player.hand.splice(cardHandIdx, 1);
-            gameState.selectedHandIdx = null;
+            player.hand.splice(cardHandIdx, 1); gameState.selectedHandIdx = null;
 
             if (card.type === CARD_TYPES.DISORDER || card.type === CARD_TYPES.DRUG) {
-                stack.push(card);
-                sfx.playCard();
-                logAction(`${player.name} played "${card.title}".`);
+                stack.push(card); sfx.playCard(); logAction(`${player.name} played "${card.title}".`);
             } else if (card.type === CARD_TYPES.THERAPY) {
                 while (stack.length > 0) gameState.discardPile.push(stack.pop());
-                gameState.discardPile.push(card);
-                targetPlayer.slotLocked[stackIdx] = true;
-                sfx.playCure();
-                logAction(`${player.name} used Therapy! Slot locked safe!`);
+                gameState.discardPile.push(card); targetPlayer.slotLocked[stackIdx] = true;
+                sfx.playCure(); logAction(`${player.name} cured slot!`);
             } else if (card.type === CARD_TYPES.EPISODE) {
-                sfx.playDisaster();
-                const topDisorder = getStackTopCard(stack);
-                stack.push(card);
-                renderAll();
-                setTimeout(() => {
-                    stack.pop();
-                    gameState.discardPile.push(card);
-                    logAction(`${player.name} triggered Meltdown on ${topDisorder.title}!`);
-                }, 800);
+                sfx.playDisaster(); const top = getStackTopCard(stack); stack.push(card); renderAll();
+                setTimeout(() => { stack.pop(); gameState.discardPile.push(card); logAction(`${player.name} triggered Meltdown!`); }, 800);
             }
 
             if (!player.isBot) {
                 gameState.actionsLeft--;
-                if (gameState.actionsLeft <= 0) {
-                    setTimeout(() => endTurn(), 600);
-                }
+                if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
             }
-
             renderAll();
-            if(gameState.mode === 'host') syncCloudState();
+            if (gameState.mode === 'host') syncCloudState();
         }
 
         async function syncCloudState() {
-            if(gameState.mode !== 'host') return;
+            if (gameState.mode !== 'host') return;
             await db.ref('rooms/' + gameState.roomCode).update({
-                state: {
-                    deck: gameState.deck,
-                    discardPile: gameState.discardPile,
-                    activePlayer: gameState.activePlayer,
-                    actionsLeft: gameState.actionsLeft,
-                    gameOver: gameState.gameOver,
-                    players: gameState.players
-                }
+                state: { deck: gameState.deck, discardPile: gameState.discardPile, activePlayer: gameState.activePlayer, actionsLeft: gameState.actionsLeft, gameOver: gameState.gameOver, players: gameState.players }
             });
         }
 
         function checkWinConditions() {
             gameState.players.forEach(p => {
-                let untreatedCount = 0;
-                p.psyche.forEach(s => { if (isStackUntreated(s)) untreatedCount++; });
-                if (untreatedCount === 0) {
+                let untreated = 0; p.psyche.forEach(s => { if (isStackUntreated(s)) untreated++; });
+                if (untreated === 0) {
                     if (p.id === 0) { localProfile.wins++; localStorage.setItem('unfiltered_wins', localProfile.wins); }
                     localProfile.games++; localStorage.setItem('unfiltered_games', localProfile.games);
                     triggerGameOver(p);
@@ -961,10 +869,7 @@
             }
         }
 
-        function switchPlayerTab(tabIdx) {
-            gameState.activeTab = tabIdx;
-            renderAll();
-        }
+        function switchPlayerTab(tabIdx) { gameState.activeTab = tabIdx; renderAll(); }
 
         function renderAll() {
             document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
@@ -973,8 +878,7 @@
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
             document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
 
-            const tabBar = document.getElementById('tab-bar-container');
-            tabBar.innerHTML = '';
+            const tabBar = document.getElementById('tab-bar-container'); tabBar.innerHTML = '';
             gameState.players.forEach((p, idx) => {
                 const isSelected = gameState.activeTab === idx;
                 const btn = document.createElement('button');
@@ -987,9 +891,7 @@
             const activePlayerObj = gameState.players[gameState.activeTab] || gameState.players[0];
             document.getElementById('tab-player-name').textContent = activePlayerObj.name;
 
-            const container = document.getElementById('active-psyche-container');
-            container.innerHTML = '';
-
+            const container = document.getElementById('active-psyche-container'); container.innerHTML = '';
             for (let sIdx = 0; sIdx < 4; sIdx++) {
                 const stack = activePlayerObj.psyche[sIdx];
                 const isLocked = activePlayerObj.slotLocked[sIdx];
@@ -999,39 +901,29 @@
                 if (isLocked) {
                     slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[9px] font-black uppercase">CURED</span></div>`;
                 } else if (stack.length === 0) {
-                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty Slot</span>`;
+                    slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-500 uppercase">Empty</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
-                        cardDOM.classList.add('stacked-card');
-                        cardDOM.style.top = `${cIdx * 10}px`;
-                        cardDOM.style.zIndex = cIdx + 1;
+                        cardDOM.classList.add('stacked-card'); cardDOM.style.top = `${cIdx * 10}px`; cardDOM.style.zIndex = cIdx + 1;
                         slot.appendChild(cardDOM);
                     });
                 }
 
-                // Drag and Drop Event Handlers
                 slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('drag-over'); };
                 slot.ondragleave = () => slot.classList.remove('drag-over');
                 slot.ondrop = (e) => {
-                    e.preventDefault();
-                    slot.classList.remove('drag-over');
+                    e.preventDefault(); slot.classList.remove('drag-over');
                     const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
                     if (!isNaN(handIdx) && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
                         const card = gameState.players[0].hand[handIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
-                            executePlayCard(0, handIdx, gameState.activeTab, sIdx);
-                        }
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, handIdx, gameState.activeTab, sIdx);
                     }
                 };
-
-                // Tap-to-play fallback for mobile/click
                 slot.onclick = () => {
                     if (gameState.selectedHandIdx !== null && !isLocked && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
                         const card = gameState.players[0].hand[gameState.selectedHandIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) {
-                            executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
-                        }
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
                     }
                 };
                 container.appendChild(slot);
@@ -1042,23 +934,11 @@
             if (handContainer) {
                 handContainer.innerHTML = '';
                 gameState.players[0]?.hand.forEach((card, idx) => {
-                    const cardDOM = renderCardDOM(card);
-                    cardDOM.classList.add('hand-card-item');
-                    cardDOM.draggable = true;
-
+                    const cardDOM = renderCardDOM(card); cardDOM.classList.add('hand-card-item'); cardDOM.draggable = true;
                     if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
-
-                    cardDOM.ondragstart = (e) => {
-                        e.dataTransfer.setData('text/plain', idx);
-                        cardDOM.classList.add('dragging');
-                    };
+                    cardDOM.ondragstart = (e) => { e.dataTransfer.setData('text/plain', idx); cardDOM.classList.add('dragging'); };
                     cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
-
-                    cardDOM.onclick = (e) => {
-                        e.stopPropagation();
-                        gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
-                        renderAll();
-                    };
+                    cardDOM.onclick = (e) => { e.stopPropagation(); gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; renderAll(); };
                     handContainer.appendChild(cardDOM);
                 });
             }
@@ -1068,22 +948,15 @@
         function renderCardDOM(card) {
             const cardEl = document.createElement('div');
             let typeClass = card.type === CARD_TYPES.EPISODE ? 'card-black' : 'card-white';
-            let headerText = card.type.toUpperCase();
-            let headerClass = 'card-disorder-header';
-            if(card.type === CARD_TYPES.DRUG) headerClass = 'card-drug-header';
-            if(card.type === CARD_TYPES.THERAPY) headerClass = 'card-therapy-header';
-            if(card.type === CARD_TYPES.EPISODE) headerClass = 'card-episode-header';
-
+            let headerClass = card.type === CARD_TYPES.DRUG ? 'card-drug-header' : card.type === CARD_TYPES.THERAPY ? 'card-therapy-header' : card.type === CARD_TYPES.EPISODE ? 'card-episode-header' : 'card-disorder-header';
             cardEl.className = `card-base ${typeClass} shadow-xl`;
-            
             let subText = card.desc || card.punishmentText || '';
             if (card.type === CARD_TYPES.DRUG) {
                 const sideEffectNames = card.sideEffects ? card.sideEffects.map(id => DISORDERS[id]?.name || id).join(', ') : '';
                 subText = `Shields: ${card.treatsName}<br/><span class="text-rose-600 font-extrabold">Vulnerable: ${sideEffectNames}</span>`;
             }
-
             cardEl.innerHTML = `
-                <div class="flex items-center justify-between w-full"><span class="${headerClass}">${headerText}</span></div>
+                <div class="flex items-center justify-between w-full"><span class="${headerClass}">${card.type.toUpperCase()}</span></div>
                 <div class="my-auto text-left">
                     <div class="font-black text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
                     <div class="text-[7.5px] ${typeClass==='card-black'?'text-zinc-300':'text-zinc-700'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
@@ -1096,11 +969,9 @@
         }
 
         function logAction(msg) { document.getElementById('log-text').textContent = msg; }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); setTimeout(() => document.getElementById(id).classList.add('modal-active'), 10); }
-        function closeModal(id) { document.getElementById(id).classList.remove('modal-active'); setTimeout(() => document.getElementById(id).classList.add('hidden'), 350); }
-
-        document.getElementById('btn-rules').onclick = () => openModal('rules-modal');
-        document.getElementById('close-rules').onclick = () => closeModal('rules-modal');
+        function openModal(id) { const el = document.getElementById(id); el.classList.remove('hidden'); setTimeout(() => el.classList.add('active', 'modal-active'), 10); }
+        function closeModal(id) { const el = document.getElementById(id); el.classList.remove('active', 'modal-active'); setTimeout(() => el.classList.add('hidden'), 350); }
+        function openThemeModal() { openModal('theme-modal'); }
     </script>
 </body>
 </html>
