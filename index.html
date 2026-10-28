@@ -135,6 +135,26 @@
             background: rgba(5, 150, 105, 0.12) !important;
         }
 
+        /* MOBILE RESPONSIVE TWEAKS */
+        @media (max-width: 768px) {
+            .card-base {
+                width: 86px;
+                height: 122px;
+                padding: 6px;
+            }
+            .card-disorder-header, .card-drug-header, .card-therapy-header, .card-episode-header {
+                font-size: 7px;
+                padding: 1px 4px;
+            }
+            #active-psyche-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+            }
+            header h1 {
+                font-size: 12px !important;
+            }
+        }
+
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
@@ -144,12 +164,12 @@
 
     <!-- MAIN MENU SCREEN -->
     <div id="screen-main-menu" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-md">
-        <div class="fade-in-up max-w-lg w-full flex flex-col items-center text-center p-8 bg-zinc-900/80 border border-zinc-800/80 rounded-3xl shadow-2xl relative">
+        <div class="fade-in-up max-w-lg w-full flex flex-col items-center text-center p-6 sm:p-8 bg-zinc-900/80 border border-zinc-800/80 rounded-3xl shadow-2xl relative">
             <div class="flex items-center gap-2 mb-3">
                 <span class="bg-rose-600/20 text-rose-400 border border-rose-500/30 font-extrabold text-[10px] px-3 py-1 rounded-full tracking-wider uppercase">18+ ADULT PARTY GAME</span>
             </div>
             
-            <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white mb-2 flex items-center gap-3">
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-2 flex items-center gap-3">
                 <i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 max-w-sm mb-6">A dark, psychological party game. Clear your mind or sabotage your friends.</p>
@@ -265,58 +285,58 @@
     </div>
 
     <!-- TOP NAV HEADER -->
-    <header class="h-12 bg-zinc-950 border-b border-zinc-800 px-4 flex items-center justify-between z-30 shrink-0">
+    <header class="h-12 bg-zinc-950 border-b border-zinc-800 px-3 sm:px-4 flex items-center justify-between z-30 shrink-0">
         <div class="flex items-center gap-2">
             <button onclick="returnToMainMenu()" class="text-zinc-400 hover:text-white text-sm pr-2 border-r border-zinc-800 transition" title="Main Menu"><i class="fa-solid fa-house"></i></button>
-            <span class="bg-rose-600/20 text-rose-400 font-bold text-[10px] px-2 py-0.5 rounded uppercase">18+ ADULT</span>
-            <h1 class="text-sm font-black tracking-tight text-zinc-100 flex items-center gap-1.5"><i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED</h1>
+            <span class="bg-rose-600/20 text-rose-400 font-bold text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded uppercase">18+</span>
+            <h1 class="text-xs sm:text-sm font-black tracking-tight text-zinc-100 flex items-center gap-1.5"><i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED</h1>
         </div>
-        <div id="game-status-bar" class="text-xs font-semibold text-zinc-300 bg-zinc-900/90 border border-zinc-800 px-4 py-1 rounded-full flex items-center gap-3">
+        <div id="game-status-bar" class="text-[11px] sm:text-xs font-semibold text-zinc-300 bg-zinc-900/90 border border-zinc-800 px-2.5 sm:px-4 py-1 rounded-full flex items-center gap-2 sm:gap-3">
             <span id="turn-indicator" class="text-rose-500 font-bold">Your Turn</span>
             <span class="text-zinc-700">|</span>
-            <span id="actions-left-indicator" class="text-amber-400">2 Actions Left</span>
+            <span id="actions-left-indicator" class="text-amber-400">2 Act</span>
         </div>
-        <div class="flex items-center gap-2">
-            <button onclick="endTurn()" class="px-3 py-1 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-md transition flex items-center gap-1">
-                <i class="fa-solid fa-forward-step"></i> End Turn
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="endTurn()" class="px-2.5 sm:px-3 py-1 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-md transition flex items-center gap-1">
+                <i class="fa-solid fa-forward-step"></i> <span class="hidden sm:inline">End Turn</span>
             </button>
-            <button onclick="openModal('rules-modal')" class="px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-book mr-1"></i> Guide</button>
+            <button onclick="openModal('rules-modal')" class="px-2.5 sm:px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition"><i class="fa-solid fa-book sm:mr-1"></i><span class="hidden sm:inline"> Guide</span></button>
         </div>
     </header>
 
     <!-- TABLETOP CONTAINER -->
-    <main id="table-container" class="flex-1 relative overflow-hidden p-3 md:p-5 flex flex-col gap-3 max-w-5xl mx-auto w-full">
-        <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800/80 shrink-0">
-            <div class="flex items-center gap-4">
-                <div id="draw-deck" class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800 hover:border-rose-600/50 transition cursor-pointer">
-                    <i class="fa-solid fa-fire-flame-curved text-rose-500 text-sm"></i>
-                    <span class="text-xs font-bold text-white uppercase tracking-wider">Draw Deck (<span id="deck-count" class="text-rose-500">0</span>)</span>
+    <main id="table-container" class="flex-1 relative overflow-y-auto sm:overflow-hidden p-2 sm:p-5 flex flex-col gap-2.5 sm:gap-3 max-w-5xl mx-auto w-full">
+        <div class="flex items-center justify-between bg-zinc-900/80 p-2.5 sm:p-3 rounded-2xl border border-zinc-800/80 shrink-0">
+            <div class="flex items-center gap-2.5 sm:gap-4">
+                <div id="draw-deck" class="flex items-center gap-1.5 sm:gap-2 bg-zinc-950 px-3 py-1.5 rounded-xl border border-zinc-800 hover:border-rose-600/50 transition cursor-pointer">
+                    <i class="fa-solid fa-fire-flame-curved text-rose-500 text-xs sm:text-sm"></i>
+                    <span class="text-[11px] sm:text-xs font-bold text-white uppercase tracking-wider">Deck (<span id="deck-count" class="text-rose-500">0</span>)</span>
                 </div>
-                <div class="flex items-center gap-2 bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-zinc-800">
-                    <i class="fa-solid fa-trash-can text-zinc-500 text-sm"></i>
-                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-zinc-950 px-3 py-1.5 rounded-xl border border-zinc-800">
+                    <i class="fa-solid fa-trash-can text-zinc-500 text-xs sm:text-sm"></i>
+                    <span class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Trash (<span id="discard-count" class="text-zinc-500">0</span>)</span>
                 </div>
             </div>
-            <div id="center-log" class="text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950 rounded-xl border border-zinc-800 max-w-md truncate">
+            <div id="center-log" class="hidden md:block text-xs font-semibold text-rose-400 px-4 py-1.5 bg-zinc-950 rounded-xl border border-zinc-800 max-w-md truncate">
                 <span id="log-text">Your Turn! Take up to 2 actions.</span>
             </div>
         </div>
 
         <div id="tab-bar-container" class="flex gap-1.5 overflow-x-auto shrink-0 pb-1"></div>
 
-        <div class="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 min-h-[190px]">
-            <div id="active-tab-title" class="text-xs font-bold text-zinc-400 mb-3 flex items-center gap-2 uppercase tracking-wider">
+        <div class="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center shrink-0 min-h-[170px] sm:min-h-[190px]">
+            <div id="active-tab-title" class="text-xs font-bold text-zinc-400 mb-2.5 sm:mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <i class="fa-solid fa-brain text-rose-500"></i> <span id="tab-player-name">Your</span> Psyche Stacks
             </div>
-            <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
+            <div id="active-psyche-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 justify-center items-center w-full max-w-3xl"></div>
         </div>
 
-        <div class="flex-1 bg-zinc-950/90 border border-zinc-800 rounded-2xl p-3 flex flex-col overflow-hidden min-h-[185px]">
-            <div class="text-xs font-bold text-zinc-400 mb-2 flex items-center justify-between shrink-0">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-500"></i> Your Hand (<span id="hand-count-num">4</span> Cards)</span>
-                <span class="text-[10px] text-zinc-500">Drag card onto stack above OR tap card then tap slot</span>
+        <div class="flex-1 bg-zinc-950/90 border border-zinc-800 rounded-2xl p-2.5 sm:p-3 flex flex-col overflow-hidden min-h-[160px] sm:min-h-[185px]">
+            <div class="text-[11px] sm:text-xs font-bold text-zinc-400 mb-2 flex items-center justify-between shrink-0">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand text-rose-500"></i> Your Hand (<span id="hand-count-num">4</span>)</span>
+                <span class="text-[9px] sm:text-[10px] text-zinc-500">Drag or Tap card then slot</span>
             </div>
-            <div id="player-hand" class="flex-1 flex gap-3 overflow-x-auto items-center py-2 px-1"></div>
+            <div id="player-hand" class="flex-1 flex gap-2.5 sm:gap-3 overflow-x-auto items-center py-1 sm:py-2 px-1"></div>
         </div>
     </main>
 
@@ -815,14 +835,14 @@
             document.getElementById('deck-count').textContent = gameState.deck.length;
             document.getElementById('discard-count').textContent = gameState.discardPile.length;
             document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
-            document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Actions Left`;
+            document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Act`;
 
             const tabBar = document.getElementById('tab-bar-container'); tabBar.innerHTML = '';
             gameState.players.forEach((p, idx) => {
                 const isSelected = gameState.activeTab === idx;
                 const btn = document.createElement('button');
                 btn.onclick = () => switchPlayerTab(idx);
-                btn.className = `py-2 px-3 text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shrink-0 ${isSelected ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
+                btn.className = `py-1.5 sm:py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-black uppercase rounded-xl border transition-all flex items-center justify-center gap-1.5 shrink-0 ${isSelected ? 'bg-rose-600 text-white border-rose-500' : 'bg-zinc-900/90 text-zinc-400 border-zinc-800'}`;
                 btn.innerHTML = `<span class="font-extrabold">${p.name}</span> <span class="text-[9px] opacity-70">(${p.hand.length})</span>`;
                 tabBar.appendChild(btn);
             });
@@ -838,13 +858,13 @@
                 slot.className = `card-base slot-target relative flex items-center justify-center ${isLocked ? 'slot-locked-safe' : ''}`;
 
                 if (isLocked) {
-                    slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[9px] font-black uppercase">CURED</span></div>`;
+                    slot.innerHTML = `<div class="flex flex-col items-center justify-center text-emerald-400 text-center p-1"><i class="fa-solid fa-shield-halved text-lg sm:text-xl mb-1"></i><span class="text-[8px] sm:text-[9px] font-black uppercase">CURED</span></div>`;
                 } else if (stack.length === 0) {
                     slot.innerHTML = `<span class="text-[8px] font-bold text-zinc-600 uppercase">Empty</span>`;
                 } else {
                     stack.forEach((c, cIdx) => {
                         const cardDOM = renderCardDOM(c);
-                        cardDOM.classList.add('stacked-card'); cardDOM.style.top = `${cIdx * 10}px`; cardDOM.style.zIndex = cIdx + 1;
+                        cardDOM.classList.add('stacked-card'); cardDOM.style.top = `${cIdx * 8}px`; cardDOM.style.zIndex = cIdx + 1;
                         slot.appendChild(cardDOM);
                     });
                 }
@@ -897,10 +917,10 @@
             cardEl.innerHTML = `
                 <div class="flex items-center justify-between w-full"><span class="${headerClass}">${card.type.toUpperCase()}</span></div>
                 <div class="my-auto text-left">
-                    <div class="font-black text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
-                    <div class="text-[7.5px] ${typeClass==='card-black'?'text-zinc-400':'text-zinc-600'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
+                    <div class="font-black text-[10px] sm:text-[10.5px] leading-tight ${typeClass==='card-black'?'text-white':'text-zinc-950'}">${card.title}</div>
+                    <div class="text-[7px] sm:text-[7.5px] ${typeClass==='card-black'?'text-zinc-400':'text-zinc-600'} mt-0.5 line-clamp-2">${card.flavor || ''}</div>
                 </div>
-                <div class="text-[6.5px] uppercase tracking-wider pt-1 border-t ${typeClass==='card-black'?'border-zinc-800 text-zinc-300 font-semibold':'border-zinc-200 text-zinc-800 font-bold'} leading-tight">
+                <div class="text-[6px] sm:text-[6.5px] uppercase tracking-wider pt-1 border-t ${typeClass==='card-black'?'border-zinc-800 text-zinc-300 font-semibold':'border-zinc-200 text-zinc-800 font-bold'} leading-tight">
                     ${subText}
                 </div>
             `;
