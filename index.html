@@ -293,15 +293,16 @@
         </div>
     </div>
 
-    <!-- DISCARD OVER 6 CARDS MODAL -->
+    <!-- FREE DISCARD MODAL -->
     <div id="discard-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center hidden">
         <div class="bg-zinc-900 border border-zinc-800 max-w-lg w-full p-6 text-zinc-200 rounded-3xl relative flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-3">
-                <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-hand"></i> HAND SIZE EXCEEDED (>6)</h2>
+                <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> FREE DISCARD CARDS</h2>
+                <button onclick="closeModal('discard-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-xs text-zinc-300 mb-3">You have more than 6 cards in your hand. Select cards to discard until your hand size is 6 or fewer.</p>
+            <p class="text-xs text-zinc-300 mb-3">Select any cards from your hand to discard for free. This does <strong>not</strong> count as your 2 actions!</p>
             <div id="discard-card-selector" class="flex flex-wrap gap-2 justify-center max-h-60 overflow-y-auto mb-4 p-2 bg-zinc-950 rounded-xl border border-zinc-800"></div>
-            <button onclick="confirmDiscardCards()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Confirm Discard</button>
+            <button onclick="confirmFreeDiscardCards()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Confirm Free Discard</button>
         </div>
     </div>
 
@@ -318,6 +319,9 @@
             <span id="actions-left-indicator" class="text-amber-400">2 Act</span>
         </div>
         <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="openFreeDiscardModal()" class="px-2.5 sm:px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition flex items-center gap-1" title="Discard for free">
+                <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Discard</span>
+            </button>
             <button onclick="endTurn()" class="px-2.5 sm:px-3 py-1 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-md transition flex items-center gap-1">
                 <i class="fa-solid fa-forward-step"></i> <span class="hidden sm:inline">End Turn</span>
             </button>
@@ -370,6 +374,8 @@
             </div>
             <div class="space-y-3 text-xs leading-relaxed text-zinc-300 my-2">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">WIN CONDITION:</span> Clear all visible disorders from your Psyche!</div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">MELTDOWN EFFECT:</span> Placing an Episode card on an active crisis triggers its crisis penalty effect and then discards!</div>
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800"><span class="font-bold text-rose-500">FREE DISCARD:</span> Click the Discard button anytime on your turn to discard cards without using your 2 actions.</div>
             </div>
         </div>
     </div>
@@ -447,13 +453,13 @@
         const CARD_TYPES = { DISORDER: 'disorder', DRUG: 'drug', THERAPY: 'therapy', EPISODE: 'episode' };
         const DISORDERS = {
             EXISTENTIAL_DREAD: { id: 'EXISTENTIAL_DREAD', name: 'Existential Dread', flavor: 'Staring at ceiling at 4 AM.', drugName: 'Cough Syrup', sideEffects: ['CRIPPLING_DEBT', 'PARANOIA', 'SOBBING'], punishmentText: 'Attacker steals 1 card.' },
-            CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Loan sharks waiting.', drugName: 'Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 3 cards.' },
-            SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying in Applebee\'s.', drugName: 'Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: 'Skip turn.' },
-            DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Interview disaster.', drugName: 'Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard drugs.' },
-            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking violently.', drugName: 'Glue', sideEffects: ['CRIPPLING_DEBT'], punishmentText: 'Discard 3 cards.', noTherapy: true },
-            IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'System failure.', drugName: 'Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Skip turn.' },
-            PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Pigeons are drones.', drugName: 'Swipe', sideEffects: ['DIARRHEA'], punishmentText: 'Discard hand.' },
-            EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Dumpster at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Discard half hand.', therapyOnly: true }
+            CRIPPLING_DEBT: { id: 'CRIPPLING_DEBT', name: 'Crippling Debt', flavor: 'Loan sharks waiting.', drugName: 'Pills', sideEffects: ['IMPOTENCE'], punishmentText: 'Attacker draws 2 cards.' },
+            SOBBING: { id: 'SOBBING', name: 'Uncontrollable Sobbing', flavor: 'Crying in Applebee\'s.', drugName: 'Cheap Gin', sideEffects: ['EXISTENTIAL_DREAD', 'PARANOIA'], punishmentText: 'Skip next turn.' },
+            DIARRHEA: { id: 'DIARRHEA', name: 'Explosive Diarrhea', flavor: 'Interview disaster.', drugName: 'Denial', sideEffects: ['TREMORS'], punishmentText: 'Discard top card.' },
+            TREMORS: { id: 'TREMORS', name: 'Severe Tremors', flavor: 'Shaking violently.', drugName: 'Glue', sideEffects: ['CRIPPLING_DEBT'], punishmentText: 'Force discard hand card.', noTherapy: true },
+            IMPOTENCE: { id: 'IMPOTENCE', name: 'Impotence', flavor: 'System failure.', drugName: 'Tattoos', sideEffects: ['SOBBING'], punishmentText: 'Skip next turn.' },
+            PARANOIA: { id: 'PARANOIA', name: 'Paranoia', flavor: 'Pigeons are drones.', drugName: 'Swipe', sideEffects: ['DIARRHEA'], punishmentText: 'Discard hand card.' },
+            EATING_TRASH: { id: 'EATING_TRASH', name: 'Eating Trash', flavor: 'Dumpster at 2 AM.', drugName: null, sideEffects: [], punishmentText: 'Lose an action.', therapyOnly: true }
         };
 
         const localProfile = {
@@ -485,7 +491,7 @@
                 }
             });
             for (let i = 0; i < 12; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.THERAPY, title: 'Actual Miracle', flavor: 'Purges crisis.', desc: 'Permanently locks slot!' });
-            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers instant penalty!' });
+            for (let i = 0; i < 24; i++) deck.push({ uid: `card_${cardId++}`, type: CARD_TYPES.EPISODE, title: 'Total Meltdown', flavor: 'Triggers penalty.', desc: 'Triggers crisis effect!' });
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -683,7 +689,6 @@
             if (gameState.gameOver || gameState.activePlayer !== botIdx) return;
             const bot = gameState.players[botIdx];
 
-            // HARD GUARD: Strict maximum of 2 actions per turn
             if (gameState.actionsLeft <= 0 || bot.hand.length === 0) {
                 setTimeout(() => nextTurn(), 900);
                 return;
@@ -734,19 +739,14 @@
             if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
         }
 
-        function endTurn() {
+        function openFreeDiscardModal() {
             if (gameState.activePlayer !== 0 || gameState.gameOver) return;
-            const player = gameState.players[0];
-            if (player.hand.length > 6) {
-                gameState.selectedDiscardIndices.clear();
-                renderDiscardSelector();
-                openModal('discard-modal');
-            } else {
-                nextTurn();
-            }
+            gameState.selectedDiscardIndices.clear();
+            renderFreeDiscardSelector();
+            openModal('discard-modal');
         }
 
-        function renderDiscardSelector() {
+        function renderFreeDiscardSelector() {
             const container = document.getElementById('discard-card-selector');
             container.innerHTML = '';
             gameState.players[0].hand.forEach((card, idx) => {
@@ -762,19 +762,18 @@
                     } else {
                         gameState.selectedDiscardIndices.add(idx);
                     }
-                    renderDiscardSelector();
+                    renderFreeDiscardSelector();
                 };
                 container.appendChild(cardDOM);
             });
         }
 
-        function confirmDiscardCards() {
-            const player = gameState.players[0];
-            const remainingCount = player.hand.length - gameState.selectedDiscardIndices.size;
-            if (remainingCount > 6) {
-                alert(`You must discard at least ${player.hand.length - 6} card(s) to get down to 6.`);
+        function confirmFreeDiscardCards() {
+            if (gameState.selectedDiscardIndices.size === 0) {
+                closeModal('discard-modal');
                 return;
             }
+            const player = gameState.players[0];
             const newHand = [];
             const discarded = [];
             player.hand.forEach((card, idx) => {
@@ -788,6 +787,12 @@
             gameState.discardPile.push(...discarded);
             gameState.selectedDiscardIndices.clear();
             closeModal('discard-modal');
+            logAction(`Freely discarded ${discarded.length} card(s).`);
+            renderAll();
+        }
+
+        function endTurn() {
+            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
             nextTurn();
         }
 
@@ -833,11 +838,27 @@
                 sfx.playCure(); logAction(`${player.name} cured slot on ${targetPlayer.name}!`);
             } else if (card.type === CARD_TYPES.EPISODE) {
                 sfx.playDisaster();
+                const topCard = getStackTopCard(stack);
+                const disorderInfo = topCard ? DISORDERS[topCard.disorderId] : null;
+                
+                // Trigger Crisis Punishment Effect
+                if (disorderInfo) {
+                    logAction(`MELTDOWN! ${targetPlayer.name}'s crisis triggered: ${disorderInfo.punishmentText}`);
+                    if (disorderInfo.id === 'SOBBING' || disorderInfo.id === 'IMPOTENCE') {
+                        targetPlayer.skipNextTurn = true;
+                    } else if (disorderInfo.id === 'EXISTENTIAL_DREAD' && player.hand.length > 0) {
+                        player.hand.push(targetPlayer.hand.pop());
+                    } else if (disorderInfo.id === 'CRIPPLING_DEBT') {
+                        drawCardsForPlayer(player.id, 2);
+                    } else if (disorderInfo.id === 'EATING_TRASH' && gameState.actionsLeft > 1) {
+                        gameState.actionsLeft = Math.max(0, gameState.actionsLeft - 1);
+                    } else if (targetPlayer.hand.length > 0) {
+                        gameState.discardPile.push(targetPlayer.hand.pop());
+                    }
+                }
                 gameState.discardPile.push(card);
-                logAction(`${player.name} triggered Meltdown instantly on ${targetPlayer.name}!`);
             }
 
-            // Always decrement actions on card play
             gameState.actionsLeft--;
 
             if (!player.isBot && gameState.actionsLeft <= 0) {
@@ -919,7 +940,6 @@
                     });
                 }
 
-                // Drag & Drop Target Handlers
                 slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('drag-over'); };
                 slot.ondragleave = () => slot.classList.remove('drag-over');
                 slot.ondrop = (e) => {
@@ -949,7 +969,6 @@
                     cardDOM.draggable = true;
                     if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
 
-                    // Native Drag & Drop Handlers for Hand Cards
                     cardDOM.ondragstart = (e) => { 
                         e.dataTransfer.setData('text/plain', idx); 
                         cardDOM.classList.add('dragging'); 
