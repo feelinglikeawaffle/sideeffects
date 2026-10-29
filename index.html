@@ -731,7 +731,8 @@
             logAction(`${player.name}'s turn! 2 actions available.`);
             renderAll();
 
-            if (player.isBot && gameState.mode === 'single') {
+            if (player.isBot && (gameState.mode === 'single' || gameState.mode === 'host')) {
+                // In online games the host runs bot turns and publishes the resulting state.
                 setTimeout(() => executeBotTurn(playerIdx), 1200);
             } else if (gameState.mode === 'host') { syncCloudState(); }
         }
