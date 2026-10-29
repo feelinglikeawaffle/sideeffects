@@ -544,7 +544,7 @@
                 gameState.roomCode = code;
                 document.getElementById('created-room-code').textContent = code;
                 const initialRoomData = {
-                    host: localProfile.username, name: (document.getElementById('input-server-name').value.trim() || (localProfile.username + \'’s server\')).slice(0,30), password: document.getElementById('input-server-password').value, maxPlayers: parseInt(document.getElementById('select-max-players').value),
+                    host: localProfile.username, name: (document.getElementById('input-server-name').value.trim() || (localProfile.username + "'s server")).slice(0,30), password: document.getElementById('input-server-password').value, maxPlayers: parseInt(document.getElementById('select-max-players').value),
                     players: [{ id: 0, name: localProfile.username }], status: 'waiting', state: null
                 };
                 await db.ref('rooms/' + code).set(initialRoomData);
