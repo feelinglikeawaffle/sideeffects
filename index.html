@@ -1048,14 +1048,11 @@
 
             const handContainer = document.getElementById('player-hand');
             const handTitleLabel = document.getElementById('hand-title-label');
-            const handOwner = gameState.players[gameState.activeTab] || gameState.players[0];
+            // Always render the local human's hand; activeTab selects only which board is being viewed/targeted.
+            const handOwner = gameState.players[0];
             
             setTextIfPresent('hand-count-num', handOwner.hand.length);
-            if (isSpectating) {
-                handTitleLabel.innerHTML = `<i class="fa-solid fa-eye text-amber-400"></i> Spectating ${handOwner.name}'s Hand (${handOwner.hand.length} cards)`;
-            } else {
-                handTitleLabel.innerHTML = `<i class="fa-solid fa-hand text-rose-500"></i> Your Hand (${handOwner.hand.length} cards)`;
-            }
+            handTitleLabel.innerHTML = `<i class="fa-solid fa-hand text-rose-500"></i> Your Hand (${handOwner.hand.length} cards)`;
 
             if (handContainer) {
                 handContainer.innerHTML = '';
@@ -1064,7 +1061,7 @@
                     cardDOM.classList.add('hand-card-item'); 
                     // Only the human's own hand is interactive, and only during their turn.
                     // Spectating other players never grants control over their cards.
-                    const canControlHand = !isSpectating && gameState.activePlayer === 0 &&
+                    const canControlHand = gameState.activePlayer === 0 &&
                         gameState.actionsLeft > 0 && !gameState.gameOver;
                     cardDOM.draggable = canControlHand;
                     if (canControlHand) {
