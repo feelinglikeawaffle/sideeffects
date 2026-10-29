@@ -193,9 +193,9 @@
                     Host Game
                 </button>
 
-                <button onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-right-to-bracket text-base text-rose-500"></i>
-                    Join Game
+                <button onclick="openServerBrowser()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-server text-base text-rose-500"></i>
+                    Server Browser
                 </button>
             </div>
         </div>
@@ -224,6 +224,10 @@
                 </div>
                 <div class="space-y-4 text-left">
                     <div>
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Server Name</label>
+                        <input id="input-server-name" maxlength="30" placeholder="Chill Night" class="w-full mb-3 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Password (optional)</label>
+                        <input id="input-server-password" type="password" maxlength="40" placeholder="Leave blank for public" class="w-full mb-3 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (2 - 8)</label>
                         <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
                             <option value="2">2 Players</option>
@@ -272,6 +276,21 @@
                 </div>
             </div>
             <button onclick="submitJoinCode()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Join Waiting Room</button>
+        </div>
+    </div>
+
+    <!-- SERVER BROWSER -->
+    <div id="server-browser-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl">
+            <div class="min-h-0 flex flex-col">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                    <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-server"></i> SERVER BROWSER</h2>
+                    <button onclick="closeModal('server-browser-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p class="text-xs text-zinc-400 mb-3">Find a public waiting room, or create your own server.</p>
+                <div id="server-browser-list" class="space-y-2 overflow-y-auto min-h-0 flex-1"><p class="text-xs text-zinc-500">Loading servers…</p></div>
+            </div>
+            <button onclick="closeModal('server-browser-modal'); openHostModal();" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Create Server</button>
         </div>
     </div>
 
@@ -451,7 +470,7 @@
         };
 
         const gameState = {
-            mode: 'single', roomCode: '', deck: [], discardPile: [],
+            mode: 'single', roomCode: '', localPlayerId: 0, hasStarted: false, deck: [], discardPile: [],
             activePlayer: 0, actionsLeft: 2, gameOver: false,
             selectedHandIdx: null, activeTab: 0, players: [], roomListener: null,
             selectedDiscardIndices: new Set()
@@ -525,7 +544,7 @@
                 gameState.roomCode = code;
                 document.getElementById('created-room-code').textContent = code;
                 const initialRoomData = {
-                    host: localProfile.username, maxPlayers: parseInt(document.getElementById('select-max-players').value),
+                    host: localProfile.username, name: (document.getElementById('input-server-name').value.trim() || (localProfile.username + "'s server")).slice(0,30), password: document.getElementById('input-server-password').value, maxPlayers: parseInt(document.getElementById('select-max-players').value),
                     players: [{ id: 0, name: localProfile.username }], status: 'waiting', state: null
                 };
                 await db.ref('rooms/' + code).set(initialRoomData);
@@ -555,6 +574,41 @@
         function copyRoomCode() { navigator.clipboard.writeText(gameState.roomCode); logAction('Room code copied!'); }
         function openJoinModal() { saveProfile(); openModal('join-modal'); }
 
+        async function openServerBrowser() {
+            saveProfile();
+            openModal('server-browser-modal');
+            const list = document.getElementById('server-browser-list');
+            list.innerHTML = '<p class="text-xs text-zinc-500">Loading servers…</p>';
+            try {
+                const snap = await db.ref('rooms').once('value');
+                const rooms = snap.val() || {};
+                const available = Object.entries(rooms).filter(([code, room]) =>
+                    room && room.status === 'waiting' && Array.isArray(room.players) &&
+                    room.players.length < Number(room.maxPlayers || 8)
+                );
+                if (!available.length) {
+                    list.innerHTML = '<p class="text-xs text-zinc-500 p-3 bg-zinc-950 rounded-xl">No open servers right now. Create one and invite friends!</p>';
+                    return;
+                }
+                list.innerHTML = available.map(([code, room]) => {
+                    const safeName = String(room.name || (room.host + "'s server")).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+                    return `<button onclick="joinServerFromBrowser('${code}')" class="w-full text-left p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex items-center justify-between gap-3">
+                        <span class="min-w-0"><strong class="block text-sm text-white truncate">${safeName}</strong><span class="text-[10px] text-zinc-400">${room.players.length}/${Number(room.maxPlayers || 8)} players · ${room.password ? '🔒 Password' : 'Public'}</span></span>
+                        <span class="text-rose-400 text-xs font-black">${code}</span>
+                    </button>`;
+                }).join('');
+            } catch (error) {
+                list.innerHTML = '<p class="text-xs text-rose-400 p-3">Could not load servers. Check the Firebase connection and database rules.</p>';
+                console.error('Server browser failed:', error);
+            }
+        }
+
+        function joinServerFromBrowser(code) {
+            document.getElementById('input-join-code').value = code;
+            closeModal('server-browser-modal');
+            submitJoinCode();
+        }
+
         async function submitJoinCode() {
             const code = document.getElementById('input-join-code').value.trim().toUpperCase();
             if (code.length !== 6) { alert('Enter valid 6-char room code.'); return; }
@@ -564,6 +618,9 @@
             const roomData = snapshot.val();
             if(roomData.status !== 'waiting') { alert('Game already started!'); return; }
 
+            if (roomData.players.length >= Number(roomData.maxPlayers || 8)) { alert('This server is full.'); return; }
+            const requiredPassword = roomData.password || '';
+            if (requiredPassword && (prompt('This server is password protected. Enter password:') || '') !== requiredPassword) { alert('Incorrect server password.'); return; }
             const newPlayerId = roomData.players.length;
             roomData.players.push({ id: newPlayerId, name: localProfile.username });
             await roomRef.update({ players: roomData.players });
@@ -577,28 +634,37 @@
             waitingScreen.classList.remove('slide-hidden-right');
             waitingScreen.classList.add('slide-in-right');
 
-            gameState.mode = 'join'; gameState.roomCode = code;
+            gameState.mode = 'join'; gameState.roomCode = code; gameState.localPlayerId = newPlayerId;
             updateWaitingPlayerList(roomData.players);
 
             if(gameState.roomListener) gameState.roomListener.off();
             gameState.roomListener = roomRef;
+            gameState.hasStarted = false;
+            let stateListenerAttached = false;
             gameState.roomListener.on('value', snap => {
                 const cloudData = snap.val();
-                if(cloudData) {
-                    if(cloudData.players && cloudData.status === 'waiting') updateWaitingPlayerList(cloudData.players);
-                    
-                    // Triggered when host starts the match
-                    if(cloudData.status === 'started' && cloudData.state) {
-                        waitingScreen.classList.remove('slide-in-right');
-                        waitingScreen.classList.add('slide-hidden-right');
-                        Object.assign(gameState, cloudData.state);
-                        slideToGame();
-                        renderAll();
-
-                        // Listen for ongoing real-time game state syncs from host
+                if (!cloudData) return;
+                if (cloudData.status === 'waiting' && cloudData.players) {
+                    updateWaitingPlayerList(cloudData.players);
+                    if (gameState.hasStarted) {
+                        gameState.hasStarted = false;
+                        closeModal('game-over-modal');
+                        waitingScreen.classList.remove('slide-hidden-right');
+                        waitingScreen.classList.add('slide-in-right');
+                    }
+                }
+                if (cloudData.status === 'started' && cloudData.state) {
+                    gameState.hasStarted = true;
+                    waitingScreen.classList.remove('slide-in-right');
+                    waitingScreen.classList.add('slide-hidden-right');
+                    Object.assign(gameState, cloudData.state);
+                    slideToGame();
+                    renderAll();
+                    if (!stateListenerAttached) {
+                        stateListenerAttached = true;
                         roomRef.child('state').on('value', stateSnap => {
                             const updatedState = stateSnap.val();
-                            if(updatedState && gameState.mode === 'join') {
+                            if (updatedState && gameState.mode === 'join') {
                                 Object.assign(gameState, updatedState);
                                 renderAll();
                             }
@@ -650,7 +716,7 @@
                     activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
                 }
 
-                gameState.mode = 'host';
+                gameState.mode = 'host'; gameState.localPlayerId = 0;
                 gameState.players = activePlayersList.map((p, newIdx) => ({
                     id: newIdx,
                     name: p.name || `Player ${newIdx + 1}`,
@@ -677,6 +743,14 @@
                 });
 
                 closeModal('host-modal');
+                // The host is authoritative: remote clients submit move requests here.
+                roomRef.child('actions').off();
+                roomRef.child('actions').on('child_added', actionSnap => {
+                    const action = actionSnap.val();
+                    processClientAction(action);
+                    actionSnap.ref.remove();
+                });
+                gameState.hasStarted = true;
                 slideToGame();
                 renderAll();
             } catch (error) {
@@ -787,15 +861,16 @@
         }
 
         function handleHumanDrawAction() {
-            if (gameState.activePlayer !== 0 || gameState.actionsLeft <= 0 || gameState.gameOver) return;
-            drawCardsForPlayer(0, 1); gameState.actionsLeft--; sfx.playDraw();
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0 || gameState.gameOver) return;
+            if (gameState.mode === 'join') { submitClientAction({ type: 'draw' }); return; }
+            drawCardsForPlayer(gameState.localPlayerId, 1); gameState.actionsLeft--; sfx.playDraw();
             logAction(`Drew 1 card. (${gameState.actionsLeft} actions left)`);
             renderAll();
             if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
         }
 
         function openFreeDiscardModal() {
-            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.gameOver || gameState.mode === 'join') return;
             gameState.selectedDiscardIndices.clear();
             renderFreeDiscardSelector();
             openModal('discard-modal');
@@ -804,7 +879,7 @@
         function renderFreeDiscardSelector() {
             const container = document.getElementById('discard-card-selector');
             container.innerHTML = '';
-            gameState.players[0].hand.forEach((card, idx) => {
+            gameState.players[gameState.localPlayerId].hand.forEach((card, idx) => {
                 const cardDOM = renderCardDOM(card);
                 cardDOM.style.cursor = 'pointer';
                 if (gameState.selectedDiscardIndices.has(idx)) {
@@ -828,7 +903,7 @@
                 closeModal('discard-modal');
                 return;
             }
-            const player = gameState.players[0];
+            const player = gameState.players[gameState.localPlayerId];
             const newHand = [];
             const discarded = [];
             player.hand.forEach((card, idx) => {
@@ -846,8 +921,9 @@
             renderAll();
         }
 
-        function endTurn() {
-            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+        function endTurn(playerIdx = gameState.localPlayerId) {
+            if (gameState.activePlayer !== playerIdx || gameState.gameOver) return;
+            if (gameState.mode === 'join') { submitClientAction({ type: 'endTurn' }); return; }
             nextTurn();
         }
 
@@ -884,7 +960,13 @@
             return false;
         }
 
+        function requestPlayCard(cardHandIdx, targetPlayerIdx, stackIdx) {
+            if (gameState.mode === 'join') { submitClientAction({ type: 'play', cardHandIdx, targetPlayerIdx, stackIdx }); return; }
+            executePlayCard(gameState.localPlayerId, cardHandIdx, targetPlayerIdx, stackIdx);
+        }
+
         function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
+            if (playerIdx !== gameState.activePlayer || gameState.actionsLeft <= 0 || gameState.gameOver) return;
             const player = gameState.players[playerIdx];
             const card = player.hand[cardHandIdx];
             const targetPlayer = gameState.players[targetPlayerIdx];
@@ -931,8 +1013,8 @@
 
             gameState.actionsLeft--;
 
-            if (!player.isBot && gameState.actionsLeft <= 0 && gameState.activePlayer === 0) {
-                setTimeout(() => endTurn(), 500);
+            if (!player.isBot && gameState.actionsLeft <= 0 && gameState.activePlayer === playerIdx) {
+                setTimeout(() => endTurn(playerIdx), 500);
             }
             renderAll();
             if (gameState.mode === 'host') syncCloudState();
@@ -962,9 +1044,31 @@
         }
 
         function triggerGameOver(winner) {
+            if (gameState.gameOver) return;
             gameState.gameOver = true;
-            document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
-            openModal('game-over-modal');
+            document.getElementById('winner-title').textContent = winner.id === gameState.localPlayerId ? 'VICTORY!' : `${winner.name} WINS!`;
+            if (gameState.mode === 'host' && gameState.roomCode) {
+                // Re-open the same server lobby for everyone when the match ends.
+                db.ref('rooms/' + gameState.roomCode).update({ status: 'waiting', state: null, actions: null })
+                    .then(() => {
+                        closeModal('game-over-modal');
+                        const waiting = document.getElementById('screen-waiting-room');
+                        waiting.classList.remove('slide-hidden-right');
+                        waiting.classList.add('slide-in-right');
+                        updateWaitingPlayerList(gameState.players.filter(p => !p.isBot).map((p, i) => ({id:i,name:p.name})));
+                        if (gameState.roomListener) {
+                            gameState.roomListener.off();
+                            gameState.roomListener = db.ref('rooms/' + gameState.roomCode);
+                            gameState.roomListener.on('value', snap => {
+                                const data = snap.val();
+                                if (data && data.status === 'waiting' && data.players) updateHostPlayerList(data.players);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Could not return server to lobby:', error));
+            } else {
+                openModal('game-over-modal');
+            }
         }
 
         function shuffleArray(array) {
@@ -976,6 +1080,32 @@
 
         function switchPlayerTab(tabIdx) { gameState.activeTab = tabIdx; renderAll(); }
 
+        function submitClientAction(action) {
+            if (gameState.mode !== 'join' || !gameState.roomCode) return;
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0 || gameState.gameOver) return;
+            db.ref('rooms/' + gameState.roomCode + '/actions').push({ ...action, playerId: gameState.localPlayerId, createdAt: Date.now() })
+                .catch(error => alert('Could not send your move to the host: ' + error.message));
+        }
+
+        function processClientAction(action) {
+            if (gameState.mode !== 'host' || !action || action.playerId !== gameState.activePlayer || gameState.gameOver) return;
+            const playerId = Number(action.playerId);
+            if (action.type === 'draw' && gameState.actionsLeft > 0) {
+                drawCardsForPlayer(playerId, 1); gameState.actionsLeft--;
+                logAction(gameState.players[playerId].name + ' drew a card. (' + gameState.actionsLeft + ' actions left)');
+                renderAll(); syncCloudState();
+                if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(playerId), 500);
+            } else if (action.type === 'endTurn' && playerId === gameState.activePlayer) {
+                nextTurn();
+            } else if (action.type === 'play' && gameState.actionsLeft > 0) {
+                const handIdx = Number(action.cardHandIdx), targetIdx = Number(action.targetPlayerIdx), stackIdx = Number(action.stackIdx);
+                const player = gameState.players[playerId];
+                if (!player || !Number.isInteger(handIdx) || !Number.isInteger(targetIdx) || !Number.isInteger(stackIdx) || !player.hand[handIdx] || !gameState.players[targetIdx] || stackIdx < 0 || stackIdx > 3) return;
+                if (!canPlayCardOnStack(player.hand[handIdx], targetIdx, stackIdx)) return;
+                executePlayCard(playerId, handIdx, targetIdx, stackIdx);
+            }
+        }
+
         function renderAll() {
             // Some UI labels are absent in the current mobile/desktop layout. Update
             // them only when present so one optional label cannot abort game startup.
@@ -986,10 +1116,10 @@
             setTextIfPresent('account-stats', `Wins: ${localProfile.wins} | Games: ${localProfile.games}`);
             setTextIfPresent('deck-count', gameState.deck.length);
             setTextIfPresent('discard-count', gameState.discardPile.length);
-            setTextIfPresent('turn-indicator', gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`);
+            setTextIfPresent('turn-indicator', gameState.activePlayer === gameState.localPlayerId ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`);
             setTextIfPresent('actions-left-indicator', `${gameState.actionsLeft} Act`);
 
-            const isSpectating = gameState.activeTab !== 0;
+            const isSpectating = gameState.activeTab !== gameState.localPlayerId;
             const specBadge = document.getElementById('spectating-badge');
             if (isSpectating) specBadge.classList.remove('hidden');
             else specBadge.classList.add('hidden');
@@ -1032,15 +1162,15 @@
                 slot.ondrop = (e) => {
                     e.preventDefault(); slot.classList.remove('drag-over');
                     const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
-                    if (!isNaN(handIdx) && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
-                        const card = gameState.players[0].hand[handIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, handIdx, gameState.activeTab, sIdx);
+                    if (!isNaN(handIdx) && gameState.activePlayer === gameState.localPlayerId && gameState.actionsLeft > 0) {
+                        const card = gameState.players[gameState.localPlayerId].hand[handIdx];
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) requestPlayCard(handIdx, gameState.activeTab, sIdx);
                     }
                 };
                 slot.onclick = () => {
-                    if (gameState.selectedHandIdx !== null && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
-                        const card = gameState.players[0].hand[gameState.selectedHandIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
+                    if (gameState.selectedHandIdx !== null && gameState.activePlayer === gameState.localPlayerId && gameState.actionsLeft > 0) {
+                        const card = gameState.players[gameState.localPlayerId].hand[gameState.selectedHandIdx];
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) requestPlayCard(gameState.selectedHandIdx, gameState.activeTab, sIdx);
                     }
                 };
                 container.appendChild(slot);
@@ -1049,7 +1179,7 @@
             const handContainer = document.getElementById('player-hand');
             const handTitleLabel = document.getElementById('hand-title-label');
             // Always render the local human's hand; activeTab selects only which board is being viewed/targeted.
-            const handOwner = gameState.players[0];
+            const handOwner = gameState.players[gameState.localPlayerId] || gameState.players[0];
             
             setTextIfPresent('hand-count-num', handOwner.hand.length);
             handTitleLabel.innerHTML = `<i class="fa-solid fa-hand text-rose-500"></i> Your Hand (${handOwner.hand.length} cards)`;
@@ -1061,14 +1191,14 @@
                     cardDOM.classList.add('hand-card-item'); 
                     // Only the human's own hand is interactive, and only during their turn.
                     // Spectating other players never grants control over their cards.
-                    const canControlHand = gameState.activePlayer === 0 &&
+                    const canControlHand = gameState.activePlayer === gameState.localPlayerId &&
                         gameState.actionsLeft > 0 && !gameState.gameOver;
                     cardDOM.draggable = canControlHand;
                     if (canControlHand) {
                         if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
 
                         cardDOM.ondragstart = (e) => {
-                            if (gameState.activeTab !== 0 || gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) {
+                            if (gameState.activeTab !== gameState.localPlayerId || gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0) {
                                 e.preventDefault();
                                 return;
                             }
@@ -1080,7 +1210,7 @@
 
                         cardDOM.onclick = (e) => {
                             e.stopPropagation();
-                            if (gameState.activeTab !== 0 || gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) return;
+                            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0) return;
                             gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
                             renderAll();
                         };
