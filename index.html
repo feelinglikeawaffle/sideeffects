@@ -844,15 +844,16 @@
         }
 
         function handleHumanDrawAction() {
-            if (gameState.activePlayer !== 0 || gameState.actionsLeft <= 0 || gameState.gameOver) return;
-            drawCardsForPlayer(0, 1); gameState.actionsLeft--; sfx.playDraw();
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0 || gameState.gameOver) return;
+            if (gameState.mode === 'join') { submitClientAction({ type: 'draw' }); return; }
+            drawCardsForPlayer(gameState.localPlayerId, 1); gameState.actionsLeft--; sfx.playDraw();
             logAction(`Drew 1 card. (${gameState.actionsLeft} actions left)`);
             renderAll();
             if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(), 500);
         }
 
         function openFreeDiscardModal() {
-            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.gameOver || gameState.mode === 'join') return;
             gameState.selectedDiscardIndices.clear();
             renderFreeDiscardSelector();
             openModal('discard-modal');
@@ -861,7 +862,7 @@
         function renderFreeDiscardSelector() {
             const container = document.getElementById('discard-card-selector');
             container.innerHTML = '';
-            gameState.players[0].hand.forEach((card, idx) => {
+            gameState.players[gameState.localPlayerId].hand.forEach((card, idx) => {
                 const cardDOM = renderCardDOM(card);
                 cardDOM.style.cursor = 'pointer';
                 if (gameState.selectedDiscardIndices.has(idx)) {
@@ -885,7 +886,7 @@
                 closeModal('discard-modal');
                 return;
             }
-            const player = gameState.players[0];
+            const player = gameState.players[gameState.localPlayerId];
             const newHand = [];
             const discarded = [];
             player.hand.forEach((card, idx) => {
@@ -904,7 +905,8 @@
         }
 
         function endTurn() {
-            if (gameState.activePlayer !== 0 || gameState.gameOver) return;
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.gameOver) return;
+            if (gameState.mode === 'join') { submitClientAction({ type: 'endTurn' }); return; }
             nextTurn();
         }
 
@@ -941,7 +943,13 @@
             return false;
         }
 
+        function requestPlayCard(cardHandIdx, targetPlayerIdx, stackIdx) {
+            if (gameState.mode === 'join') { submitClientAction({ type: 'play', cardHandIdx, targetPlayerIdx, stackIdx }); return; }
+            executePlayCard(gameState.localPlayerId, cardHandIdx, targetPlayerIdx, stackIdx);
+        }
+
         function executePlayCard(playerIdx, cardHandIdx, targetPlayerIdx, stackIdx) {
+            if (playerIdx !== gameState.activePlayer || gameState.actionsLeft <= 0 || gameState.gameOver) return;
             const player = gameState.players[playerIdx];
             const card = player.hand[cardHandIdx];
             const targetPlayer = gameState.players[targetPlayerIdx];
@@ -988,8 +996,8 @@
 
             gameState.actionsLeft--;
 
-            if (!player.isBot && gameState.actionsLeft <= 0 && gameState.activePlayer === 0) {
-                setTimeout(() => endTurn(), 500);
+            if (!player.isBot && gameState.actionsLeft <= 0 && gameState.activePlayer === playerIdx) {
+                setTimeout(() => endTurn(playerIdx), 500);
             }
             renderAll();
             if (gameState.mode === 'host') syncCloudState();
@@ -1032,6 +1040,32 @@
         }
 
         function switchPlayerTab(tabIdx) { gameState.activeTab = tabIdx; renderAll(); }
+
+        function submitClientAction(action) {
+            if (gameState.mode !== 'join' || !gameState.roomCode) return;
+            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0 || gameState.gameOver) return;
+            db.ref('rooms/' + gameState.roomCode + '/actions').push({ ...action, playerId: gameState.localPlayerId, createdAt: Date.now() })
+                .catch(error => alert('Could not send your move to the host: ' + error.message));
+        }
+
+        function processClientAction(action) {
+            if (gameState.mode !== 'host' || !action || action.playerId !== gameState.activePlayer || gameState.gameOver) return;
+            const playerId = Number(action.playerId);
+            if (action.type === 'draw' && gameState.actionsLeft > 0) {
+                drawCardsForPlayer(playerId, 1); gameState.actionsLeft--;
+                logAction(gameState.players[playerId].name + ' drew a card. (' + gameState.actionsLeft + ' actions left)');
+                renderAll(); syncCloudState();
+                if (gameState.actionsLeft <= 0) setTimeout(() => endTurn(playerId), 500);
+            } else if (action.type === 'endTurn' && playerId === gameState.activePlayer) {
+                nextTurn();
+            } else if (action.type === 'play' && gameState.actionsLeft > 0) {
+                const handIdx = Number(action.cardHandIdx), targetIdx = Number(action.targetPlayerIdx), stackIdx = Number(action.stackIdx);
+                const player = gameState.players[playerId];
+                if (!player || !Number.isInteger(handIdx) || !Number.isInteger(targetIdx) || !Number.isInteger(stackIdx) || !player.hand[handIdx] || !gameState.players[targetIdx] || stackIdx < 0 || stackIdx > 3) return;
+                if (!canPlayCardOnStack(player.hand[handIdx], targetIdx, stackIdx)) return;
+                executePlayCard(playerId, handIdx, targetIdx, stackIdx);
+            }
+        }
 
         function renderAll() {
             // Some UI labels are absent in the current mobile/desktop layout. Update
