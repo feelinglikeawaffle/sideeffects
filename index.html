@@ -719,8 +719,8 @@
             gameState.activePlayer = playerIdx; gameState.actionsLeft = 2; gameState.selectedHandIdx = null;
             const player = gameState.players[playerIdx];
 
-            // SPECTATE MODE: Automatically switch view (tab) to the active player's POV
-            gameState.activeTab = playerIdx;
+            // Viewing a player's board is separate from turn ownership.
+            // Do not change activeTab here: turns must never change whose hand the human controls.
 
             if (player.skipNextTurn) {
                 player.skipNextTurn = false; logAction(`${player.name}'s turn was skipped!`);
@@ -1062,20 +1062,30 @@
                 handOwner.hand.forEach((card, idx) => {
                     const cardDOM = renderCardDOM(card); 
                     cardDOM.classList.add('hand-card-item'); 
-                    if (!isSpectating) {
-                        cardDOM.draggable = true;
+                    // Only the human's own hand is interactive, and only during their turn.
+                    // Spectating other players never grants control over their cards.
+                    const canControlHand = !isSpectating && gameState.activePlayer === 0 &&
+                        gameState.actionsLeft > 0 && !gameState.gameOver;
+                    cardDOM.draggable = canControlHand;
+                    if (canControlHand) {
                         if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
 
-                        cardDOM.ondragstart = (e) => { 
-                            e.dataTransfer.setData('text/plain', idx); 
-                            cardDOM.classList.add('dragging'); 
+                        cardDOM.ondragstart = (e) => {
+                            if (gameState.activeTab !== 0 || gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) {
+                                e.preventDefault();
+                                return;
+                            }
+                            e.dataTransfer.setData('text/plain', String(idx));
+                            e.dataTransfer.effectAllowed = 'move';
+                            cardDOM.classList.add('dragging');
                         };
                         cardDOM.ondragend = () => cardDOM.classList.remove('dragging');
 
-                        cardDOM.onclick = (e) => { 
-                            e.stopPropagation(); 
-                            gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx; 
-                            renderAll(); 
+                        cardDOM.onclick = (e) => {
+                            e.stopPropagation();
+                            if (gameState.activeTab !== 0 || gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) return;
+                            gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
+                            renderAll();
                         };
                     }
                     handContainer.appendChild(cardDOM);
