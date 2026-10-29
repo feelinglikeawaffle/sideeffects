@@ -158,6 +158,43 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+
+        /* BETA UI: clean, Cards-Against-Humanity-inspired tabletop */
+        body.beta-ui { background:#151713 !important; color:#f4f0e6; }
+        body.beta-ui .table-bg { background-color:#20231d !important; background-image:radial-gradient(ellipse at 50% 25%, #30362b 0%, #20231d 72%) !important; }
+        body.beta-ui .screen-container { background:#20231d !important; }
+        body.beta-ui #screen-main-menu > div { background:#f3f0e7 !important; color:#20211e !important; border:1px solid #d5d0c3 !important; border-radius:12px !important; box-shadow:0 20px 60px #0005 !important; }
+        body.beta-ui #screen-main-menu h1, body.beta-ui #screen-main-menu h1 i { color:#20211e !important; }
+        body.beta-ui #screen-main-menu p { color:#5d5c54 !important; }
+        body.beta-ui #screen-main-menu .bg-zinc-950\/80, body.beta-ui #screen-main-menu .bg-zinc-900\/80 { background:#e7e3d9 !important; border-color:#d2cdbf !important; }
+        body.beta-ui #screen-main-menu .text-zinc-300, body.beta-ui #screen-main-menu .text-zinc-400, body.beta-ui #screen-main-menu .text-zinc-500 { color:#68665d !important; }
+        body.beta-ui header { background:#171914 !important; border-color:#3b4035 !important; }
+        body.beta-ui #game-status-bar { background:#292d25 !important; border-color:#454a3d !important; }
+        body.beta-ui .card-base { background:#f7f5ee !important; color:#20211e !important; border:1px solid #d7d3c8 !important; border-radius:7px !important; box-shadow:0 4px 9px #0005 !important; }
+        body.beta-ui .card-base .text-white { color:#20211e !important; }
+        body.beta-ui .card-base .text-zinc-400, body.beta-ui .card-base .text-zinc-300 { color:#65645c !important; }
+        body.beta-ui .card-base .border-zinc-800 { border-color:#d8d4c9 !important; }
+        body.beta-ui .card-disorder { border-top:5px solid #9c3e46 !important; }
+        body.beta-ui .card-drug { border-top:5px solid #52769a !important; }
+        body.beta-ui .card-therapy { border-top:5px solid #57816c !important; }
+        body.beta-ui .card-episode { border-top:5px solid #b45b43 !important; }
+        body.beta-ui .card-action { border-top:5px solid #b18a43 !important; }
+        body.beta-ui .tag-badge { background:#e5e1d7 !important; color:#373830 !important; border-radius:3px !important; letter-spacing:.7px; }
+        body.beta-ui .slot-target { background:#262b22 !important; border-color:#656b5b !important; }
+        body.beta-ui .slot-locked-safe { background:#263c2d !important; border-color:#6d9c7a !important; }
+        body.beta-ui .slot-target .text-zinc-600 { color:#a6aa9c !important; }
+        body.beta-ui .bg-zinc-950, body.beta-ui .bg-zinc-900, body.beta-ui .bg-zinc-900\/90 { background:#252920 !important; }
+        body.beta-ui .border-zinc-800, body.beta-ui .border-zinc-700 { border-color:#42473b !important; }
+        body.beta-ui .text-rose-500, body.beta-ui .text-rose-600, body.beta-ui .text-rose-400 { color:#d1a0a0 !important; }
+        body.beta-ui .bg-rose-600 { background:#8d454b !important; }
+        body.beta-ui .hover\:bg-rose-500:hover { background:#a2555b !important; }
+        body.beta-ui .text-amber-400 { color:#d9bd7b !important; }
+        body.beta-ui .text-zinc-100, body.beta-ui .text-zinc-200 { color:#f0ede4 !important; }
+        body.beta-ui .screen-container .text-white { color:#f3f0e7 !important; }
+        body.beta-ui .side-drawer, body.beta-ui #discard-modal > div { background:#20231d !important; border-color:#454a3d !important; }
+        body.beta-ui .beta-ui-toggle { border-color:#6b705f !important; color:#e6e1d4 !important; background:#292d25 !important; }
+        .beta-ui-toggle { white-space:nowrap; }
+        @media (max-width: 640px) { .beta-ui-toggle .beta-label { display:none; } }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
@@ -173,6 +210,7 @@
                 <i class="fa-solid fa-skull text-rose-600"></i> UNFILTERED
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 max-w-sm mb-6">A dark, psychological party game. Clear your mind or sabotage your friends.</p>
+            <button id="beta-ui-menu-toggle" onclick="toggleBetaUI()" class="beta-ui-toggle mb-5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-zinc-700 bg-zinc-950 text-zinc-300 transition hover:brightness-110"><i class="fa-solid fa-layer-group mr-1.5"></i><span class="beta-label">Beta UI</span><span id="beta-ui-menu-state" class="ml-1.5 text-emerald-400">Off</span></button>
 
             <div class="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 text-left">
                 <div class="text-xs font-bold text-zinc-300 mb-2 flex items-center justify-between">
@@ -325,6 +363,7 @@
             <span id="actions-left-indicator" class="text-amber-400">2 Act</span>
         </div>
         <div class="flex items-center gap-1.5 sm:gap-2">
+            <button id="beta-ui-header-toggle" onclick="toggleBetaUI()" class="beta-ui-toggle px-2.5 sm:px-3 py-1 text-xs font-bold bg-zinc-800 text-zinc-200 rounded-md border border-zinc-700 transition" title="Toggle Beta UI"><i class="fa-solid fa-layer-group"></i> <span class="beta-label">Beta</span></button>
             <button onclick="openFreeDiscardModal()" class="px-2.5 sm:px-3 py-1 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700 transition flex items-center gap-1" title="Discard for free">
                 <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Discard</span>
             </button>
@@ -398,6 +437,25 @@
 
     <!-- AUDIO & GAME SCRIPT -->
     <script>
+
+        // Beta UI is a visual-only mode; it never changes game rules or room state.
+        function setBetaUI(enabled) {
+            document.body.classList.toggle('beta-ui', !!enabled);
+            try { localStorage.setItem('unfiltered_beta_ui', enabled ? '1' : '0'); } catch (e) {}
+            const state = document.getElementById('beta-ui-menu-state');
+            if (state) { state.textContent = enabled ? 'On' : 'Off'; state.className = 'ml-1.5 ' + (enabled ? 'text-emerald-400' : 'text-zinc-500'); }
+            const headerToggle = document.getElementById('beta-ui-header-toggle');
+            if (headerToggle) {
+                headerToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+                headerToggle.title = enabled ? 'Turn off Beta UI' : 'Turn on Beta UI';
+                headerToggle.style.outline = enabled ? '1px solid #9c7777' : 'none';
+            }
+            const menuToggle = document.getElementById('beta-ui-menu-toggle');
+            if (menuToggle) menuToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+        }
+        function toggleBetaUI() { setBetaUI(!document.body.classList.contains('beta-ui')); }
+        try { setBetaUI(localStorage.getItem('unfiltered_beta_ui') === '1'); } catch (e) { setBetaUI(false); }
+
         const firebaseConfig = {
             apiKey: "AIzaSyBUSK6ehu4PSCmAJ34q-FayFXmym1V3tlY",
             authDomain: "unfiltered-card-game.firebaseapp.com",
