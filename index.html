@@ -193,9 +193,9 @@
                     Host Game
                 </button>
 
-                <button onclick="openJoinModal()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-right-to-bracket text-base text-rose-500"></i>
-                    Join Game
+                <button onclick="openServerBrowser()" class="py-3.5 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-2xl font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-server text-base text-rose-500"></i>
+                    Server Browser
                 </button>
             </div>
         </div>
@@ -224,6 +224,10 @@
                 </div>
                 <div class="space-y-4 text-left">
                     <div>
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Server Name</label>
+                        <input id="input-server-name" maxlength="30" placeholder="Chill Night" class="w-full mb-3 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
+                        <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Password (optional)</label>
+                        <input id="input-server-password" type="password" maxlength="40" placeholder="Leave blank for public" class="w-full mb-3 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
                         <label class="text-xs font-bold uppercase text-zinc-400 block mb-1">Max Players (2 - 8)</label>
                         <select id="select-max-players" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-rose-600">
                             <option value="2">2 Players</option>
@@ -272,6 +276,21 @@
                 </div>
             </div>
             <button onclick="submitJoinCode()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition shadow-lg">Join Waiting Room</button>
+        </div>
+    </div>
+
+    <!-- SERVER BROWSER -->
+    <div id="server-browser-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-end hidden">
+        <div class="side-drawer bg-zinc-900 border-l border-zinc-800 h-full max-w-md w-full p-6 flex flex-col justify-between text-zinc-100 shadow-2xl">
+            <div class="min-h-0 flex flex-col">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+                    <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-server"></i> SERVER BROWSER</h2>
+                    <button onclick="closeModal('server-browser-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p class="text-xs text-zinc-400 mb-3">Find a public waiting room, or create your own server.</p>
+                <div id="server-browser-list" class="space-y-2 overflow-y-auto min-h-0 flex-1"><p class="text-xs text-zinc-500">Loading servers…</p></div>
+            </div>
+            <button onclick="closeModal('server-browser-modal'); openHostModal();" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Create Server</button>
         </div>
     </div>
 
@@ -451,7 +470,7 @@
         };
 
         const gameState = {
-            mode: 'single', roomCode: '', deck: [], discardPile: [],
+            mode: 'single', roomCode: '', localPlayerId: 0, deck: [], discardPile: [],
             activePlayer: 0, actionsLeft: 2, gameOver: false,
             selectedHandIdx: null, activeTab: 0, players: [], roomListener: null,
             selectedDiscardIndices: new Set()
