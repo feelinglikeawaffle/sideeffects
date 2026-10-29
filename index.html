@@ -159,42 +159,119 @@
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
 
-        /* BETA UI: clean, Cards-Against-Humanity-inspired tabletop */
-        body.beta-ui { background:#151713 !important; color:#f4f0e6; }
-        body.beta-ui .table-bg { background-color:#20231d !important; background-image:radial-gradient(ellipse at 50% 25%, #30362b 0%, #20231d 72%) !important; }
-        body.beta-ui .screen-container { background:#20231d !important; }
-        body.beta-ui #screen-main-menu > div { background:#f3f0e7 !important; color:#20211e !important; border:1px solid #d5d0c3 !important; border-radius:12px !important; box-shadow:0 20px 60px #0005 !important; }
-        body.beta-ui #screen-main-menu h1, body.beta-ui #screen-main-menu h1 i { color:#20211e !important; }
-        body.beta-ui #screen-main-menu p { color:#5d5c54 !important; }
-        body.beta-ui #screen-main-menu .bg-zinc-950\/80, body.beta-ui #screen-main-menu .bg-zinc-900\/80 { background:#e7e3d9 !important; border-color:#d2cdbf !important; }
-        body.beta-ui #screen-main-menu .text-zinc-300, body.beta-ui #screen-main-menu .text-zinc-400, body.beta-ui #screen-main-menu .text-zinc-500 { color:#68665d !important; }
-        body.beta-ui header { background:#171914 !important; border-color:#3b4035 !important; }
-        body.beta-ui #game-status-bar { background:#292d25 !important; border-color:#454a3d !important; }
-        body.beta-ui .card-base { background:#f7f5ee !important; color:#20211e !important; border:1px solid #d7d3c8 !important; border-radius:7px !important; box-shadow:0 4px 9px #0005 !important; }
-        body.beta-ui .card-base .text-white { color:#20211e !important; }
-        body.beta-ui .card-base .text-zinc-400, body.beta-ui .card-base .text-zinc-300 { color:#65645c !important; }
-        body.beta-ui .card-base .border-zinc-800 { border-color:#d8d4c9 !important; }
-        body.beta-ui .card-disorder { border-top:5px solid #9c3e46 !important; }
-        body.beta-ui .card-drug { border-top:5px solid #52769a !important; }
-        body.beta-ui .card-therapy { border-top:5px solid #57816c !important; }
-        body.beta-ui .card-episode { border-top:5px solid #b45b43 !important; }
-        body.beta-ui .card-action { border-top:5px solid #b18a43 !important; }
-        body.beta-ui .tag-badge { background:#e5e1d7 !important; color:#373830 !important; border-radius:3px !important; letter-spacing:.7px; }
-        body.beta-ui .slot-target { background:#262b22 !important; border-color:#656b5b !important; }
-        body.beta-ui .slot-locked-safe { background:#263c2d !important; border-color:#6d9c7a !important; }
-        body.beta-ui .slot-target .text-zinc-600 { color:#a6aa9c !important; }
-        body.beta-ui .bg-zinc-950, body.beta-ui .bg-zinc-900, body.beta-ui .bg-zinc-900\/90 { background:#252920 !important; }
-        body.beta-ui .border-zinc-800, body.beta-ui .border-zinc-700 { border-color:#42473b !important; }
-        body.beta-ui .text-rose-500, body.beta-ui .text-rose-600, body.beta-ui .text-rose-400 { color:#d1a0a0 !important; }
-        body.beta-ui .bg-rose-600 { background:#8d454b !important; }
-        body.beta-ui .hover\:bg-rose-500:hover { background:#a2555b !important; }
-        body.beta-ui .text-amber-400 { color:#d9bd7b !important; }
-        body.beta-ui .text-zinc-100, body.beta-ui .text-zinc-200 { color:#f0ede4 !important; }
-        body.beta-ui .screen-container .text-white { color:#f3f0e7 !important; }
-        body.beta-ui .side-drawer, body.beta-ui #discard-modal > div { background:#20231d !important; border-color:#454a3d !important; }
-        body.beta-ui .beta-ui-toggle { border-color:#6b705f !important; color:#e6e1d4 !important; background:#292d25 !important; }
+        /* BETA UI: dark, tactile tabletop with a more expressive layout. Scoped so Normal stays untouched. */
+        body.beta-ui {
+            --beta-bg:#0b0c12; --beta-panel:#151722; --beta-panel-2:#1c1f2c;
+            --beta-line:#34384b; --beta-text:#f5f3ff; --beta-muted:#a7abc0;
+            --beta-accent:#ff426d; --beta-accent-2:#8b5cf6;
+            background:var(--beta-bg) !important; color:var(--beta-text);
+            background-image:radial-gradient(ellipse at 50% -10%, #27203b 0%, #0b0c12 62%) !important;
+        }
+        body.beta-ui .table-bg { background:transparent !important; background-image:radial-gradient(ellipse at 50% 10%,#252039 0%,#101119 70%) !important; }
+        body.beta-ui .screen-container { background:rgba(11,12,18,.96) !important; }
+        body.beta-ui #screen-main-menu { align-items:center; }
+        body.beta-ui #screen-main-menu > div {
+            background:linear-gradient(145deg,#1c1d2a,#11121a) !important; color:var(--beta-text) !important;
+            border:1px solid #3b3651 !important; border-radius:26px !important;
+            box-shadow:0 24px 80px #000a,0 0 0 1px #ffffff08 inset !important;
+            animation:beta-menu-enter .55s cubic-bezier(.2,.8,.2,1) both;
+        }
+        body.beta-ui #screen-main-menu h1, body.beta-ui #screen-main-menu h1 i { color:#fff !important; }
+        body.beta-ui #screen-main-menu h1 i { color:var(--beta-accent) !important; filter:drop-shadow(0 0 12px #ff426d55); }
+        body.beta-ui #screen-main-menu p { color:#b9bbce !important; }
+        body.beta-ui #screen-main-menu .bg-zinc-950\/80, body.beta-ui #screen-main-menu .bg-zinc-900\/80 {
+            background:#171925 !important; border-color:#34374b !important;
+        }
+        body.beta-ui #screen-main-menu .text-zinc-300, body.beta-ui #screen-main-menu .text-zinc-400,
+        body.beta-ui #screen-main-menu .text-zinc-500 { color:#a7abc0 !important; }
+        body.beta-ui header {
+            background:rgba(14,15,23,.96) !important; border-color:#303347 !important;
+            box-shadow:0 8px 30px #0004; backdrop-filter:blur(16px);
+        }
+        body.beta-ui #game-status-bar {
+            background:linear-gradient(110deg,#242039,#1a1c29) !important; border:1px solid #49405f !important;
+            border-radius:16px !important; box-shadow:0 8px 24px #0003;
+        }
+        body.beta-ui #table-container { max-width:1440px; gap:14px !important; padding:clamp(8px,1.7vw,22px) !important; }
+        body.beta-ui #table-container > div:first-child {
+            background:linear-gradient(110deg,#191b28,#13151e) !important; border:1px solid #303347 !important;
+            border-radius:18px !important; box-shadow:0 10px 24px #0003;
+        }
+        body.beta-ui #active-psyche-container { gap:clamp(10px,1.4vw,22px) !important; max-width:100% !important; }
+        body.beta-ui #active-psyche-container > * {
+            border-radius:18px !important; transition:transform .24s ease, border-color .24s ease, box-shadow .24s ease;
+        }
+        body.beta-ui #bottom-hand-section {
+            flex:0 0 auto !important; min-height:clamp(190px,28vh,290px) !important;
+            background:linear-gradient(145deg,#1b1d2a,#11131c) !important;
+            border:1px solid #3a3d52 !important; border-radius:22px !important;
+            box-shadow:0 -10px 36px #0003,0 1px 0 #ffffff08 inset !important;
+            padding:12px 14px !important;
+        }
+        body.beta-ui #hand-title-label { color:#f4f1ff !important; }
+        body.beta-ui #player-hand { gap:clamp(9px,1.2vw,17px) !important; padding:10px 5px 14px !important; perspective:1000px; }
+        body.beta-ui .card-base {
+            background:linear-gradient(155deg,#292c3b 0%,#1b1d29 74%) !important;
+            color:#f7f5ff !important; border:1px solid #494c62 !important; border-radius:13px !important;
+            box-shadow:0 8px 16px #0006,0 1px 0 #ffffff12 inset !important;
+            overflow:hidden; transform-origin:50% 100%;
+            transition:transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease, border-color .22s ease, filter .22s ease !important;
+            animation:beta-card-deal .38s cubic-bezier(.2,.8,.2,1) both;
+        }
+        body.beta-ui .card-base:hover {
+            transform:translateY(-10px) rotate(-1deg) scale(1.035) !important;
+            border-color:#a58bff !important; box-shadow:0 18px 28px #0008,0 0 0 1px #8b5cf655 !important;
+            z-index:8; filter:brightness(1.12);
+        }
+        body.beta-ui .card-base .text-white { color:#fff !important; }
+        body.beta-ui .card-base .text-zinc-400, body.beta-ui .card-base .text-zinc-300 { color:#b8bbcf !important; }
+        body.beta-ui .card-base .border-zinc-800 { border-color:#45485d !important; }
+        body.beta-ui .card-disorder { border-top:5px solid #ff426d !important; }
+        body.beta-ui .card-drug { border-top:5px solid #54b7ff !important; }
+        body.beta-ui .card-therapy { border-top:5px solid #42d6a0 !important; }
+        body.beta-ui .card-episode { border-top:5px solid #ff9f43 !important; }
+        body.beta-ui .card-action { border-top:5px solid #a78bfa !important; }
+        body.beta-ui .tag-badge { background:#303247 !important; color:#e4ddff !important; border:1px solid #4a4665 !important; border-radius:6px !important; letter-spacing:.7px; }
+        body.beta-ui .slot-target {
+            background:linear-gradient(145deg,#24263a,#171925) !important; border:1px dashed #74708f !important;
+            border-radius:15px !important; box-shadow:0 0 0 1px #ffffff05 inset; transition:all .2s ease;
+        }
+        body.beta-ui .slot-target:hover { border-color:#ff6486 !important; box-shadow:0 0 22px #ff426d20 !important; transform:translateY(-2px); }
+        body.beta-ui .slot-locked-safe { background:#15372f !important; border-color:#3cae8a !important; }
+        body.beta-ui .slot-target .text-zinc-600 { color:#b4b2ca !important; }
+        body.beta-ui .bg-zinc-950, body.beta-ui .bg-zinc-900, body.beta-ui .bg-zinc-900\/90 {
+            background:#191b27 !important;
+        }
+        body.beta-ui .border-zinc-800, body.beta-ui .border-zinc-700 { border-color:#35384d !important; }
+        body.beta-ui .text-rose-500, body.beta-ui .text-rose-600, body.beta-ui .text-rose-400 { color:#ff6486 !important; }
+        body.beta-ui .bg-rose-600 { background:#e8325d !important; box-shadow:0 5px 16px #e8325d33; }
+        body.beta-ui .hover\\:bg-rose-500:hover { background:#ff5278 !important; }
+        body.beta-ui button, body.beta-ui .cursor-pointer { transition:transform .18s ease,filter .18s ease,box-shadow .18s ease; }
+        body.beta-ui button:hover { filter:brightness(1.12); }
+        body.beta-ui button:active { transform:scale(.975); }
+        body.beta-ui .text-amber-400 { color:#ffd166 !important; }
+        body.beta-ui .text-zinc-100, body.beta-ui .text-zinc-200 { color:#f0efff !important; }
+        body.beta-ui .screen-container .text-white { color:#f3f1ff !important; }
+        body.beta-ui .side-drawer, body.beta-ui #discard-modal > div {
+            background:#171925 !important; border-color:#3b3e53 !important; box-shadow:0 24px 80px #000a !important;
+        }
+        body.beta-ui .beta-ui-toggle { border-color:#5b5278 !important; color:#f2edff !important; background:#222033 !important; }
+        body.beta-ui .beta-ui-toggle[aria-pressed="true"] { background:#3b2850 !important; border-color:#a78bfa !important; }
+        body.beta-ui .modal-overlay > div { border-radius:22px !important; box-shadow:0 24px 80px #000a; }
+        @keyframes beta-menu-enter { from { opacity:0; transform:translateY(18px) scale(.975); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes beta-card-deal { from { opacity:0; transform:translateY(14px) rotate(1.5deg) scale(.96); } to { opacity:1; transform:translateY(0) rotate(0) scale(1); } }
+        @media (prefers-reduced-motion: reduce) {
+            body.beta-ui *, body.beta-ui *::before, body.beta-ui *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+        }
         .beta-ui-toggle { white-space:nowrap; }
-        @media (max-width: 640px) { .beta-ui-toggle .beta-label { display:none; } }
+        @media (max-width: 640px) {
+            .beta-ui-toggle .beta-label { display:none; }
+            body.beta-ui #table-container { gap:9px !important; padding:7px !important; }
+            body.beta-ui #bottom-hand-section { min-height:205px !important; border-radius:18px !important; padding:10px !important; }
+            body.beta-ui #player-hand { gap:8px !important; }
+            body.beta-ui .card-base { border-radius:10px !important; }
+            body.beta-ui #active-psyche-container { gap:8px !important; }
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col table-bg overflow-hidden select-none">
