@@ -977,11 +977,17 @@
         function switchPlayerTab(tabIdx) { gameState.activeTab = tabIdx; renderAll(); }
 
         function renderAll() {
-            document.getElementById('account-stats').textContent = `Wins: ${localProfile.wins} | Games: ${localProfile.games}`;
-            document.getElementById('deck-count').textContent = gameState.deck.length;
-            document.getElementById('discard-count').textContent = gameState.discardPile.length;
-            document.getElementById('turn-indicator').textContent = gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`;
-            document.getElementById('actions-left-indicator').textContent = `${gameState.actionsLeft} Act`;
+            // Some UI labels are absent in the current mobile/desktop layout. Update
+            // them only when present so one optional label cannot abort game startup.
+            const setTextIfPresent = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            };
+            setTextIfPresent('account-stats', `Wins: ${localProfile.wins} | Games: ${localProfile.games}`);
+            setTextIfPresent('deck-count', gameState.deck.length);
+            setTextIfPresent('discard-count', gameState.discardPile.length);
+            setTextIfPresent('turn-indicator', gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`);
+            setTextIfPresent('actions-left-indicator', `${gameState.actionsLeft} Act`);
 
             const isSpectating = gameState.activeTab !== 0;
             const specBadge = document.getElementById('spectating-badge');
@@ -1000,7 +1006,7 @@
             });
 
             const activePlayerObj = gameState.players[gameState.activeTab] || gameState.players[0];
-            document.getElementById('tab-player-name').textContent = isSpectating ? `${activePlayerObj.name}'s` : 'Your';
+            setTextIfPresent('tab-player-name', isSpectating ? `${activePlayerObj.name}'s` : 'Your');
 
             const container = document.getElementById('active-psyche-container'); container.innerHTML = '';
             for (let sIdx = 0; sIdx < 4; sIdx++) {
@@ -1044,7 +1050,7 @@
             const handTitleLabel = document.getElementById('hand-title-label');
             const handOwner = gameState.players[gameState.activeTab] || gameState.players[0];
             
-            document.getElementById('hand-count-num').textContent = handOwner.hand.length;
+            setTextIfPresent('hand-count-num', handOwner.hand.length);
             if (isSpectating) {
                 handTitleLabel.innerHTML = `<i class="fa-solid fa-eye text-amber-400"></i> Spectating ${handOwner.name}'s Hand (${handOwner.hand.length} cards)`;
             } else {
