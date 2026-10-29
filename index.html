@@ -544,7 +544,7 @@
                 gameState.roomCode = code;
                 document.getElementById('created-room-code').textContent = code;
                 const initialRoomData = {
-                    host: localProfile.username, maxPlayers: parseInt(document.getElementById('select-max-players').value),
+                    host: localProfile.username, name: (document.getElementById('input-server-name').value.trim() || (localProfile.username + \'’s server\')).slice(0,30), password: document.getElementById('input-server-password').value, maxPlayers: parseInt(document.getElementById('select-max-players').value),
                     players: [{ id: 0, name: localProfile.username }], status: 'waiting', state: null
                 };
                 await db.ref('rooms/' + code).set(initialRoomData);
@@ -574,6 +574,41 @@
         function copyRoomCode() { navigator.clipboard.writeText(gameState.roomCode); logAction('Room code copied!'); }
         function openJoinModal() { saveProfile(); openModal('join-modal'); }
 
+        async function openServerBrowser() {
+            saveProfile();
+            openModal('server-browser-modal');
+            const list = document.getElementById('server-browser-list');
+            list.innerHTML = '<p class="text-xs text-zinc-500">Loading servers…</p>';
+            try {
+                const snap = await db.ref('rooms').once('value');
+                const rooms = snap.val() || {};
+                const available = Object.entries(rooms).filter(([code, room]) =>
+                    room && room.status === 'waiting' && Array.isArray(room.players) &&
+                    room.players.length < Number(room.maxPlayers || 8)
+                );
+                if (!available.length) {
+                    list.innerHTML = '<p class="text-xs text-zinc-500 p-3 bg-zinc-950 rounded-xl">No open servers right now. Create one and invite friends!</p>';
+                    return;
+                }
+                list.innerHTML = available.map(([code, room]) => {
+                    const safeName = String(room.name || (room.host + "'s server")).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+                    return `<button onclick="joinServerFromBrowser('${code}')" class="w-full text-left p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex items-center justify-between gap-3">
+                        <span class="min-w-0"><strong class="block text-sm text-white truncate">${safeName}</strong><span class="text-[10px] text-zinc-400">${room.players.length}/${Number(room.maxPlayers || 8)} players · ${room.password ? '🔒 Password' : 'Public'}</span></span>
+                        <span class="text-rose-400 text-xs font-black">${code}</span>
+                    </button>`;
+                }).join('');
+            } catch (error) {
+                list.innerHTML = '<p class="text-xs text-rose-400 p-3">Could not load servers. Check the Firebase connection and database rules.</p>';
+                console.error('Server browser failed:', error);
+            }
+        }
+
+        function joinServerFromBrowser(code) {
+            document.getElementById('input-join-code').value = code;
+            closeModal('server-browser-modal');
+            submitJoinCode();
+        }
+
         async function submitJoinCode() {
             const code = document.getElementById('input-join-code').value.trim().toUpperCase();
             if (code.length !== 6) { alert('Enter valid 6-char room code.'); return; }
@@ -583,6 +618,9 @@
             const roomData = snapshot.val();
             if(roomData.status !== 'waiting') { alert('Game already started!'); return; }
 
+            if (roomData.players.length >= Number(roomData.maxPlayers || 8)) { alert('This server is full.'); return; }
+            const requiredPassword = roomData.password || '';
+            if (requiredPassword && (prompt('This server is password protected. Enter password:') || '') !== requiredPassword) { alert('Incorrect server password.'); return; }
             const newPlayerId = roomData.players.length;
             roomData.players.push({ id: newPlayerId, name: localProfile.username });
             await roomRef.update({ players: roomData.players });
@@ -596,7 +634,7 @@
             waitingScreen.classList.remove('slide-hidden-right');
             waitingScreen.classList.add('slide-in-right');
 
-            gameState.mode = 'join'; gameState.roomCode = code;
+            gameState.mode = 'join'; gameState.roomCode = code; gameState.localPlayerId = newPlayerId;
             updateWaitingPlayerList(roomData.players);
 
             if(gameState.roomListener) gameState.roomListener.off();
@@ -669,7 +707,7 @@
                     activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
                 }
 
-                gameState.mode = 'host';
+                gameState.mode = 'host'; gameState.localPlayerId = 0;
                 gameState.players = activePlayersList.map((p, newIdx) => ({
                     id: newIdx,
                     name: p.name || `Player ${newIdx + 1}`,
