@@ -287,8 +287,13 @@
                     <h2 class="text-base font-black text-rose-500 flex items-center gap-2"><i class="fa-solid fa-server"></i> SERVER BROWSER</h2>
                     <button onclick="closeModal('server-browser-modal')" class="text-zinc-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <p class="text-xs text-zinc-400 mb-3">Find a public waiting room, or create your own server.</p>
-                <div id="server-browser-list" class="space-y-2 overflow-y-auto min-h-0 flex-1"><p class="text-xs text-zinc-500">Loading servers…</p></div>
+                <p class="text-xs text-zinc-400 mb-3">Live servers hosted by players who are currently online.</p>
+                <div class="flex gap-2 mb-3">
+                    <input id="server-browser-search" type="search" maxlength="40" placeholder="Search server names or codes…" oninput="filterServerBrowser()" class="min-w-0 flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-rose-600">
+                    <button onclick="openServerBrowser()" aria-label="Refresh server list" title="Refresh servers" class="px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <p id="server-browser-status" class="text-[10px] text-zinc-500 mb-2">Refreshing…</p>
+                <div id="server-browser-list" class="space-y-2 overflow-y-auto min-h-0 flex-1"><p class="text-xs text-zinc-500">Loading live servers…</p></div>
             </div>
             <button onclick="closeModal('server-browser-modal'); openHostModal();" class="w-full py-3 bg-rose-600 hover:bg-rose-500 font-black text-white text-xs uppercase tracking-wider rounded-xl transition">Create Server</button>
         </div>
@@ -547,7 +552,11 @@
                     host: localProfile.username, name: (document.getElementById('input-server-name').value.trim() || (localProfile.username + "'s server")).slice(0,30), password: document.getElementById('input-server-password').value, maxPlayers: parseInt(document.getElementById('select-max-players').value),
                     players: [{ id: 0, name: localProfile.username }], status: 'waiting', state: null
                 };
-                await db.ref('rooms/' + code).set(initialRoomData);
+                const roomRef = db.ref('rooms/' + code);
+                await roomRef.set({ ...initialRoomData, hostOnline: true, updatedAt: firebase.database.ServerValue.TIMESTAMP });
+                // Firebase marks this room offline if the host disconnects/closes the page.
+                await roomRef.child('hostOnline').onDisconnect().set(false);
+                await roomRef.child('hostOnline').set(true);
                 updateHostPlayerList(initialRoomData.players);
                 openModal('host-modal');
 
@@ -574,33 +583,61 @@
         function copyRoomCode() { navigator.clipboard.writeText(gameState.roomCode); logAction('Room code copied!'); }
         function openJoinModal() { saveProfile(); openModal('join-modal'); }
 
+        let serverBrowserRooms = [];
+
         async function openServerBrowser() {
             saveProfile();
             openModal('server-browser-modal');
             const list = document.getElementById('server-browser-list');
-            list.innerHTML = '<p class="text-xs text-zinc-500">Loading servers…</p>';
+            const status = document.getElementById('server-browser-status');
+            if (list) list.innerHTML = '<p class="text-xs text-zinc-500">Refreshing live servers…</p>';
+            if (status) status.textContent = 'Checking currently connected hosts…';
             try {
                 const snap = await db.ref('rooms').once('value');
                 const rooms = snap.val() || {};
-                const available = Object.entries(rooms).filter(([code, room]) =>
-                    room && room.status === 'waiting' && Array.isArray(room.players) &&
+                // Only show rooms whose host presence flag says they are currently online.
+                // Old/test/stale room records without a presence flag are intentionally hidden.
+                serverBrowserRooms = Object.entries(rooms).filter(([code, room]) =>
+                    /^[A-Z0-9]{6}$/.test(code) &&
+                    room && room.hostOnline === true &&
+                    room.status === 'waiting' &&
+                    Array.isArray(room.players) &&
                     room.players.length < Number(room.maxPlayers || 8)
-                );
-                if (!available.length) {
-                    list.innerHTML = '<p class="text-xs text-zinc-500 p-3 bg-zinc-950 rounded-xl">No open servers right now. Create one and invite friends!</p>';
-                    return;
-                }
-                list.innerHTML = available.map(([code, room]) => {
-                    const safeName = String(room.name || (room.host + "'s server")).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-                    return `<button onclick="joinServerFromBrowser('${code}')" class="w-full text-left p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex items-center justify-between gap-3">
-                        <span class="min-w-0"><strong class="block text-sm text-white truncate">${safeName}</strong><span class="text-[10px] text-zinc-400">${room.players.length}/${Number(room.maxPlayers || 8)} players · ${room.password ? '🔒 Password' : 'Public'}</span></span>
-                        <span class="text-rose-400 text-xs font-black">${code}</span>
-                    </button>`;
-                }).join('');
+                ).map(([code, room]) => ({ code, ...room }));
+                if (status) status.textContent = serverBrowserRooms.length
+                    ? serverBrowserRooms.length + ' live server' + (serverBrowserRooms.length === 1 ? '' : 's')
+                    : '0 live servers';
+                filterServerBrowser();
             } catch (error) {
-                list.innerHTML = '<p class="text-xs text-rose-400 p-3">Could not load servers. Check the Firebase connection and database rules.</p>';
-                console.error('Server browser failed:', error);
+                serverBrowserRooms = [];
+                if (status) status.textContent = 'Could not connect to the server list';
+                list.innerHTML = '<p class="text-xs text-rose-400 p-3">Could not load live servers. Check the Firebase connection and database rules.</p>';
+                console.error('Server browser refresh failed:', error);
             }
+        }
+
+        function filterServerBrowser() {
+            const list = document.getElementById('server-browser-list');
+            const query = (document.getElementById('server-browser-search')?.value || '').trim().toLowerCase();
+            if (!list) return;
+            const filtered = serverBrowserRooms.filter(room =>
+                String(room.name || room.host || '').toLowerCase().includes(query) ||
+                String(room.code || '').toLowerCase().includes(query)
+            );
+            if (!filtered.length) {
+                list.innerHTML = query
+                    ? '<p class="text-xs text-zinc-500 p-3 bg-zinc-950 rounded-xl">No live servers match that search.</p>'
+                    : '<p class="text-xs text-zinc-500 p-3 bg-zinc-950 rounded-xl">No live servers are available right now. Create one or refresh later.</p>';
+                return;
+            }
+            list.innerHTML = filtered.map(room => {
+                const safeName = String(room.name || (room.host + "'s server")).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+                const code = String(room.code);
+                return `<button onclick="joinServerFromBrowser('${code}')" class="w-full text-left p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex items-center justify-between gap-3">
+                    <span class="min-w-0"><strong class="block text-sm text-white truncate">${safeName}</strong><span class="text-[10px] text-zinc-400">${room.players.length}/${Number(room.maxPlayers || 8)} players · ${room.password ? '🔒 Password required' : 'Public'}</span></span>
+                    <span class="text-rose-400 text-xs font-black">${code}</span>
+                </button>`;
+            }).join('');
         }
 
         function joinServerFromBrowser(code) {
