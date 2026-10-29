@@ -618,58 +618,76 @@
         }
 
         async function hostStartMatch() {
-            closeModal('host-modal'); 
-            gameState.mode = 'host';
-            const roomRef = db.ref('rooms/' + gameState.roomCode);
-            const snapshot = await roomRef.once('value');
-            const roomData = snapshot.val();
-            
-            const maxP = roomData.maxPlayers || 4;
-            let activePlayersList = roomData.players || [{ id: 0, name: localProfile.username }];
-            
-            // Fill empty slots with Bot players if needed up to max limit
-            for (let i = activePlayersList.length; i < maxP; i++) {
-                activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
+            const startButton = document.querySelector('#host-modal button[onclick="hostStartMatch()"]');
+            if (startButton) {
+                if (startButton.disabled) return;
+                startButton.disabled = true;
+                startButton.textContent = 'Starting...';
             }
 
-            // Shuffle players into random order as requested!
-            shuffleArray(activePlayersList);
+            try {
+                if (!gameState.roomCode) throw new Error('No lobby code was found. Please create the lobby again.');
 
-            gameState.players = activePlayersList.map((p, newIdx) => ({
-                id: newIdx, 
-                name: p.name, 
-                isBot: !!p.isBot || p.name.startsWith('Bot'), 
-                hand: [], 
-                psyche: [[], [], [], []], 
-                slotLocked: [false, false, false, false], 
-                skipNextTurn: false
-            }));
-            
-            initGame();
-            
-            // Push randomized game state package to Firebase
-            await roomRef.update({
-                status: 'started',
-                state: { 
-                    deck: gameState.deck, 
-                    discardPile: gameState.discardPile, 
-                    activePlayer: gameState.activePlayer, 
-                    actionsLeft: gameState.actionsLeft, 
-                    gameOver: gameState.gameOver, 
-                    players: gameState.players 
+                const roomRef = db.ref('rooms/' + gameState.roomCode);
+                const snapshot = await roomRef.once('value');
+                if (!snapshot.exists()) throw new Error('This lobby no longer exists. Please create a new one.');
+
+                const roomData = snapshot.val();
+                if (roomData.status !== 'waiting') throw new Error('This match has already started or is no longer waiting.');
+                const maxP = Number(roomData.maxPlayers) || 4;
+                const activePlayersList = Array.isArray(roomData.players) ? [...roomData.players] : [];
+
+                if (activePlayersList.length === 0) {
+                    activePlayersList.push({ id: 0, name: localProfile.username });
                 }
-            });
-
-            // Listen for state changes from other players if necessary
-            roomRef.child('state').on('value', stateSnap => {
-                const updatedState = stateSnap.val();
-                if(updatedState && gameState.mode === 'host') {
-                    // Host can manage incoming client updates if any
+                if (activePlayersList.length > maxP) {
+                    throw new Error('The lobby has more players than its configured limit. Recreate the lobby and try again.');
                 }
-            });
 
-            slideToGame();
-            renderAll();
+                // Keep the host in slot 0: all current human controls use player 0.
+                // Fill unused seats with bots so a host can start a small lobby immediately.
+                for (let i = activePlayersList.length; i < maxP; i++) {
+                    activePlayersList.push({ id: i, name: `Bot ${i}`, isBot: true });
+                }
+
+                gameState.mode = 'host';
+                gameState.players = activePlayersList.map((p, newIdx) => ({
+                    id: newIdx,
+                    name: p.name || `Player ${newIdx + 1}`,
+                    isBot: !!p.isBot || String(p.name || '').startsWith('Bot'),
+                    hand: [],
+                    psyche: [[], [], [], []],
+                    slotLocked: [false, false, false, false],
+                    skipNextTurn: false
+                }));
+
+                initGame();
+
+                // Publish the initialized state before leaving the lobby screen.
+                await roomRef.update({
+                    status: 'started',
+                    state: {
+                        deck: gameState.deck,
+                        discardPile: gameState.discardPile,
+                        activePlayer: gameState.activePlayer,
+                        actionsLeft: gameState.actionsLeft,
+                        gameOver: gameState.gameOver,
+                        players: gameState.players
+                    }
+                });
+
+                closeModal('host-modal');
+                slideToGame();
+                renderAll();
+            } catch (error) {
+                console.error('Unable to start UNFILTERED match:', error);
+                alert('Could not start the match. Your lobby is still open.\n\n' + (error && error.message ? error.message : 'Unknown Firebase error. Check your connection and Firebase Realtime Database rules.'));
+            } finally {
+                if (startButton) {
+                    startButton.disabled = false;
+                    startButton.textContent = 'Start Match';
+                }
+            }
         }
 
         function returnToMainMenu() {
