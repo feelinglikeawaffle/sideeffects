@@ -639,23 +639,32 @@
 
             if(gameState.roomListener) gameState.roomListener.off();
             gameState.roomListener = roomRef;
+            gameState.hasStarted = false;
+            let stateListenerAttached = false;
             gameState.roomListener.on('value', snap => {
                 const cloudData = snap.val();
-                if(cloudData) {
-                    if(cloudData.players && cloudData.status === 'waiting') updateWaitingPlayerList(cloudData.players);
-                    
-                    // Triggered when host starts the match
-                    if(cloudData.status === 'started' && cloudData.state) {
-                        waitingScreen.classList.remove('slide-in-right');
-                        waitingScreen.classList.add('slide-hidden-right');
-                        Object.assign(gameState, cloudData.state);
-                        slideToGame();
-                        renderAll();
-
-                        // Listen for ongoing real-time game state syncs from host
+                if (!cloudData) return;
+                if (cloudData.status === 'waiting' && cloudData.players) {
+                    updateWaitingPlayerList(cloudData.players);
+                    if (gameState.hasStarted) {
+                        gameState.hasStarted = false;
+                        closeModal('game-over-modal');
+                        waitingScreen.classList.remove('slide-hidden-right');
+                        waitingScreen.classList.add('slide-in-right');
+                    }
+                }
+                if (cloudData.status === 'started' && cloudData.state) {
+                    gameState.hasStarted = true;
+                    waitingScreen.classList.remove('slide-in-right');
+                    waitingScreen.classList.add('slide-hidden-right');
+                    Object.assign(gameState, cloudData.state);
+                    slideToGame();
+                    renderAll();
+                    if (!stateListenerAttached) {
+                        stateListenerAttached = true;
                         roomRef.child('state').on('value', stateSnap => {
                             const updatedState = stateSnap.val();
-                            if(updatedState && gameState.mode === 'join') {
+                            if (updatedState && gameState.mode === 'join') {
                                 Object.assign(gameState, updatedState);
                                 renderAll();
                             }
@@ -912,8 +921,8 @@
             renderAll();
         }
 
-        function endTurn() {
-            if (gameState.activePlayer !== gameState.localPlayerId || gameState.gameOver) return;
+        function endTurn(playerIdx = gameState.localPlayerId) {
+            if (gameState.activePlayer !== playerIdx || gameState.gameOver) return;
             if (gameState.mode === 'join') { submitClientAction({ type: 'endTurn' }); return; }
             nextTurn();
         }
@@ -1035,9 +1044,31 @@
         }
 
         function triggerGameOver(winner) {
+            if (gameState.gameOver) return;
             gameState.gameOver = true;
-            document.getElementById('winner-title').textContent = winner.id === 0 ? 'VICTORY!' : `${winner.name} WINS!`;
-            openModal('game-over-modal');
+            document.getElementById('winner-title').textContent = winner.id === gameState.localPlayerId ? 'VICTORY!' : `${winner.name} WINS!`;
+            if (gameState.mode === 'host' && gameState.roomCode) {
+                // Re-open the same server lobby for everyone when the match ends.
+                db.ref('rooms/' + gameState.roomCode).update({ status: 'waiting', state: null, actions: null })
+                    .then(() => {
+                        closeModal('game-over-modal');
+                        const waiting = document.getElementById('screen-waiting-room');
+                        waiting.classList.remove('slide-hidden-right');
+                        waiting.classList.add('slide-in-right');
+                        updateWaitingPlayerList(gameState.players.filter(p => !p.isBot).map((p, i) => ({id:i,name:p.name})));
+                        if (gameState.roomListener) {
+                            gameState.roomListener.off();
+                            gameState.roomListener = db.ref('rooms/' + gameState.roomCode);
+                            gameState.roomListener.on('value', snap => {
+                                const data = snap.val();
+                                if (data && data.status === 'waiting' && data.players) updateHostPlayerList(data.players);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Could not return server to lobby:', error));
+            } else {
+                openModal('game-over-modal');
+            }
         }
 
         function shuffleArray(array) {
