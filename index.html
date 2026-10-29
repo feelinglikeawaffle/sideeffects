@@ -1210,7 +1210,7 @@
 
                         cardDOM.onclick = (e) => {
                             e.stopPropagation();
-                            if (gameState.activeTab !== gameState.localPlayerId || gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0) return;
+                            if (gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0) return;
                             gameState.selectedHandIdx = gameState.selectedHandIdx === idx ? null : idx;
                             renderAll();
                         };
