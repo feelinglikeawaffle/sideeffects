@@ -470,7 +470,7 @@
         };
 
         const gameState = {
-            mode: 'single', roomCode: '', localPlayerId: 0, deck: [], discardPile: [],
+            mode: 'single', roomCode: '', localPlayerId: 0, hasStarted: false, deck: [], discardPile: [],
             activePlayer: 0, actionsLeft: 2, gameOver: false,
             selectedHandIdx: null, activeTab: 0, players: [], roomListener: null,
             selectedDiscardIndices: new Set()
@@ -734,6 +734,14 @@
                 });
 
                 closeModal('host-modal');
+                // The host is authoritative: remote clients submit move requests here.
+                roomRef.child('actions').off();
+                roomRef.child('actions').on('child_added', actionSnap => {
+                    const action = actionSnap.val();
+                    processClientAction(action);
+                    actionSnap.ref.remove();
+                });
+                gameState.hasStarted = true;
                 slideToGame();
                 renderAll();
             } catch (error) {
@@ -1077,10 +1085,10 @@
             setTextIfPresent('account-stats', `Wins: ${localProfile.wins} | Games: ${localProfile.games}`);
             setTextIfPresent('deck-count', gameState.deck.length);
             setTextIfPresent('discard-count', gameState.discardPile.length);
-            setTextIfPresent('turn-indicator', gameState.activePlayer === 0 ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`);
+            setTextIfPresent('turn-indicator', gameState.activePlayer === gameState.localPlayerId ? 'Your Turn' : `${gameState.players[gameState.activePlayer]?.name}'s Turn`);
             setTextIfPresent('actions-left-indicator', `${gameState.actionsLeft} Act`);
 
-            const isSpectating = gameState.activeTab !== 0;
+            const isSpectating = gameState.activeTab !== gameState.localPlayerId;
             const specBadge = document.getElementById('spectating-badge');
             if (isSpectating) specBadge.classList.remove('hidden');
             else specBadge.classList.add('hidden');
@@ -1123,15 +1131,15 @@
                 slot.ondrop = (e) => {
                     e.preventDefault(); slot.classList.remove('drag-over');
                     const handIdx = parseInt(e.dataTransfer.getData('text/plain'));
-                    if (!isNaN(handIdx) && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
-                        const card = gameState.players[0].hand[handIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, handIdx, gameState.activeTab, sIdx);
+                    if (!isNaN(handIdx) && gameState.activePlayer === gameState.localPlayerId && gameState.actionsLeft > 0) {
+                        const card = gameState.players[gameState.localPlayerId].hand[handIdx];
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) requestPlayCard(handIdx, gameState.activeTab, sIdx);
                     }
                 };
                 slot.onclick = () => {
-                    if (gameState.selectedHandIdx !== null && gameState.activePlayer === 0 && gameState.actionsLeft > 0) {
-                        const card = gameState.players[0].hand[gameState.selectedHandIdx];
-                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) executePlayCard(0, gameState.selectedHandIdx, gameState.activeTab, sIdx);
+                    if (gameState.selectedHandIdx !== null && gameState.activePlayer === gameState.localPlayerId && gameState.actionsLeft > 0) {
+                        const card = gameState.players[gameState.localPlayerId].hand[gameState.selectedHandIdx];
+                        if (canPlayCardOnStack(card, gameState.activeTab, sIdx)) requestPlayCard(gameState.selectedHandIdx, gameState.activeTab, sIdx);
                     }
                 };
                 container.appendChild(slot);
@@ -1140,7 +1148,7 @@
             const handContainer = document.getElementById('player-hand');
             const handTitleLabel = document.getElementById('hand-title-label');
             // Always render the local human's hand; activeTab selects only which board is being viewed/targeted.
-            const handOwner = gameState.players[0];
+            const handOwner = gameState.players[gameState.localPlayerId] || gameState.players[0];
             
             setTextIfPresent('hand-count-num', handOwner.hand.length);
             handTitleLabel.innerHTML = `<i class="fa-solid fa-hand text-rose-500"></i> Your Hand (${handOwner.hand.length} cards)`;
@@ -1152,14 +1160,14 @@
                     cardDOM.classList.add('hand-card-item'); 
                     // Only the human's own hand is interactive, and only during their turn.
                     // Spectating other players never grants control over their cards.
-                    const canControlHand = gameState.activePlayer === 0 &&
+                    const canControlHand = gameState.activePlayer === gameState.localPlayerId &&
                         gameState.actionsLeft > 0 && !gameState.gameOver;
                     cardDOM.draggable = canControlHand;
                     if (canControlHand) {
                         if (gameState.selectedHandIdx === idx) cardDOM.classList.add('selected-card');
 
                         cardDOM.ondragstart = (e) => {
-                            if (gameState.activeTab !== 0 || gameState.activePlayer !== 0 || gameState.actionsLeft <= 0) {
+                            if (gameState.activeTab !== gameState.localPlayerId || gameState.activePlayer !== gameState.localPlayerId || gameState.actionsLeft <= 0) {
                                 e.preventDefault();
                                 return;
                             }
